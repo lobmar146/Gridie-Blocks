@@ -10,8 +10,9 @@ import { toolboxJS } from '../toolbox/toolbox'
 import { blocksDesafio1 } from '../blocks/desafio1'
 import { desafio1Generator } from '../generators/desafio1'
 import { toolboxDesafio1 } from '../toolbox/toolboxDesafio1'
+import { toolboxDesafio2 } from '../toolbox/toolboxDesafio2'
 
-const BlocklyComponent = () => {
+const BlocklyComponent = ({ toolBoxDesafio }) => {
   const blocklyDiv = useRef(null)
   const toolbox = useRef(null)
   const [code, setCode] = useState('')
@@ -25,7 +26,7 @@ const BlocklyComponent = () => {
 
     // Initialize Blockly workspace with the dark theme
     const workspace = Blockly.inject(blocklyDiv.current, {
-      toolbox: toolboxDesafio1,
+      toolbox: toolBoxDesafio === '1' ? toolboxDesafio1 : toolboxDesafio2,
       theme: Blockly.Themes.Dark, // Apply the dark theme here
       locale: 'es' // Set the locale
     })
