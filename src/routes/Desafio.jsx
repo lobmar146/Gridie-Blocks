@@ -3,6 +3,7 @@ import React from 'react'
 import BlocklyComponent from '../components/BocklyComponent'
 import '../App.css'
 import { Link } from 'react-router-dom'
+import '../App.css'
 
 const App = ({ titulo, consigna, toolBox }) => {
   return (

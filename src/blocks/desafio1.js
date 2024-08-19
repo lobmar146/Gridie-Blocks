@@ -1,5 +1,6 @@
 import * as Blockly from 'blockly'
 
+// Definición de bloques
 export const blocksDesafio1 =
   Blockly.common.createBlockDefinitionsFromJsonArray([
     {
@@ -23,7 +24,7 @@ export const blocksDesafio1 =
     },
     {
       type: 'apagarled',
-      message0: 'Encender Led Conectado en Pin 13 %1',
+      message0: 'Apagar Led Conectado en Pin 13 %1',
       args0: [
         {
           type: 'field_image',
@@ -38,6 +39,19 @@ export const blocksDesafio1 =
       nextStatement: null,
       colour: 240,
       tooltip: '',
+      helpUrl: ''
+    },
+    {
+      type: 'ejecutar_una_vez',
+      message0: 'Ejecutar 1 vez (setup) %1',
+      args0: [
+        {
+          type: 'input_statement',
+          name: 'SETUP_CODE'
+        }
+      ],
+      colour: 120,
+      tooltip: 'Código que se ejecutará una sola vez al inicio (setup)',
       helpUrl: ''
     }
   ])
