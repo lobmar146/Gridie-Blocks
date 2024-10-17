@@ -54,5 +54,14 @@ export const blocksDesafio1 =
       colour: 120,
       tooltip: 'Código que se ejecutará una sola vez al inicio (setup)',
       helpUrl: ''
+    },
+    {
+      type: 'esperar_un_segundo',
+      message0: 'Esperar 1 segundo',
+      previousStatement: null,
+      nextStatement: null,
+      colour: 50, // Puedes cambiar el color si lo prefieres
+      tooltip: 'Esperar 1 segundo antes de continuar',
+      helpUrl: ''
     }
   ])

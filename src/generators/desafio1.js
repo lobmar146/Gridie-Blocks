@@ -18,6 +18,12 @@ desafio1Generator['apagarled'] = function (block) {
   return 'digitalWrite(13, LOW);\n' // Devuelve el código directamente
 }
 
+// Define la función para el bloque 'esperar 1 segundo'
+desafio1Generator['esperar_un_segundo'] = function (block) {
+  var code = 'delay(1000);\n' // Genera el código delay(1000) en Arduino
+  return code
+}
+
 // Define la función para el bloque 'ejecutar_una_vez'
 desafio1Generator['ejecutar_una_vez'] = function (block) {
   let currentBlock = block.getInputTargetBlock('SETUP_CODE')
