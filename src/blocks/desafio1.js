@@ -1,4 +1,5 @@
 import * as Blockly from 'blockly'
+import 'blockly/blocks' // Esto asegura que los bloques predefinidos de Blockly estén disponibles
 
 // Definición de bloques
 export const blocksDesafio1 =
