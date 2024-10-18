@@ -9,37 +9,47 @@ import { blocksDesafio1 } from '../blocks/desafio1'
 import { desafio1Generator } from '../generators/desafio1'
 import { toolboxDesafio1 } from '../toolbox/toolboxDesafio1'
 import { toolboxDesafio2 } from '../toolbox/toolboxDesafio2'
+import { toolboxDesafio3 } from '../toolbox/toolboxDesafio3'
 import '../App.css'
 
 // Sobrescribe los mensajes de los bloques de procedimientos
-// Sobrescribe los mensajes de los bloques de procedimientos
-Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'] = 'Definir' // Título del procedimiento por defecto
+Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'] = 'Definir'
 Blockly.Msg['PROCEDURES_DEFNORETURN_DO'] = 'hacer'
-Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE'] = 'Hacer algo' // Nombre predeterminado del procedimiento
-Blockly.Msg['PROCEDURES_CALLNORETURN_TITLE'] = 'llamar a %1' // Título de "call no return"
+Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE'] = 'Hacer algo'
+Blockly.Msg['PROCEDURES_CALLNORETURN_TITLE'] = 'llamar a %1'
 Blockly.Msg['PROCEDURES_DEFNORETURN_TOOLTIP'] =
   'Define un procedimiento sin retorno.'
 Blockly.Msg['PROCEDURES_CALLNORETURN_TOOLTIP'] =
   'Llama a un procedimiento definido por el usuario sin retorno.'
 
 // Ocultar los bloques de procedimientos con retorno
-Blockly.Blocks['procedures_defreturn'] = null // Deshabilita el bloque de procedimientos con retorno
-Blockly.Blocks['procedures_callreturn'] = null // Deshabilita el bloque de llamada a procedimientos con retorno
-Blockly.Blocks['procedures_ifreturn'] = null // Deshabilita el bloque "if [] return"
+Blockly.Blocks['procedures_defreturn'] = null
+Blockly.Blocks['procedures_callreturn'] = null
+Blockly.Blocks['procedures_ifreturn'] = null
 
 // Define los bloques una vez fuera del componente
 Blockly.common.defineBlocks(blocksDesafio1)
 
 const BlocklyComponent = ({ toolBoxDesafio }) => {
   const blocklyDiv = useRef(null)
-  const toolbox = useRef(null)
   const workspaceRef = useRef(null) // Referencia al workspace
   const [code, setCode] = useState('')
   const [showCode, setShowCode] = useState(false)
 
+  // Definir todos los toolboxes disponibles en un objeto
+  const toolboxMap = {
+    '1': toolboxDesafio1,
+    '2': toolboxDesafio2,
+    '3': toolboxDesafio3,
+    // Agrega aquí otros toolboxes si los tienes
+  }
+
   useEffect(() => {
+    // Acceder dinámicamente al toolbox según el prop
+    const selectedToolbox = toolboxMap[toolBoxDesafio] || toolboxDesafio1 // Default toolbox in case of no match
+
     workspaceRef.current = Blockly.inject(blocklyDiv.current, {
-      toolbox: toolBoxDesafio === '1' ? toolboxDesafio1 : toolboxDesafio2,
+      toolbox: selectedToolbox,
       theme: Blockly.Themes.Dark,
       locale: 'es',
       scrollbars: true,
@@ -59,25 +69,21 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
     initialBlock.render()
     initialBlock.moveBy(20, 20)
     initialBlock.setDeletable(false)
+
     const onWorkspaceChange = () => {
       // Recorre todos los bloques en el workspace
       workspaceRef.current.getAllBlocks().forEach(block => {
         // Verifica si el bloque no es del tipo 'ejecutar_una_vez'
         if (block.type !== 'ejecutar_una_vez') {
-          // Excepciones: No deshabilitar bloques de procedimientos
           if (
             block.type === 'procedures_defnoreturn' ||
             block.type === 'procedures_defreturn' ||
             block.type === 'procedures_callnoreturn'
           ) {
-            // Si es un bloque de procedimiento, mantenerlo habilitado
             block.setEnabled(true)
           } else {
-            // Revisa si el bloque está dentro de un procedimiento o de 'ejecutar_una_vez'
             let parentBlock = block.getSurroundParent()
             let isInsideProcedure = false
-
-            // Busca si el bloque tiene un padre que sea un procedimiento
             while (parentBlock) {
               if (
                 parentBlock.type === 'procedures_defnoreturn' ||
@@ -87,10 +93,8 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
                 isInsideProcedure = true
                 break
               }
-              parentBlock = parentBlock.getSurroundParent() // Sigue subiendo en la jerarquía de bloques
+              parentBlock = parentBlock.getSurroundParent()
             }
-
-            // Habilita los bloques que estén dentro de un procedimiento o 'ejecutar_una_vez'
             if (isInsideProcedure) {
               block.setEnabled(true)
             } else {
@@ -113,7 +117,7 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
       workspaceRef.current.removeChangeListener(onWorkspaceChange)
       workspaceRef.current.dispose()
     }
-  }, [toolBoxDesafio])
+  }, [toolBoxDesafio]) // Se actualizará cada vez que cambie el prop 'toolBoxDesafio'
 
   useEffect(() => {
     if (workspaceRef.current) {

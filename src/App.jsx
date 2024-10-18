@@ -25,14 +25,26 @@ const App = () => {
           }
         />
         <Route
-          path='/Desafio2'
+          path='/Ejercicio1'
           element={
             <Desafio
-              titulo='Desafio 2: Parpadear'
+              titulo='Ejercicio1: Parpadear'
               consigna={
                 'Ahora queremos que parpadee. Puedes ayudar a la placa Arduino a hacerlo?'
               }
               toolBox='2'
+            />
+          }
+        />
+                <Route
+          path='/Desafio2'
+          element={
+            <Desafio
+              titulo='Desafio 2: Encender el Semaforo'
+              consigna={
+                '¿Cómo hacemos para encender A-B-C en secuencia?'
+              }
+              toolBox='3'
             />
           }
         />

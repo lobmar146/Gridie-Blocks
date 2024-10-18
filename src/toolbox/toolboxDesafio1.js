@@ -3,7 +3,7 @@ export const toolboxDesafio1 = {
   contents: [
     {
       kind: 'category',
-      name: 'Comandos', // Categoría para 'Comandos'
+      name: 'Primitivas', // Categoría para 'Comandos'
       contents: [
         {
           kind: 'block',

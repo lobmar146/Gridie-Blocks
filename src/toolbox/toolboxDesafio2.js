@@ -3,7 +3,7 @@ export const toolboxDesafio2 = {
   contents: [
     {
       kind: 'category',
-      name: 'Comandos',
+      name: 'Primitivas', // Nueva categoría que agrupa todos los bloques de comandos y semáforo
       contents: [
         {
           kind: 'block',
@@ -15,14 +15,14 @@ export const toolboxDesafio2 = {
         },
         {
           kind: 'block',
-          type: 'esperar_un_segundo' // Añadimos el bloque 'esperar_un_segundo'
+          type: 'esperar_un_segundo' // Bloque 'esperar_un_segundo'
         }
       ]
     },
     {
       kind: 'category',
       name: 'Procedimientos',
-      custom: 'PROCEDURE'
+      custom: 'PROCEDURE' // Añadir los bloques de procedimientos aquí
     }
   ]
-}
+};
