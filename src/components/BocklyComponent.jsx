@@ -3,10 +3,10 @@ import * as Blockly from 'blockly/core'
 import 'blockly/blocks'
 import { javascriptGenerator } from 'blockly/javascript'
 import 'blockly/msg/es'
-import { forBlock } from '../generators/customGeneratos'
-import { toolboxJS } from '../toolbox/toolbox'
 import { blocksDesafio1 } from '../blocks/desafio1'
+import { forBlock } from '../generators/customGeneratos'
 import { desafio1Generator } from '../generators/desafio1'
+import { toolboxJS } from '../toolbox/toolbox'
 import { toolboxDesafio1 } from '../toolbox/toolboxDesafio1'
 import { toolboxDesafio2 } from '../toolbox/toolboxDesafio2'
 import { toolboxDesafio3 } from '../toolbox/toolboxDesafio3'
@@ -38,9 +38,9 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
 
   // Definir todos los toolboxes disponibles en un objeto
   const toolboxMap = {
-    '1': toolboxDesafio1,
-    '2': toolboxDesafio2,
-    '3': toolboxDesafio3,
+    1: toolboxDesafio1,
+    2: toolboxDesafio2,
+    3: toolboxDesafio3
     // Agrega aquí otros toolboxes si los tienes
   }
 
@@ -49,6 +49,7 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
     const selectedToolbox = toolboxMap[toolBoxDesafio] || toolboxDesafio1 // Default toolbox in case of no match
 
     workspaceRef.current = Blockly.inject(blocklyDiv.current, {
+      renderer: 'zelos',
       toolbox: selectedToolbox,
       theme: Blockly.Themes.Dark,
       locale: 'es',
@@ -126,17 +127,17 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
   }, [showCode])
 
   return (
-    <div className='blockly-container'>
+    <div className="blockly-container">
       <div
         ref={blocklyDiv}
         className={showCode ? 'blockly-workspace' : 'blockly-workspace-full'}
       ></div>
       {showCode && (
-        <textarea value={code} readOnly className='blockly-code-area' />
+        <textarea value={code} readOnly className="blockly-code-area" />
       )}
       <button
         onClick={() => setShowCode(!showCode)}
-        className='blockly-toggle-button'
+        className="blockly-toggle-button"
       >
         {showCode ? 'Ocultar Código' : 'Mostrar Código'}
       </button>
