@@ -43,6 +43,32 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
     3: toolboxDesafio3
     // Agrega aquí otros toolboxes si los tienes
   }
+  const darkTheme = Blockly.Theme.defineTheme('darkTheme', {
+    base: Blockly.Themes.Classic,
+    blockStyles: {
+      colour_blocks: {
+        colourPrimary: '#a5745b',
+        colourSecondary: '#dbc7bd',
+        colourTertiary: '#845d49'
+      }
+      // Define otros estilos de bloque si es necesario
+    },
+    categoryStyles: {
+      list_category: {
+        colour: '#745ba5'
+      }
+    },
+    componentStyles: {
+      workspaceBackgroundColour: '#1e1e1e',
+      toolboxBackgroundColour: '#333',
+      toolboxForegroundColour: '#fff',
+      flyoutBackgroundColour: '#252526',
+      flyoutForegroundColour: '#ccc',
+      flyoutOpacity: 1,
+      scrollbarColour: '#797979',
+      scrollbarOpacity: 0.8
+    }
+  })
 
   useEffect(() => {
     // Acceder dinámicamente al toolbox según el prop
@@ -51,7 +77,7 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
     workspaceRef.current = Blockly.inject(blocklyDiv.current, {
       renderer: 'zelos',
       toolbox: selectedToolbox,
-      theme: Blockly.Themes.Dark,
+      theme: darkTheme,
       locale: 'es',
       scrollbars: true,
       zoom: {
