@@ -10,101 +10,100 @@ let codeMap = {
 
 // Función para agregar pinMode y digitalWrite
 function addPinModeAndDigitalWrite(pin, state) {
-  const pinModeCode = `pinMode(${pin}, OUTPUT);\n`;
-  const digitalWriteCode = `digitalWrite(${pin}, ${state});\n`;
-  return pinModeCode + digitalWriteCode;
+  const pinModeCode = `pinMode(${pin}, OUTPUT);\n`
+  const digitalWriteCode = `digitalWrite(${pin}, ${state});\n`
+  return pinModeCode + digitalWriteCode
 }
 
 // Bloque 'encerled' (Led en Pin 13)
-desafio1Generator['encerled'] = function(block) {
-  const code = addPinModeAndDigitalWrite(13, 'HIGH');
-  return code; // Solo agrega código en setup
-};
+desafio1Generator['encerled'] = function (block) {
+  const code = addPinModeAndDigitalWrite(13, 'HIGH')
+  return code // Solo agrega código en setup
+}
 
 // Bloque 'apagarled' (Led en Pin 13)
-desafio1Generator['apagarled'] = function(block) {
-  const code = addPinModeAndDigitalWrite(13, 'LOW');
-  return code;
-};
+desafio1Generator['apagarled'] = function (block) {
+  const code = addPinModeAndDigitalWrite(13, 'LOW')
+  return code
+}
 
 // Define la función para el bloque 'esperar_un_segundo'
-desafio1Generator['esperar_un_segundo'] = function(block) {
-  const code = 'delay(1000);\n'; // Genera el código delay(1000) en Arduino
-  return code;
-};
+desafio1Generator['esperar_un_segundo'] = function (block) {
+  const code = 'delay(1000);\n' // Genera el código delay(1000) en Arduino
+  return code
+}
 
 // Bloque 'EncenderRojoA'
-desafio1Generator['EncenderRojoA'] = function(block) {
-  const code = addPinModeAndDigitalWrite(5, 'HIGH') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['EncenderRojoA'] = function (block) {
+  const code = addPinModeAndDigitalWrite(5, 'HIGH') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'ApagarRojoA'
-desafio1Generator['ApagarRojoA'] = function(block) {
-  const code = addPinModeAndDigitalWrite(5, 'LOW') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['ApagarRojoA'] = function (block) {
+  const code = addPinModeAndDigitalWrite(5, 'LOW') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'EncenderAmarilloC'
-desafio1Generator['EncenderAmarilloC'] = function(block) {
-  const code = addPinModeAndDigitalWrite(6, 'HIGH') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['EncenderAmarilloC'] = function (block) {
+  const code = addPinModeAndDigitalWrite(6, 'HIGH') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'ApagarAmarilloC'
-desafio1Generator['ApagarAmarilloC'] = function(block) {
-  const code = addPinModeAndDigitalWrite(6, 'LOW') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['ApagarAmarilloC'] = function (block) {
+  const code = addPinModeAndDigitalWrite(6, 'LOW') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'EncenderVerdeE'
-desafio1Generator['EncenderVerdeE'] = function(block) {
-  const code = addPinModeAndDigitalWrite(7, 'HIGH') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['EncenderVerdeE'] = function (block) {
+  const code = addPinModeAndDigitalWrite(7, 'HIGH') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'ApagarVerdeE'
-desafio1Generator['ApagarVerdeE'] = function(block) {
-  const code = addPinModeAndDigitalWrite(7, 'LOW') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['ApagarVerdeE'] = function (block) {
+  const code = addPinModeAndDigitalWrite(7, 'LOW') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'EncenderRojoB'
-desafio1Generator['EncenderRojoB'] = function(block) {
-  const code = addPinModeAndDigitalWrite(8, 'HIGH') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['EncenderRojoB'] = function (block) {
+  const code = addPinModeAndDigitalWrite(8, 'HIGH') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'ApagarRojoB'
-desafio1Generator['ApagarRojoB'] = function(block) {
-  const code = addPinModeAndDigitalWrite(8, 'LOW') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['ApagarRojoB'] = function (block) {
+  const code = addPinModeAndDigitalWrite(8, 'LOW') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'EncenderAmarilloD'
-desafio1Generator['EncenderAmarilloD'] = function(block) {
-  const code = addPinModeAndDigitalWrite(9, 'HIGH') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['EncenderAmarilloD'] = function (block) {
+  const code = addPinModeAndDigitalWrite(9, 'HIGH') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'ApagarAmarilloD'
-desafio1Generator['ApagarAmarilloD'] = function(block) {
-  const code = addPinModeAndDigitalWrite(9, 'LOW') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['ApagarAmarilloD'] = function (block) {
+  const code = addPinModeAndDigitalWrite(9, 'LOW') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'EncenderVerdeF'
-desafio1Generator['EncenderVerdeF'] = function(block) {
-  const code = addPinModeAndDigitalWrite(10, 'HIGH') + 'delay(1000);\n';
-  return code;
-};
+desafio1Generator['EncenderVerdeF'] = function (block) {
+  const code = addPinModeAndDigitalWrite(10, 'HIGH') + 'delay(1000);\n'
+  return code
+}
 
 // Bloque 'ApagarVerdeF'
-desafio1Generator['ApagarVerdeF'] = function(block) {
-  const code = addPinModeAndDigitalWrite(10, 'LOW') + 'delay(1000);\n';
-  return code;
-};
-
+desafio1Generator['ApagarVerdeF'] = function (block) {
+  const code = addPinModeAndDigitalWrite(10, 'LOW') + 'delay(1000);\n'
+  return code
+}
 
 // Define la función para el bloque 'esperar 1 segundo'
 desafio1Generator['esperar_un_segundo'] = function (block) {
