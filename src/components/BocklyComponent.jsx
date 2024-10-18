@@ -88,7 +88,13 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
         minScale: 0.3,
         scaleSpeed: 1.2
       },
-      trashcan: true
+      trashcan: true,
+      grid: {
+        spacing: 20, // Espaciado entre las líneas de la cuadrícula
+        length: 5, // Longitud de las líneas de la cuadrícula (0 para puntos)
+        colour: '#393838', // Color de la cuadrícula
+        snap: true // Los bloques se alinearán a la cuadrícula cuando se suelten
+      }
     })
 
     const initialBlock = workspaceRef.current.newBlock('ejecutar_una_vez')
