@@ -13,10 +13,10 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route
-          path='/Desafio1'
+          path='/Ejercicio1'
           element={
             <Desafio
-              titulo='Desafio 1: Encender un Led'
+              titulo='Ejercicio 1: Encender un Led'
               consigna={
                 'Como primer paso deberemos encender un led. Ayudas a la placa Arduino a encender el led?'
               }
@@ -25,7 +25,7 @@ const App = () => {
           }
         />
         <Route
-          path='/Ejercicio1'
+          path='/Problema1'
           element={
             <Desafio
               titulo='Ejercicio1: Parpadear'
@@ -37,10 +37,10 @@ const App = () => {
           }
         />
                 <Route
-          path='/Desafio2'
+          path='/Ejercicio2'
           element={
             <Desafio
-              titulo='Desafio 2: Encender el Semaforo'
+              titulo='Ejercicio 2: Encender el Semaforo'
               consigna={
                 '¿Cómo hacemos para encender A-B-C en secuencia?'
               }

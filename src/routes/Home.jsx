@@ -11,31 +11,31 @@ const Home = () => {
       </h2>
 
       <div className='flex-container'>
-        <Link to='/Desafio1' className='button'>
+        <Link to='/Ejercicio1' className='button'>
           <div className='box'>
             <img
               src='https://cdn-icons-png.flaticon.com/512/2534/2534928.png'
               alt='Imagen 1'
             />
-            <h3>Desafío 1: Encender un Led</h3>
+            <h3>Ejercicio 1: Encender un Led</h3>
           </div>
         </Link>
-        <Link to='/Ejercicio1' className='button'>
+        <Link to='/Problema1' className='button'>
           <div className='box'>
             <img
               src='https://cdn-icons-png.flaticon.com/512/2338/2338838.png'
               alt='Imagen 2'
             />
-            <h3>Ejercicio 1: Parpadear</h3>
+            <h3>Problema 1: Parpadear</h3>
           </div>
         </Link>
-        <Link to='/Desafio2' className='button'>
+        <Link to='/Ejercicio2' className='button'>
           <div className='box'>
             <img
               src='/img/desafio2/semaforo.png'
               alt='Imagen 2'
             />
-            <h3>Desafío 2: El Semaforo</h3>
+            <h3>Ejercicio 2: El Semaforo</h3>
           </div>
         </Link>
       </div>
