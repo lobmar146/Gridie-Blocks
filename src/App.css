@@ -164,3 +164,8 @@ h1 {
 .blockly-toggle-button:hover {
   background-color: #0056b3;
 }
+/* Estilo para el nombre de las funciones en azul y negrita */
+.function-name {
+  color: #2386f0;
+  font-weight: bold;
+}

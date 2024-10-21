@@ -2,112 +2,167 @@ import * as Blockly from 'blockly'
 
 export const desafio1Generator = new Blockly.Generator('DESAFIO1')
 
-// Objeto para almacenar el código generado por cada bloque
+// Objeto para almacenar el código generado por cada bloque y los pines ya configurados
 let codeMap = {
+  pinMode: '', // Código que irá en pinMode
   setup: '', // Código que irá en setup
   loop: '' // Código que irá en loop
 }
 
-// Función para agregar pinMode y digitalWrite
-function addPinModeAndDigitalWrite(pin, state) {
-  const pinModeCode = `pinMode(${pin}, OUTPUT);\n`
-  const digitalWriteCode = `digitalWrite(${pin}, ${state});\n`
-  return pinModeCode + digitalWriteCode
+// Objeto para almacenar los pines configurados para no repetir pinMode
+let configuredPins = {}
+
+// Función para agregar pinMode en el setup
+function addPinModeIfNotDefined(pin) {
+  if (!configuredPins[pin]) {
+    codeMap.pinMode += `pinMode(${pin}, OUTPUT);\n`
+    configuredPins[pin] = true // Marcar pin como configurado
+  }
+}
+
+// Función para generar digitalWrite con comentario
+function generateDigitalWrite(pin, state, comment) {
+  return `// ${comment}\ndigitalWrite(${pin}, ${state});\n`
+}
+
+// Función para aplicar indentación
+function indentCode(code, level = 1) {
+  const indent = '  '.repeat(level) // Cada nivel de indentación añade dos espacios
+  return code
+    .split('\n')
+    .map(line => (line.trim() ? indent + line : line)) // Solo indenta líneas que no están vacías
+    .join('\n')
 }
 
 // Bloque 'encerled' (Led en Pin 13)
 desafio1Generator['encerled'] = function (block) {
-  const code = addPinModeAndDigitalWrite(13, 'HIGH')
-  return code // Solo agrega código en setup
+  const pin = 13
+  addPinModeIfNotDefined(pin) // Asegura que pinMode se coloca en el setup
+  const comment = 'Encendiendo LED en Pin Digital 13' // Comentario para encender LED
+  const code = generateDigitalWrite(pin, 'HIGH', comment)
+  return code
 }
 
 // Bloque 'apagarled' (Led en Pin 13)
 desafio1Generator['apagarled'] = function (block) {
-  const code = addPinModeAndDigitalWrite(13, 'LOW')
+  const pin = 13
+  addPinModeIfNotDefined(pin)
+  const comment = 'Apagando LED en Pin Digital 13' // Comentario para apagar LED
+  const code = generateDigitalWrite(pin, 'LOW', comment)
   return code
 }
 
 // Define la función para el bloque 'esperar_un_segundo'
 desafio1Generator['esperar_un_segundo'] = function (block) {
-  const code = 'delay(1000);\n' // Genera el código delay(1000) en Arduino
+  const code = 'delay(1000);\n'
   return code
 }
 
 // Bloque 'EncenderRojoA'
 desafio1Generator['EncenderRojoA'] = function (block) {
-  const code = addPinModeAndDigitalWrite(5, 'HIGH') + 'delay(1000);\n'
+  const pin = 5
+  addPinModeIfNotDefined(pin)
+  const comment = 'Encendiendo Luz Roja conectada al Pin 5'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'ApagarRojoA'
 desafio1Generator['ApagarRojoA'] = function (block) {
-  const code = addPinModeAndDigitalWrite(5, 'LOW') + 'delay(1000);\n'
+  const pin = 5
+  addPinModeIfNotDefined(pin)
+  const comment = 'Apagando Luz Roja conectada al Pin 5'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'EncenderAmarilloC'
 desafio1Generator['EncenderAmarilloC'] = function (block) {
-  const code = addPinModeAndDigitalWrite(6, 'HIGH') + 'delay(1000);\n'
+  const pin = 6
+  addPinModeIfNotDefined(pin)
+  const comment = 'Encendiendo Luz Amarilla conectada al Pin 6'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'ApagarAmarilloC'
 desafio1Generator['ApagarAmarilloC'] = function (block) {
-  const code = addPinModeAndDigitalWrite(6, 'LOW') + 'delay(1000);\n'
+  const pin = 6
+  addPinModeIfNotDefined(pin)
+  const comment = 'Apagando Luz Amarilla conectada al Pin 6'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'EncenderVerdeE'
 desafio1Generator['EncenderVerdeE'] = function (block) {
-  const code = addPinModeAndDigitalWrite(7, 'HIGH') + 'delay(1000);\n'
+  const pin = 7
+  addPinModeIfNotDefined(pin)
+  const comment = 'Encendiendo Luz Verde conectada al Pin 7'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'ApagarVerdeE'
 desafio1Generator['ApagarVerdeE'] = function (block) {
-  const code = addPinModeAndDigitalWrite(7, 'LOW') + 'delay(1000);\n'
+  const pin = 7
+  addPinModeIfNotDefined(pin)
+  const comment = 'Apagando Luz Verde conectada al Pin 7'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'EncenderRojoB'
 desafio1Generator['EncenderRojoB'] = function (block) {
-  const code = addPinModeAndDigitalWrite(8, 'HIGH') + 'delay(1000);\n'
+  const pin = 8
+  addPinModeIfNotDefined(pin)
+  const comment = 'Encendiendo Luz Roja conectada al Pin 8'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'ApagarRojoB'
 desafio1Generator['ApagarRojoB'] = function (block) {
-  const code = addPinModeAndDigitalWrite(8, 'LOW') + 'delay(1000);\n'
+  const pin = 8
+  addPinModeIfNotDefined(pin)
+  const comment = 'Apagando Luz Roja conectada al Pin 8'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'EncenderAmarilloD'
 desafio1Generator['EncenderAmarilloD'] = function (block) {
-  const code = addPinModeAndDigitalWrite(9, 'HIGH') + 'delay(1000);\n'
+  const pin = 9
+  addPinModeIfNotDefined(pin)
+  const comment = 'Encendiendo Luz Amarilla conectada al Pin 9'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'ApagarAmarilloD'
 desafio1Generator['ApagarAmarilloD'] = function (block) {
-  const code = addPinModeAndDigitalWrite(9, 'LOW') + 'delay(1000);\n'
+  const pin = 9
+  addPinModeIfNotDefined(pin)
+  const comment = 'Apagando Luz Amarilla conectada al Pin 9'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'EncenderVerdeF'
 desafio1Generator['EncenderVerdeF'] = function (block) {
-  const code = addPinModeAndDigitalWrite(10, 'HIGH') + 'delay(1000);\n'
+  const pin = 10
+  addPinModeIfNotDefined(pin)
+  const comment = 'Encendiendo Luz Verde conectada al Pin 10'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
   return code
 }
 
 // Bloque 'ApagarVerdeF'
 desafio1Generator['ApagarVerdeF'] = function (block) {
-  const code = addPinModeAndDigitalWrite(10, 'LOW') + 'delay(1000);\n'
-  return code
-}
-
-// Define la función para el bloque 'esperar 1 segundo'
-desafio1Generator['esperar_un_segundo'] = function (block) {
-  var code = 'delay(1000);\n' // Genera el código delay(1000) en Arduino
+  const pin = 10
+  addPinModeIfNotDefined(pin)
+  const comment = 'Apagando Luz Verde conectada al Pin 10'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
   return code
 }
 
@@ -119,7 +174,7 @@ desafio1Generator['ejecutar_una_vez'] = function (block) {
   while (currentBlock) {
     const code = this[currentBlock.type](currentBlock)
     if (code) {
-      codeMap.setup += code
+      codeMap.setup += code // No aplicar indentación extra a `setup`
     }
     currentBlock = currentBlock.getNextBlock() // Mueve al siguiente bloque en la cadena
   }
@@ -136,11 +191,13 @@ desafio1Generator.workspaceToCode = function (workspace) {
     this.variableDB_ = new Blockly.Names(Blockly.Procedures.NAME_TYPE)
   }
 
-  // Limpia el mapa de código
+  // Limpia el mapa de código y pines configurados
   codeMap = {
+    pinMode: '', // Código para pinMode que debe estar al principio de setup
     setup: '', // Código que irá en setup
     loop: '' // Código que irá en loop
   }
+  configuredPins = {} // Resetear pines configurados
 
   // Almacena las definiciones de los procedimientos
   let procedureDefinitions = ''
@@ -160,8 +217,14 @@ desafio1Generator.workspaceToCode = function (workspace) {
     }
   })
 
-  // Genera la estructura básica con setup y loop, incluso si están vacíos
-  let finalCode = `${procedureDefinitions}\nvoid setup() {\n${codeMap.setup}}\n\nvoid loop() {\n${codeMap.loop}}\n`
+  // Genera la estructura básica con setup y loop, colocando pinMode al inicio del setup
+  let finalCode = `${procedureDefinitions}\nvoid setup() {\n${indentCode(
+    codeMap.pinMode,
+    1
+  )}\n${indentCode(codeMap.setup, 1)}}\n\nvoid loop() {\n${indentCode(
+    codeMap.loop,
+    1
+  )}}\n`
 
   return finalCode.trim() // Elimina espacios en blanco alrededor del código
 }
@@ -182,7 +245,7 @@ desafio1Generator['procedures_defnoreturn'] = function (block) {
   }
 
   // Genera el código del procedimiento
-  var code = 'void ' + funcName + '() {\n' + branch + '}\n'
+  var code = 'void ' + funcName + '() {\n' + indentCode(branch, 1) + '}\n'
   return code // Devuelve el código del procedimiento
 }
 
@@ -204,7 +267,13 @@ desafio1Generator['procedures_defreturn'] = function (block) {
 
   // Genera el código del procedimiento con retorno
   var code =
-    'int ' + funcName + '() {\n' + branch + '  return ' + returnValue + ';\n}\n'
+    'int ' +
+    funcName +
+    '() {\n' +
+    indentCode(branch, 1) +
+    '  return ' +
+    returnValue +
+    ';\n}\n'
   return code // Devuelve el código del procedimiento
 }
 
