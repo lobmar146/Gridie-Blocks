@@ -54,7 +54,7 @@ desafio1Generator['apagarled'] = function (block) {
 
 // Define la función para el bloque 'esperar_un_segundo'
 desafio1Generator['esperar_un_segundo'] = function (block) {
-  const code = 'delay(1000);\n'
+  const code = '//Esperar 1 segundo \ndelay(1000);\n'
   return code
 }
 
@@ -63,7 +63,7 @@ desafio1Generator['EncenderRojoA'] = function (block) {
   const pin = 5
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Roja conectada al Pin 5'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -72,7 +72,7 @@ desafio1Generator['ApagarRojoA'] = function (block) {
   const pin = 5
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Roja conectada al Pin 5'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
@@ -81,7 +81,7 @@ desafio1Generator['EncenderAmarilloC'] = function (block) {
   const pin = 6
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Amarilla conectada al Pin 6'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -90,7 +90,7 @@ desafio1Generator['ApagarAmarilloC'] = function (block) {
   const pin = 6
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Amarilla conectada al Pin 6'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
@@ -99,7 +99,7 @@ desafio1Generator['EncenderVerdeE'] = function (block) {
   const pin = 7
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Verde conectada al Pin 7'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -108,7 +108,7 @@ desafio1Generator['ApagarVerdeE'] = function (block) {
   const pin = 7
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Verde conectada al Pin 7'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
@@ -117,7 +117,7 @@ desafio1Generator['EncenderRojoB'] = function (block) {
   const pin = 8
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Roja conectada al Pin 8'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -126,7 +126,7 @@ desafio1Generator['ApagarRojoB'] = function (block) {
   const pin = 8
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Roja conectada al Pin 8'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
@@ -135,7 +135,7 @@ desafio1Generator['EncenderAmarilloD'] = function (block) {
   const pin = 9
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Amarilla conectada al Pin 9'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -144,7 +144,7 @@ desafio1Generator['ApagarAmarilloD'] = function (block) {
   const pin = 9
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Amarilla conectada al Pin 9'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
@@ -153,7 +153,7 @@ desafio1Generator['EncenderVerdeF'] = function (block) {
   const pin = 10
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Verde conectada al Pin 10'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'n'
   return code
 }
 
@@ -162,7 +162,7 @@ desafio1Generator['ApagarVerdeF'] = function (block) {
   const pin = 10
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Verde conectada al Pin 10'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + 'delay(1000);\n'
+  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
