@@ -106,7 +106,7 @@ h1 {
   text-align: left;
 }
 
-.card-nivel .consigna {
+.consigna {
   border: 1px solid #555; /* Borde más oscuro */
   padding: 20px; /* Padding adicional para la consigna */
   margin: 20px; /* Márgenes alrededor de la consigna */
