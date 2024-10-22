@@ -19,7 +19,7 @@ const Home = () => {
       {/* Clase 1 */}
       <section className="clase">
         <hr></hr>
-        <h2>Clase 1</h2>
+        <h2>Clase 1: Secuencia y Procedimientos</h2>
         <hr></hr>
         <div className="flex-container">
           <Link to="/Ejercicio1" className="card-nivel">
@@ -53,8 +53,18 @@ const Home = () => {
       {/* Clase 2 */}
       <section className="clase">
         <hr></hr>
-        <h2>Clase 2</h2>
+        <h2>Clase 2: Repetitivas</h2>
         <hr></hr>
+        <div className="flex-container">
+          <Link to="/Ejercicio1Clase2" className="card-nivel">
+            <div className="card-nivel-header">
+              <img src="img/ejercicio1/led_encendido.png" alt="Imagen 1" />
+            </div>
+            <div className="card-nivel-bottom">
+              <h3>Ejercicio 1: subir y bajar la luz del led</h3>
+            </div>
+          </Link>
+        </div>
       </section>
     </section>
   )

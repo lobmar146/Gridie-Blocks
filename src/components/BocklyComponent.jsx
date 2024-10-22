@@ -8,6 +8,7 @@ import { forBlock } from '../generators/customGeneratos'
 import { desafio1Generator } from '../generators/desafio1'
 import { toolboxJS } from '../toolbox/toolbox'
 import { toolboxDesafio1 } from '../toolbox/toolboxDesafio1'
+import { toolboxDesafio1Clase2 } from '../toolbox/toolboxDesafio1Clase2'
 import { toolboxDesafio2 } from '../toolbox/toolboxDesafio2'
 import { toolboxDesafio3 } from '../toolbox/toolboxDesafio3'
 import '../App.css'
@@ -40,7 +41,8 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
   const toolboxMap = {
     1: toolboxDesafio1,
     2: toolboxDesafio2,
-    3: toolboxDesafio3
+    3: toolboxDesafio3,
+    4: toolboxDesafio1Clase2
     // Agrega aquí otros toolboxes si los tienes
   }
   const darkTheme = Blockly.Theme.defineTheme('darkTheme', {

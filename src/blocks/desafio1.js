@@ -1,4 +1,4 @@
-import * as Blockly from 'blockly';
+import * as Blockly from 'blockly'
 
 export const blocksDesafio1 =
   Blockly.common.createBlockDefinitionsFromJsonArray([
@@ -17,7 +17,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: 240,
+      colour: '#0D47A1', // Azul muy oscuro (contraste adecuado para texto blanco)
       tooltip: '',
       helpUrl: ''
     },
@@ -36,7 +36,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: 240,
+      colour: '#0D47A1', // Azul muy oscuro (contraste adecuado para texto blanco)
       tooltip: '',
       helpUrl: ''
     },
@@ -54,7 +54,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: '#cb0019',
+      colour: '#B71C1C', // Rojo oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -72,7 +72,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: '#cb0019',
+      colour: '#B71C1C', // Rojo oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -90,7 +90,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: '#a6a100',
+      colour: '#E65100', // Naranja oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -108,7 +108,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: '#a6a100',
+      colour: '#E65100', // Naranja oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -126,7 +126,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: 100,
+      colour: '#1B5E20', // Verde oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -144,7 +144,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: 100,
+      colour: '#1B5E20', // Verde oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -162,7 +162,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: '#cb0019',
+      colour: '#B71C1C', // Rojo oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -180,7 +180,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: '#cb0019',
+      colour: '#B71C1C', // Rojo oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -198,7 +198,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: '#a6a100',
+      colour: '#E65100', // Naranja oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -216,7 +216,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: '#a6a100',
+      colour: '#E65100', // Naranja oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -234,7 +234,7 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: 100,
+      colour: '#1B5E20', // Verde oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
@@ -252,11 +252,11 @@ export const blocksDesafio1 =
       ],
       previousStatement: null,
       nextStatement: null,
-      colour: 100,
+      colour: '#1B5E20', // Verde oscuro (contraste adecuado)
       tooltip: '',
       helpUrl: ''
     },
-     {
+    {
       type: 'ejecutar_una_vez',
       message0: 'Ejecutar 1 vez (setup) %1',
       args0: [
@@ -265,17 +265,42 @@ export const blocksDesafio1 =
           name: 'SETUP_CODE'
         }
       ],
-      colour: 120,
+      colour: '#00796B', // Verde azulado muy oscuro, similar a las placas Arduino (contraste adecuado)
       tooltip: 'Código que se ejecutará una sola vez al inicio (setup)',
       helpUrl: ''
     },
-        {
+    {
       type: 'esperar_un_segundo',
       message0: 'Esperar 1 segundo',
       previousStatement: null,
       nextStatement: null,
-      colour: 50, // Puedes cambiar el color si lo prefieres
+      colour: '#84651d', // Verde azulado muy oscuro (contraste adecuado)
       tooltip: 'Esperar 1 segundo antes de continuar',
       helpUrl: ''
+    },
+    {
+      type: 'controls_repeat_ext', // Bloque para repetir X cantidad de veces
+      message0: 'Repetir %1 veces',
+      args0: [
+        {
+          type: 'field_number', // Usar un campo numérico directamente
+          name: 'TIMES',
+          value: 5, // Valor predeterminado para las repeticiones
+          min: 1 // Limitar el valor mínimo a 1 (opcional)
+        }
+      ],
+      message1: 'Hacer %1',
+      args1: [
+        {
+          type: 'input_statement',
+          name: 'DO' // Bloques que se ejecutan en cada repetición
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#ad5f23', // Naranja muy oscuro (contraste adecuado)
+      tooltip:
+        'Repetir un conjunto de instrucciones un número determinado de veces.',
+      helpUrl: ''
     }
-  ]);
+  ])

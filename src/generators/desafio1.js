@@ -153,7 +153,7 @@ desafio1Generator['EncenderVerdeF'] = function (block) {
   const pin = 10
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Verde conectada al Pin 10'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + 'n'
+  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -284,4 +284,31 @@ desafio1Generator['procedures_callnoreturn'] = function (block) {
     Blockly.Procedures.NAME_TYPE
   )
   return funcName + '();\n'
+}
+
+// Bloque para 'repetir x cantidad de veces'
+desafio1Generator['controls_repeat_ext'] = function (block) {
+  // Obtener el número de repeticiones
+  var repeats = block.getField('TIMES')
+    ? String(Number(block.getFieldValue('TIMES')))
+    : desafio1Generator.valueToCode(
+        block,
+        'TIMES',
+        desafio1Generator.ORDER_ASSIGNMENT
+      ) || '0'
+
+  // Procesar los bloques dentro del bucle con recursividad
+  let branch = ''
+  let currentBlock = block.getInputTargetBlock('DO')
+  while (currentBlock) {
+    branch += this[currentBlock.type](currentBlock) || '' // Generar código para cada bloque dentro del bucle
+    currentBlock = currentBlock.getNextBlock() // Mover al siguiente bloque dentro del bucle
+  }
+
+  // Aplicar indentación al código dentro del bucle
+  branch = indentCode(branch, 2) // Indentar el contenido del bucle
+
+  // Generar el código del bucle 'for'
+  const code = `for (int repetir = 0; repetir < ${repeats}; repetir++) {\n${branch}}\n`
+  return code
 }
