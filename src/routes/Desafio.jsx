@@ -8,7 +8,16 @@ const App = ({ titulo, consigna, toolBox }) => {
   return (
     <div className="App">
       <Link to="/">Volver a los niveles</Link>
-      <h1>{titulo}</h1>
+
+      <h1>
+        {' '}
+        <span className="logo">
+          <span className="texto-verde">GrID</span>
+          <span className="texto-rojo">IE</span>
+        </span>{' '}
+        Blocks - {titulo}{' '}
+      </h1>
+
       <p className="consigna">{consigna}</p>
       <BlocklyComponent toolBoxDesafio={toolBox} />
     </div>
