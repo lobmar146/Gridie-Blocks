@@ -64,6 +64,22 @@ const Home = () => {
               <h3>Ejercicio 1: subir y bajar la luz del led</h3>
             </div>
           </Link>
+          <Link to="/Ejercicio2Clase2" className="card-nivel">
+            <div className="card-nivel-header">
+              <img src="img/ejercicio1/led_encendido.png" alt="Imagen 1" />
+            </div>
+            <div className="card-nivel-bottom">
+              <h3>Ejercicio 2: Intensidad del led con Repetitivas</h3>
+            </div>
+          </Link>
+          <Link to="/Ejercicio2Clase2Variante" className="card-nivel">
+            <div className="card-nivel-header">
+              <img src="img/ejercicio1/led_encendido.png" alt="Imagen 1" />
+            </div>
+            <div className="card-nivel-bottom">
+              <h3>Ejercicio 2: Repetitiva VARIANTE</h3>
+            </div>
+          </Link>
         </div>
       </section>
     </section>

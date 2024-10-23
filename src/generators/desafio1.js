@@ -5,12 +5,16 @@ export const desafio1Generator = new Blockly.Generator('DESAFIO1')
 // Objeto para almacenar el código generado por cada bloque y los pines ya configurados
 let codeMap = {
   pinMode: '', // Código que irá en pinMode
+  variables: '', // Variables definidas
   setup: '', // Código que irá en setup
   loop: '' // Código que irá en loop
 }
 
 // Objeto para almacenar los pines configurados para no repetir pinMode
 let configuredPins = {}
+
+// Objeto para almacenar si la variable "intensidad" ya ha sido declarada
+let definedVariables = {}
 
 // Función para agregar pinMode en el setup
 function addPinModeIfNotDefined(pin) {
@@ -20,9 +24,17 @@ function addPinModeIfNotDefined(pin) {
   }
 }
 
-// Función para generar digitalWrite con comentario
-function generateDigitalWrite(pin, state, comment) {
-  return `// ${comment}\ndigitalWrite(${pin}, ${state});\n`
+// Función para agregar la variable "intensidad" si no está definida
+function addVariableIfNotDefined(variableName, initialValue, comment) {
+  if (!definedVariables[variableName]) {
+    codeMap.variables += `// ${comment}\nint ${variableName} = ${initialValue};\n`
+    definedVariables[variableName] = true // Marcar la variable como definida
+  }
+}
+
+// Función para generar analogWrite con comentario
+function generateAnalogWrite(pin, value, comment) {
+  return `// ${comment}\nanalogWrite(${pin}, ${value});\n`
 }
 
 // Función para aplicar indentación
@@ -39,7 +51,7 @@ desafio1Generator['encerled'] = function (block) {
   const pin = 13
   addPinModeIfNotDefined(pin) // Asegura que pinMode se coloca en el setup
   const comment = 'Encendiendo LED en Pin Digital 13' // Comentario para encender LED
-  const code = generateDigitalWrite(pin, 'HIGH', comment)
+  const code = generateAnalogWrite(pin, 'HIGH', comment)
   return code
 }
 
@@ -48,13 +60,67 @@ desafio1Generator['apagarled'] = function (block) {
   const pin = 13
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando LED en Pin Digital 13' // Comentario para apagar LED
-  const code = generateDigitalWrite(pin, 'LOW', comment)
+  const code = generateAnalogWrite(pin, 'LOW', comment)
   return code
 }
 
-// Define la función para el bloque 'esperar_un_segundo'
+// Bloque 'aumentar_intensidad_led' (Controla la intensidad del LED en Pin 11)
+desafio1Generator['aumentar_intensidad_led'] = function (block) {
+  const pin = 11
+  const intensityChange = Number(block.getFieldValue('INTENSITY')) // Obtener el valor del bloque
+
+  // Asegurar que el pinMode se coloque en el setup
+  addPinModeIfNotDefined(pin)
+
+  // Asegurar que la variable "intensidad" solo se define una vez
+  addVariableIfNotDefined(
+    'intensidad',
+    1, // Valor inicial
+    'Definimos la variable que controla la intensidad'
+  )
+
+  // Incrementar la variable "intensidad" en función del valor del bloque
+  const code =
+    `// Aumento la intensidad del LED en ${intensityChange}\nintensidad += ${intensityChange};\n` +
+    generateAnalogWrite(
+      pin,
+      'intensidad',
+      'Aumentamos la intensidad del LED en el Pin 11'
+    )
+
+  return code
+}
+
+// Bloque 'bajar_intensidad_led' (Disminuye la intensidad del LED en Pin 11)
+desafio1Generator['bajar_intensidad_led'] = function (block) {
+  const pin = 11
+  const intensityChange = Number(block.getFieldValue('INTENSITY')) // Obtener el valor del bloque
+
+  // Asegurar que el pinMode se coloque en el setup
+  addPinModeIfNotDefined(pin)
+
+  // Asegurar que la variable "intensidad" solo se define una vez
+  addVariableIfNotDefined(
+    'intensidad',
+    1, // Valor inicial
+    'Definimos la variable que controla la intensidad'
+  )
+
+  // Decrementar la variable "intensidad" en función del valor del bloque
+  const code =
+    `// Disminuimos la intensidad del LED en ${intensityChange}\nintensidad -= ${intensityChange};\n` +
+    generateAnalogWrite(
+      pin,
+      'intensidad',
+      'Disminuimos la intensidad del LED en el Pin 11'
+    )
+
+  return code
+}
+
+// Bloque 'esperar_un_segundo' (Delay de 1 segundo)
 desafio1Generator['esperar_un_segundo'] = function (block) {
-  const code = '//Esperar 1 segundo \ndelay(1000);\n'
+  const code = '// Esperar 1 segundo\n' + 'delay(1000);\n'
   return code
 }
 
@@ -63,7 +129,7 @@ desafio1Generator['EncenderRojoA'] = function (block) {
   const pin = 5
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Roja conectada al Pin 5'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
+  const code = generateAnalogWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -72,7 +138,7 @@ desafio1Generator['ApagarRojoA'] = function (block) {
   const pin = 5
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Roja conectada al Pin 5'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
+  const code = generateAnalogWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
@@ -81,7 +147,7 @@ desafio1Generator['EncenderAmarilloC'] = function (block) {
   const pin = 6
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Amarilla conectada al Pin 6'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
+  const code = generateAnalogWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -90,7 +156,7 @@ desafio1Generator['ApagarAmarilloC'] = function (block) {
   const pin = 6
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Amarilla conectada al Pin 6'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
+  const code = generateAnalogWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
@@ -99,7 +165,7 @@ desafio1Generator['EncenderVerdeE'] = function (block) {
   const pin = 7
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Verde conectada al Pin 7'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
+  const code = generateAnalogWrite(pin, 'HIGH', comment) + '\n'
   return code
 }
 
@@ -108,61 +174,7 @@ desafio1Generator['ApagarVerdeE'] = function (block) {
   const pin = 7
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Verde conectada al Pin 7'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
-  return code
-}
-
-// Bloque 'EncenderRojoB'
-desafio1Generator['EncenderRojoB'] = function (block) {
-  const pin = 8
-  addPinModeIfNotDefined(pin)
-  const comment = 'Encendiendo Luz Roja conectada al Pin 8'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
-  return code
-}
-
-// Bloque 'ApagarRojoB'
-desafio1Generator['ApagarRojoB'] = function (block) {
-  const pin = 8
-  addPinModeIfNotDefined(pin)
-  const comment = 'Apagando Luz Roja conectada al Pin 8'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
-  return code
-}
-
-// Bloque 'EncenderAmarilloD'
-desafio1Generator['EncenderAmarilloD'] = function (block) {
-  const pin = 9
-  addPinModeIfNotDefined(pin)
-  const comment = 'Encendiendo Luz Amarilla conectada al Pin 9'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
-  return code
-}
-
-// Bloque 'ApagarAmarilloD'
-desafio1Generator['ApagarAmarilloD'] = function (block) {
-  const pin = 9
-  addPinModeIfNotDefined(pin)
-  const comment = 'Apagando Luz Amarilla conectada al Pin 9'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
-  return code
-}
-
-// Bloque 'EncenderVerdeF'
-desafio1Generator['EncenderVerdeF'] = function (block) {
-  const pin = 10
-  addPinModeIfNotDefined(pin)
-  const comment = 'Encendiendo Luz Verde conectada al Pin 10'
-  const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
-  return code
-}
-
-// Bloque 'ApagarVerdeF'
-desafio1Generator['ApagarVerdeF'] = function (block) {
-  const pin = 10
-  addPinModeIfNotDefined(pin)
-  const comment = 'Apagando Luz Verde conectada al Pin 10'
-  const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
+  const code = generateAnalogWrite(pin, 'LOW', comment) + '\n'
   return code
 }
 
@@ -194,10 +206,12 @@ desafio1Generator.workspaceToCode = function (workspace) {
   // Limpia el mapa de código y pines configurados
   codeMap = {
     pinMode: '', // Código para pinMode que debe estar al principio de setup
+    variables: '', // Variables que deben estar al principio
     setup: '', // Código que irá en setup
     loop: '' // Código que irá en loop
   }
   configuredPins = {} // Resetear pines configurados
+  definedVariables = {} // Resetear variables definidas
 
   // Almacena las definiciones de los procedimientos
   let procedureDefinitions = ''
@@ -217,9 +231,20 @@ desafio1Generator.workspaceToCode = function (workspace) {
     }
   })
 
+  // Añadir comentarios sobre pines y variables si están definidos
+  const pinModeComment = codeMap.pinMode
+    ? '// Definimos los pines como entrada y salida\n'
+    : ''
+  const variablesComment = codeMap.variables
+    ? '// Definimos las variables que usará nuestro programa\n'
+    : ''
+
   // Genera la estructura básica con setup y loop, colocando pinMode al inicio del setup
-  let finalCode = `${procedureDefinitions}\nvoid setup() {\n${indentCode(
-    codeMap.pinMode,
+  let finalCode = `${procedureDefinitions}\n${variablesComment}${indentCode(
+    codeMap.variables,
+    1
+  )}\nvoid setup() {\n${indentCode(
+    pinModeComment + codeMap.pinMode,
     1
   )}\n${indentCode(codeMap.setup, 1)}}\n\nvoid loop() {\n${indentCode(
     codeMap.loop,
@@ -310,5 +335,34 @@ desafio1Generator['controls_repeat_ext'] = function (block) {
 
   // Generar el código del bucle 'for'
   const code = `for (int repetir = 0; repetir < ${repeats}; repetir++) {\n${branch}}\n`
+  return code
+}
+
+desafio1Generator['controls_count_with_intensity'] = function (block) {
+  var from =
+    desafio1Generator.valueToCode(
+      block,
+      'FROM',
+      desafio1Generator.ORDER_ATOMIC
+    ) || '0'
+  var to =
+    desafio1Generator.valueToCode(
+      block,
+      'TO',
+      desafio1Generator.ORDER_ATOMIC
+    ) || '0'
+
+  // Asegurar que la variable intensidad se declara una sola vez
+  addVariableIfNotDefined(
+    'intensidad',
+    from,
+    'Definimos la variable que controla la intensidad'
+  )
+
+  // Código del for loop
+  var branch = desafio1Generator.statementToCode(block, 'DO')
+  branch = indentCode(branch, 2) // Indentar el código interno
+
+  var code = `for (int intensidad = ${from}; intensidad <= ${to}; intensidad++) {\n${branch}}\n`
   return code
 }

@@ -302,5 +302,63 @@ export const blocksDesafio1 =
       tooltip:
         'Repetir un conjunto de instrucciones un número determinado de veces.',
       helpUrl: ''
+    },
+    {
+      type: 'aumentar_intensidad_led',
+      message0: 'Aumentar intensidad del LED en %1',
+      args0: [
+        {
+          type: 'field_number', // Campo numérico para el valor de la intensidad
+          name: 'INTENSITY',
+          value: 0, // Valor predeterminado de intensidad (rango de 0 a 255)
+          min: 0, // Valor mínimo
+          max: 255 // Valor máximo
+        }
+      ],
+      message1: '%1', // Mensaje que contendrá la imagen
+      args1: [
+        {
+          type: 'field_image',
+          src: '/img/ejercicio1Clase2/Intensidad_Led_ascendente.png',
+          width: 300,
+          height: 100,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#0D47A1', // Azul muy oscuro (contraste adecuado para texto blanco)
+      tooltip: 'Aumentar la intensidad del LED utilizando PWM (analogWrite)',
+      helpUrl: ''
+    },
+    {
+      type: 'bajar_intensidad_led',
+      message0: 'Bajar intensidad del LED en %1',
+      args0: [
+        {
+          type: 'field_number', // Campo numérico para el valor de la intensidad
+          name: 'INTENSITY',
+          value: 0, // Valor predeterminado de intensidad (rango de 0 a 255)
+          min: 0, // Valor mínimo
+          max: 255 // Valor máximo
+        }
+      ],
+      message1: '%1',
+      args1: [
+        {
+          type: 'field_image',
+          src: '/img/ejercicio1Clase2/Intensidad_Led_descendente.png',
+          width: 300,
+          height: 100,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#0D47A1', // Azul muy oscuro
+      tooltip: 'Disminuir la intensidad del LED utilizando PWM (analogWrite)',
+      helpUrl: ''
     }
   ])

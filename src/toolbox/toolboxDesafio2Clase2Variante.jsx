@@ -1,4 +1,4 @@
-export const toolboxDesafio1Clase2 = {
+export const toolboxDesafio2Clase2Variante = {
   kind: 'categoryToolbox',
   contents: [
     {
@@ -11,11 +11,21 @@ export const toolboxDesafio1Clase2 = {
         },
         {
           kind: 'block',
-          type: 'bajar_intensidad_led' // Bloque nuevo para aumentar la intensidad
+          type: 'bajar_intensidad_led' // Bloque nuevo para bajar la intensidad
         },
         {
           kind: 'block',
           type: 'esperar_un_segundo'
+        }
+      ]
+    },
+    {
+      kind: 'category',
+      name: 'Bucles',
+      contents: [
+        {
+          kind: 'block',
+          type: 'controls_repeat_ext' // Bloque de repetición
         }
       ]
     },

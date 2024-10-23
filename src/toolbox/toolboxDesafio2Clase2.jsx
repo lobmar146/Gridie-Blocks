@@ -1,4 +1,4 @@
-export const toolboxDesafio1Clase2 = {
+export const toolboxDesafio2Clase2 = {
   kind: 'categoryToolbox',
   contents: [
     {
@@ -16,6 +16,16 @@ export const toolboxDesafio1Clase2 = {
         {
           kind: 'block',
           type: 'esperar_un_segundo'
+        }
+      ]
+    },
+    {
+      kind: 'category',
+      name: 'Bucles',
+      contents: [
+        {
+          kind: 'block',
+          type: 'controls_repeat_ext' // Bloque de repetición
         }
       ]
     },
