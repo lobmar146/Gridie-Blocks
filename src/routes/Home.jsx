@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 
 const Home = () => {
   return (
-    <section className="menu">
-      <h1 className="centered">
+    <section className="container mt-5 rounded-lg border bg-card p-5">
+      <h1 className="mb-4 p-5 text-center text-3xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
         Bienvenido a{' '}
         <span className="logo">
           <span className="texto-verde">GrID</span>
@@ -12,57 +12,71 @@ const Home = () => {
         </span>{' '}
         Blocks Alfa!
       </h1>
-      <h3 className="centered">
+      <h3 className="mb-5 text-center text-xl font-bold text-primary">
         Este proyecto es para probar las características de Blockly, rompamos
-        juntos :
+        juntos:
       </h3>
       {/* Clase 1 */}
-      <section className="clase">
-        <hr></hr>
-        <h2>Clase 1: Secuencia y Procedimientos</h2>
-        <hr></hr>
-        <div className="flex-container">
-          <Link to="/Ejercicio1" className="card-nivel">
-            <div className="card-nivel-header">
-              <img src="img/ejercicio1/led_encendido.png" alt="Imagen 1" />
-            </div>
-            <div className="card-nivel-bottom">
-              <h3>Ejercicio 1: Encender un Led</h3>
-            </div>
+      <section>
+        <h2 className="border-y p-5 text-2xl font-extrabold dark:text-white">
+          Clase 1: Secuencia y Procedimientos
+        </h2>
+        <div className="grid grid-cols-3 gap-4 py-5">
+          <Link
+            to="/Ejercicio1"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/ejercicio1/led_encendido.png"
+              alt="Led encedido"
+              className="mb-4 h-32 w-full object-contain"
+            />
+            <p className="font-semibold">Ejercicio 1: Encender un Led</p>
           </Link>
-          <Link to="/Problema1" className="card-nivel">
-            <div className="card-nivel-header">
-              <img src="img/ejercicio1/led_apagado.png" alt="Imagen 2" />
-            </div>
-            <div className="card-nivel-bottom">
-              <h3>Problema 1: Parpadear</h3>
-            </div>
+          <Link
+            to="/Problema1"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/ejercicio1/led_apagado.png"
+              alt="Led parpadeando"
+              className="mb-4 h-32 w-full object-contain"
+            />
+            <p className="font-semibold">Problema 1: Parpadear</p>
           </Link>
-          <Link to="/Ejercicio2" className="card-nivel">
-            <div className="card-nivel-header">
-              <img src="img/desafio2/semaforo.png" alt="Imagen 2" />
-            </div>
-
-            <div className="card-nivel-bottom">
-              <h3>Ejercicio 2: El Semaforo</h3>
-            </div>
+          <Link
+            to="/Ejercicio2"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/desafio2/semaforo.png"
+              alt="Semáforo con led"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">Ejercicio 2: El Semaforo</p>
           </Link>
         </div>
       </section>
 
       {/* Clase 2 */}
-      <section className="clase">
-        <hr></hr>
-        <h2>Clase 2: Repetitivas</h2>
-        <hr></hr>
-        <div className="flex-container">
-          <Link to="/Ejercicio1Clase2" className="card-nivel">
-            <div className="card-nivel-header">
-              <img src="img/ejercicio1/led_encendido.png" alt="Imagen 1" />
-            </div>
-            <div className="card-nivel-bottom">
-              <h3>Ejercicio 1: subir y bajar la luz del led</h3>
-            </div>
+      <section>
+        <h2 className="border-y p-5 text-2xl font-extrabold dark:text-white">
+          Clase 2: Repetitivas
+        </h2>
+
+        <div className="grid grid-cols-3 gap-4 py-5">
+          <Link
+            to="/Ejercicio1Clase2"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/ejercicio1/led_encendido.png"
+              alt="Led subir y bajar"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">
+              Ejercicio 1: subir y bajar la luz del led
+            </p>
           </Link>
         </div>
       </section>
