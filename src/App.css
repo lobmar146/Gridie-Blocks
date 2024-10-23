@@ -169,3 +169,8 @@ h1 {
   color: #2386f0;
   font-weight: bold;
 }
+
+/* Fix vertical scroll  */
+.blocklyFlyoutScrollbar[display='none'] {
+  display: none;
+}
