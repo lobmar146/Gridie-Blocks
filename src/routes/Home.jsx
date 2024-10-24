@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const Home = () => {
   return (
-    <section className="container mt-5 rounded-lg border bg-card p-5">
+    <section className="container my-5 rounded-lg border bg-card p-5">
       <h1 className="mb-4 p-5 text-center text-3xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
         Bienvenido a{' '}
         <span className="logo">
@@ -51,7 +51,7 @@ const Home = () => {
             <img
               src="img/desafio2/semaforo.png"
               alt="Semáforo con led"
-              className="mb-4 h-32 w-full rounded-full object-contain"
+              className="mb-4 h-32 w-full object-contain"
             />
             <p className="font-semibold">Ejercicio 2: El Semaforo</p>
           </Link>
@@ -78,21 +78,29 @@ const Home = () => {
               Ejercicio 1: subir y bajar la luz del led
             </p>
           </Link>
-          <Link to="/Ejercicio2Clase2" className="card-nivel">
-            <div className="card-nivel-header">
-              <img src="img/ejercicio1/led_encendido.png" alt="Imagen 1" />
-            </div>
-            <div className="card-nivel-bottom">
-              <h3>Ejercicio 2: Intensidad del led con Repetitivas</h3>
-            </div>
+          <Link
+            to="/Ejercicio2Clase2"
+            className="card-flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/ejercicio1/led_encendido.png"
+              alt="Imagen 1"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">
+              Ejercicio 2: Intensidad del led con Repetitivas
+            </p>
           </Link>
-          <Link to="/Ejercicio2Clase2Variante" className="card-nivel">
-            <div className="card-nivel-header">
-              <img src="img/ejercicio1/led_encendido.png" alt="Imagen 1" />
-            </div>
-            <div className="card-nivel-bottom">
-              <h3>Ejercicio 2: Repetitiva VARIANTE</h3>
-            </div>
+          <Link
+            to="/Ejercicio2Clase2Variante"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/ejercicio1/led_encendido.png"
+              alt="Imagen 1"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">Ejercicio 2: Repetitiva VARIANTE</p>
           </Link>
         </div>
       </section>
