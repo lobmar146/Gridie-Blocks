@@ -47,6 +47,30 @@ const App = () => {
               />
             }
           />
+          <Route
+            path="/Ejercicio2Clase2"
+            element={
+              <Desafio
+                titulo="Ejercicio 2: Intensidad del LED con Repetitivas"
+                consigna={
+                  '¿Cómo hacemos para subir y bajar gradualmente la luz del LED usando repetitivas?'
+                }
+                toolBox="5"
+              />
+            }
+          />
+          <Route
+            path="/Ejercicio2Clase2Variante"
+            element={
+              <Desafio
+                titulo="Ejercicio 2: Intensidad del LED con Repetitivas"
+                consigna={
+                  '¿Cómo hacemos para subir y bajar gradualmente la luz del LED usando repetitivas?'
+                }
+                toolBox="6"
+              />
+            }
+          />
         </Routes>
       </div>
     </ThemeProvider>
