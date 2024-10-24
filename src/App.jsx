@@ -48,6 +48,18 @@ const App = () => {
             }
           />
           <Route
+            path="/Ejercicio1Clase2"
+            element={
+              <Desafio
+                titulo="Ejercicio 2: Intensidad del LED"
+                consigna={
+                  '¿Cómo hacemos para subir y bajar gradualmente la luz del LED '
+                }
+                toolBox="4"
+              />
+            }
+          />
+          <Route
             path="/Ejercicio2Clase2"
             element={
               <Desafio
