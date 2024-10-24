@@ -10,11 +10,6 @@ export const toolboxDesafio1 = {
           type: 'encerled' // Bloque 'encerled' dentro de la categoría 'Comandos'
         }
       ]
-    },
-    {
-      kind: 'category',
-      name: 'Procedimientos', // Categoría para 'Procedimientos'
-      custom: 'PROCEDURE' // Esto le dice a Blockly que agregue los bloques de procedimientos
     }
   ]
 }

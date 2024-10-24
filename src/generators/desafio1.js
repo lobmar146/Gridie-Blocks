@@ -2,6 +2,28 @@ import * as Blockly from 'blockly'
 
 export const desafio1Generator = new Blockly.Generator('DESAFIO1')
 
+// Inicializamos el valor de ORDER_ATOMIC al principio para evitar problemas de precedencia
+if (typeof desafio1Generator.ORDER_ATOMIC === 'undefined') {
+  desafio1Generator.ORDER_ATOMIC = 0 // Valor por defecto
+}
+
+// Asegurarse de que el generador pueda manejar bloques 'math_number'
+desafio1Generator['math_number'] = function (block) {
+  // Registro de depuración para verificar si el bloque es llamado correctamente
+  console.log('Generando código para math_number')
+
+  // Obtener el valor del número desde el bloque, o devolver '0' si es indefinido
+  const code = block.getFieldValue('NUM')
+
+  // Verificar si se obtiene el campo 'NUM'
+  if (code === null || code === undefined) {
+    console.error('El bloque math_number no tiene un campo NUM definido')
+    return ['0', desafio1Generator.ORDER_ATOMIC] // Devuelve '0' si el campo NUM es indefinido
+  }
+
+  return [code, desafio1Generator.ORDER_ATOMIC] // Devolver el valor y el orden atómico
+}
+
 // Objeto para almacenar el código generado por cada bloque y los pines ya configurados
 let codeMap = {
   pinMode: '', // Código que irá en pinMode
@@ -195,12 +217,12 @@ desafio1Generator['ejecutar_una_vez'] = function (block) {
 
 // Define una función para generar el código combinado de todos los bloques
 desafio1Generator.workspaceToCode = function (workspace) {
-  // Inicializa el generador, esto configura variableDB_ y otros elementos
+  // Inicializa el generador
   this.init(workspace)
 
-  // Asegurarse de que variableDB_ esté inicializada correctamente
-  if (!this.variableDB_) {
-    this.variableDB_ = new Blockly.Names(Blockly.Procedures.NAME_TYPE)
+  // Asegurarse de que nameDB_ esté inicializada correctamente
+  if (!this.nameDB_) {
+    this.nameDB_ = new Blockly.Names(Blockly.Procedures.NAME_TYPE)
   }
 
   // Limpia el mapa de código y pines configurados
@@ -256,7 +278,7 @@ desafio1Generator.workspaceToCode = function (workspace) {
 
 // Procedimiento sin retorno (procedures_defnoreturn)
 desafio1Generator['procedures_defnoreturn'] = function (block) {
-  var funcName = this.variableDB_.getName(
+  var funcName = this.nameDB_.getName(
     block.getFieldValue('NAME'),
     Blockly.Procedures.NAME_TYPE
   )
@@ -276,7 +298,7 @@ desafio1Generator['procedures_defnoreturn'] = function (block) {
 
 // Procedimiento con retorno (procedures_defreturn)
 desafio1Generator['procedures_defreturn'] = function (block) {
-  var funcName = this.variableDB_.getName(
+  var funcName = this.nameDB_.getName(
     block.getFieldValue('NAME'),
     Blockly.Procedures.NAME_TYPE
   )
@@ -304,7 +326,7 @@ desafio1Generator['procedures_defreturn'] = function (block) {
 
 // Llamada a procedimientos sin retorno (procedures_callnoreturn)
 desafio1Generator['procedures_callnoreturn'] = function (block) {
-  var funcName = this.variableDB_.getName(
+  var funcName = this.nameDB_.getName(
     block.getFieldValue('NAME'),
     Blockly.Procedures.NAME_TYPE
   )
@@ -364,5 +386,123 @@ desafio1Generator['controls_count_with_intensity'] = function (block) {
   branch = indentCode(branch, 2) // Indentar el código interno
 
   var code = `for (int intensidad = ${from}; intensidad <= ${to}; intensidad++) {\n${branch}}\n`
+  return code
+}
+
+desafio1Generator['poner_intensidad_led'] = function (block) {
+  const pin = 11
+
+  // Obtener el ID de la variable
+  const variableId = block.getFieldValue('INTENSITY')
+
+  // Obtener el nombre de la variable usando el ID
+  const variable = block.workspace.getVariableById(variableId)
+  let intensityVar = variable ? variable.name : 'intensidad' // Usar 'intensidad' como valor por defecto si no se encuentra la variable
+
+  // Limpiar el nombre de la variable
+  intensityVar = cleanVariableName(intensityVar)
+
+  // Asegurarse de que la variable intensidad esté declarada
+  addVariableIfNotDefined(
+    intensityVar,
+    0,
+    'Definimos la variable que controla la intensidad'
+  )
+
+  // Asegurarse de que el pinMode del LED ya esté configurado
+  addPinModeIfNotDefined(pin)
+
+  // Generar el código que asigna la intensidad al LED
+  const code = `// Ponemos la intensidad del LED en el Pin 11\nanalogWrite(${pin}, ${intensityVar});\n`
+  return code
+}
+
+desafio1Generator['controls_for'] = function (block) {
+  // Obtener el ID de la variable del bucle
+  const variableId = block.getFieldValue('VAR')
+
+  // Obtener el nombre de la variable usando el ID
+  const variable = block.workspace.getVariableById(variableId)
+  let variable0 = variable ? variable.name : 'i' // Usar 'i' como valor por defecto
+
+  // Limpiar el nombre de la variable
+  variable0 = cleanVariableName(variable0)
+
+  // Asegurarse de que la variable del bucle esté declarada
+  addVariableIfNotDefined(variable0, '0', 'Definimos la variable del bucle')
+
+  // Obtener los valores "desde", "hasta" y "de"
+  const argument0 = block.getField('FROM')
+    ? String(Number(block.getFieldValue('FROM')))
+    : desafio1Generator.valueToCode(
+        block,
+        'FROM',
+        desafio1Generator.ORDER_ASSIGNMENT
+      ) || '0'
+
+  const argument1 = block.getField('TO')
+    ? String(Number(block.getFieldValue('TO')))
+    : desafio1Generator.valueToCode(
+        block,
+        'TO',
+        desafio1Generator.ORDER_ASSIGNMENT
+      ) || '10'
+
+  const increment = block.getField('BY')
+    ? String(Number(block.getFieldValue('BY')))
+    : desafio1Generator.valueToCode(
+        block,
+        'BY',
+        desafio1Generator.ORDER_ASSIGNMENT
+      ) || '1'
+
+  // Procesar los bloques dentro del bucle con recursividad
+  let branch = ''
+  let currentBlock = block.getInputTargetBlock('DO')
+  while (currentBlock) {
+    branch += this[currentBlock.type](currentBlock) || '' // Generar código para cada bloque dentro del bucle
+    currentBlock = currentBlock.getNextBlock() // Mover al siguiente bloque dentro del bucle
+  }
+
+  // Aplicar indentación al código dentro del bucle
+  branch = indentCode(branch, 2) // Indentar el contenido del bucle
+
+  // Generar el código final del bucle for
+  const code = `for (int ${variable0} = ${argument0}; ${variable0} <= ${argument1}; ${variable0} += ${increment}) {\n${branch}}\n`
+
+  return code
+}
+
+// Función para limpiar los nombres de las variables
+function cleanVariableName(name) {
+  return name.replace(/\s+/g, '_').replace(/[^\w]/g, '') // Reemplazar espacios por guiones bajos y eliminar caracteres no válidos
+}
+
+desafio1Generator['poner_intensidad_led_variante'] = function (block) {
+  const pin = 11
+
+  // Asegurarse de que el generador esté correctamente inicializado
+  if (!desafio1Generator.ORDER_ATOMIC) {
+    desafio1Generator.ORDER_ATOMIC = 0
+  }
+
+  // Asegurarse de que el campo 'INTENSITY' puede ser un número o una variable
+  let intensityValue = desafio1Generator.valueToCode(
+    block,
+    'INTENSITY',
+    desafio1Generator.ORDER_ATOMIC
+  )
+
+  // Si intensityValue es nulo o indefinido, ponemos un valor por defecto de '0'
+  if (!intensityValue || intensityValue === '') {
+    intensityValue = '0'
+  }
+
+  // Aseguramos que el pinMode del LED ya esté configurado para el pin 11
+  addPinModeIfNotDefined(pin)
+
+  // Generamos el código que pone la intensidad en el valor de la variable o número
+  const code = `// Ponemos la intensidad del LED en el Pin 11\nanalogWrite(${pin}, ${intensityValue});\n`
+
   return code
 }

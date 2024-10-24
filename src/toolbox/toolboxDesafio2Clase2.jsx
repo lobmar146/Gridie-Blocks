@@ -5,6 +5,8 @@ export const toolboxDesafio2Clase2 = {
       kind: 'category',
       name: 'Primitivas',
       contents: [
+        { kind: 'block', type: 'encerled' },
+        { kind: 'block', type: 'apagarled' },
         {
           kind: 'block',
           type: 'aumentar_intensidad_led' // Bloque nuevo para aumentar la intensidad

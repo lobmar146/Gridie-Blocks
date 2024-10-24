@@ -360,5 +360,118 @@ export const blocksDesafio1 =
       colour: '#0D47A1', // Azul muy oscuro
       tooltip: 'Disminuir la intensidad del LED utilizando PWM (analogWrite)',
       helpUrl: ''
+    },
+    {
+      type: 'poner_intensidad_led',
+      message0: 'Poner intensidad del LED en %1',
+      args0: [
+        {
+          type: 'field_variable', // Cambiar a campo de variable en lugar de número
+          name: 'INTENSITY',
+          variable: 'Intensidad' // Nombre predeterminado de la variable
+        }
+      ],
+      message1: '%1', // Imagen del bloque
+      args1: [
+        {
+          type: 'field_image',
+          src: '/img/ejercicio1Clase2/Intensidad_Led_ascendente.png', // Imagen igual a la de aumentar
+          width: 300,
+          height: 100,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#0D47A1', // Azul muy oscuro (mismo color que aumentar intensidad)
+      tooltip:
+        'Poner la intensidad del LED en el valor especificado utilizando PWM (analogWrite)',
+      helpUrl: ''
+    },
+    {
+      type: 'controls_for',
+      message0: 'LLevar %1 desde %2 hasta %3 de %4',
+      args0: [
+        {
+          type: 'field_variable', // Campo de variable para controlar el bucle
+          name: 'VAR',
+          variable: 'Intensidad' // Nombre predeterminado de la variable
+        },
+        {
+          type: 'field_number', // Valor de inicio (desde)
+          name: 'FROM',
+          value: 0, // Valor predeterminado para las repeticiones
+          min: 1 // Limitar el valor mínimo a 1 (opcional)
+        },
+        {
+          type: 'field_number', // Valor de fin (hasta)
+          name: 'TO',
+          value: 5, // Valor predeterminado para las repeticiones
+          min: 1 // Limitar el valor mínimo a 1 (opcional)
+        },
+        {
+          type: 'field_number', // Incremento (de)
+          name: 'BY',
+          value: 1, // Valor predeterminado para las repeticiones
+          min: 1 // Limitar el valor mínimo a 1 (opcional)
+        }
+      ],
+      message1: 'hacer %1',
+      args1: [
+        {
+          type: 'input_statement', // Aquí se colocan los bloques dentro del bucle
+          name: 'DO'
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: 120, // Color típico para los bloques de control
+      tooltip:
+        'Cuenta desde un número hasta otro y ejecuta los bloques dentro del bucle',
+      helpUrl: ''
+    },
+    {
+      type: 'poner_intensidad_led_variante',
+      message0: 'Poner intensidad del LED en %1',
+      args0: [
+        {
+          type: 'input_value', // Permite valores numéricos o variables
+          name: 'INTENSITY', // Nombre del campo
+          check: ['Number', 'Variable'] // Acepta tanto números como variables
+        }
+      ],
+      message1: '%1', // Imagen del bloque
+      args1: [
+        {
+          type: 'field_image',
+          src: '/img/ejercicio1Clase2/Intensidad_Led_ascendente.png', // Imagen igual a la de aumentar intensidad
+          width: 300,
+          height: 100,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#0D47A1', // Azul muy oscuro
+      tooltip:
+        'Poner la intensidad del LED en el valor especificado utilizando PWM (analogWrite)',
+      helpUrl: ''
+    },
+    {
+      type: 'math_number',
+      message0: '%1',
+      args0: [
+        {
+          type: 'field_number',
+          name: 'NUM',
+          value: 0
+        }
+      ],
+      output: 'Number',
+      colour: 230,
+      tooltip: 'Número',
+      helpUrl: ''
     }
   ])
