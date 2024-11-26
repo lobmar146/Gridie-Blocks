@@ -34,7 +34,7 @@ Blockly.Blocks['procedures_ifreturn'] = null
 // Define los bloques una vez fuera del componente
 Blockly.common.defineBlocks(blocksDesafio1)
 
-const BlocklyComponent = ({ toolBoxDesafio }) => {
+const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
   const blocklyDiv = useRef(null)
   const workspaceRef = useRef(null) // Referencia al workspace
   const [code, setCode] = useState('')
@@ -167,7 +167,7 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
   }, [showCode])
 
   return (
-    <div className="blockly-container">
+    <div className="blockly-container" style={{ height: altura }}>
       <div
         ref={blocklyDiv}
         className={showCode ? 'blockly-workspace' : 'blockly-workspace-full'}
