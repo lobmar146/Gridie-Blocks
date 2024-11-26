@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const Home = () => {
   return (
-    <section className="container my-5 rounded-lg border bg-card p-5">
+    <section className="container mx-auto my-5 rounded-lg border bg-card p-5">
       <h1 className="mb-4 p-5 text-center text-3xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
         Bienvenido a{' '}
         <span className="logo">
