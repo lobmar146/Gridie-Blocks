@@ -166,6 +166,23 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
     }
   }, [showCode])
 
+  // Escucha cambios en la altura del contenedor y fuerza un redibujado
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      if (workspaceRef.current) {
+        Blockly.svgResize(workspaceRef.current) // Forzar redimensionamiento de Blockly
+      }
+    })
+
+    if (blocklyDiv.current) {
+      resizeObserver.observe(blocklyDiv.current)
+    }
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [altura])
+
   return (
     <div className="blockly-container" style={{ height: altura }}>
       <div
