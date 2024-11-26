@@ -272,16 +272,6 @@ export const blocksDesafio1 =
     {
       type: 'esperar_un_segundo',
       message0: 'Esperar 1 segundo',
-      args0: [
-        {
-          type: 'field_image',
-          src: '/img/ejercicio1/led_encendido.png',
-          width: 59,
-          height: 59,
-          alt: '*',
-          flipRtl: false
-        }
-      ],
       previousStatement: null,
       nextStatement: null,
       colour: '#84651d', // Verde azulado muy oscuro (contraste adecuado)
