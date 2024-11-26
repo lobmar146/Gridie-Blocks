@@ -506,3 +506,13 @@ desafio1Generator['poner_intensidad_led_variante'] = function (block) {
 
   return code
 }
+
+desafio1Generator['esperar_x_milisegundos'] = function (block) {
+  // Obtener el valor del input MILLISECONDS
+  const milliseconds = block.getFieldValue('MILLISECONDS') || '1000'
+
+  // Generar el código con el comentario
+  const code = `// Esperando ${milliseconds} milisegundos\ndelay(${milliseconds});\n`
+
+  return code
+}

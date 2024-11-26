@@ -74,9 +74,7 @@ const Home = () => {
               alt="Led subir y bajar"
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
-            <p className="font-semibold">
-              Ejercicio 1: subir y bajar la luz del led
-            </p>
+            <p className="font-semibold">Ejercicio 1: Parpadear 5 veces</p>
           </Link>
           <Link
             to="/Ejercicio2Clase2"
@@ -92,7 +90,18 @@ const Home = () => {
             </p>
           </Link>
           <Link
-            to="/Ejercicio2Clase2Variante"
+            to="/Problema1Clase2"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/problema1Clase2/SOS.png"
+              alt="Imagen 1"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">Problema 1: Señal de SOS</p>
+          </Link>
+          <Link
+            to="/Problema2Clase2"
             className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
             <img
@@ -100,7 +109,9 @@ const Home = () => {
               alt="Imagen 1"
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
-            <p className="font-semibold">Ejercicio 2: Repetitiva VARIANTE</p>
+            <p className="font-semibold">
+              Problema 2: Repetitivas con Semaforo
+            </p>
           </Link>
         </div>
       </section>

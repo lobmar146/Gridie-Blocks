@@ -272,6 +272,16 @@ export const blocksDesafio1 =
     {
       type: 'esperar_un_segundo',
       message0: 'Esperar 1 segundo',
+      args0: [
+        {
+          type: 'field_image',
+          src: '/img/ejercicio1/led_encendido.png',
+          width: 59,
+          height: 59,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
       previousStatement: null,
       nextStatement: null,
       colour: '#84651d', // Verde azulado muy oscuro (contraste adecuado)
@@ -472,6 +482,24 @@ export const blocksDesafio1 =
       output: 'Number',
       colour: 230,
       tooltip: 'Número',
+      helpUrl: ''
+    },
+    {
+      type: 'esperar_x_milisegundos',
+      message0: 'Esperar %1 milisegundos ',
+      args0: [
+        {
+          type: 'field_number', // Campo numérico para ingresar los milisegundos
+          name: 'MILLISECONDS',
+          value: 1000, // Valor predeterminado
+          min: 1 // Valor mínimo
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#84651d', // Color del bloque
+      tooltip:
+        'Espera la cantidad de milisegundos especificada antes de continuar',
       helpUrl: ''
     }
   ])

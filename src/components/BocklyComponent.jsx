@@ -13,7 +13,8 @@ import { toolboxDesafio2 } from '../toolbox/toolboxDesafio2'
 import { toolboxDesafio2Clase2 } from '../toolbox/toolboxDesafio2Clase2'
 import { toolboxDesafio3 } from '../toolbox/toolboxDesafio3'
 import '../App.css'
-import { toolboxDesafio2Clase2Variante } from '../toolbox/toolboxDesafio2Clase2Variante'
+import { toolboxDesafio3Clase2 } from '@/toolbox/toolboxDesafio3Clase2'
+import { toolboxDesafio4Clase2 } from '../toolbox/toolboxDesafio4Clase2'
 
 // Sobrescribe los mensajes de los bloques de procedimientos
 Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'] = 'Definir'
@@ -46,7 +47,8 @@ const BlocklyComponent = ({ toolBoxDesafio }) => {
     3: toolboxDesafio3,
     4: toolboxDesafio1Clase2,
     5: toolboxDesafio2Clase2,
-    6: toolboxDesafio2Clase2Variante
+    6: toolboxDesafio3Clase2,
+    7: toolboxDesafio4Clase2
     // Agrega aquí otros toolboxes si los tienes
   }
   const darkTheme = Blockly.Theme.defineTheme('darkTheme', {

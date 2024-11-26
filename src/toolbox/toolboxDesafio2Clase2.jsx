@@ -3,22 +3,23 @@ export const toolboxDesafio2Clase2 = {
   contents: [
     {
       kind: 'category',
-      name: 'Primitivas',
+      name: 'Primitivas', // Nueva categoría que agrupa todos los bloques de comandos y semáforo
       contents: [
         {
           kind: 'block',
-          type: 'aumentar_intensidad_led' // Bloque nuevo para aumentar la intensidad
+          type: 'encerled'
         },
         {
           kind: 'block',
-          type: 'bajar_intensidad_led' // Bloque nuevo para aumentar la intensidad
+          type: 'apagarled'
         },
         {
           kind: 'block',
-          type: 'esperar_un_segundo'
+          type: 'esperar_un_segundo' // Bloque 'esperar_un_segundo'
         }
       ]
     },
+
     {
       kind: 'category',
       name: 'Bucles',

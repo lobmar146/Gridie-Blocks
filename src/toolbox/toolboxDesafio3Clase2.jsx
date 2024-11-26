@@ -1,9 +1,9 @@
-export const toolboxDesafio1Clase2 = {
+export const toolboxDesafio3Clase2 = {
   kind: 'categoryToolbox',
   contents: [
     {
       kind: 'category',
-      name: 'Primitivas', // Nueva categoría que agrupa todos los bloques de comandos y semáforo
+      name: 'Primitivas',
       contents: [
         {
           kind: 'block',
@@ -15,14 +15,24 @@ export const toolboxDesafio1Clase2 = {
         },
         {
           kind: 'block',
-          type: 'esperar_un_segundo' // Bloque 'esperar_un_segundo'
+          type: 'esperar_x_milisegundos' // Bloque 'esperar_x_milisegundos'
+        }
+      ]
+    },
+    {
+      kind: 'category',
+      name: 'Bucles',
+      contents: [
+        {
+          kind: 'block',
+          type: 'controls_repeat_ext'
         }
       ]
     },
     {
       kind: 'category',
       name: 'Procedimientos',
-      custom: 'PROCEDURE' // Añadir los bloques de procedimientos aquí
+      custom: 'PROCEDURE'
     }
   ]
 }

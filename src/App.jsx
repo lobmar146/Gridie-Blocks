@@ -51,10 +51,8 @@ const App = () => {
             path="/Ejercicio1Clase2"
             element={
               <Desafio
-                titulo="Ejercicio 2: Intensidad del LED"
-                consigna={
-                  '¿Cómo hacemos para subir y bajar gradualmente la luz del LED '
-                }
+                titulo="Ejercicio 1: Parpadear 5 veces"
+                consigna={'¿Cómo hacemos para hacer parpadear el LED 5 veces? '}
                 toolBox="4"
               />
             }
@@ -63,7 +61,7 @@ const App = () => {
             path="/Ejercicio2Clase2"
             element={
               <Desafio
-                titulo="Ejercicio 2: Intensidad del LED con Repetitivas"
+                titulo="Ejercicio 2: Parpeando con Repetitivas"
                 consigna={
                   '¿Cómo hacemos para subir y bajar gradualmente la luz del LED usando repetitivas?'
                 }
@@ -72,14 +70,24 @@ const App = () => {
             }
           />
           <Route
-            path="/Ejercicio2Clase2Variante"
+            path="/Problema1Clase2"
             element={
               <Desafio
-                titulo="Ejercicio 2: Intensidad del LED con Repetitivas"
+                titulo="Problema 1: Señal de S.O.S"
                 consigna={
-                  '¿Cómo hacemos para subir y bajar gradualmente la luz del LED usando repetitivas?'
+                  'La señal de S.O.S, esta compuesta por 3 parpadeos cortos , luego 3 parpadeos largos y nuevamente 3 parpadeos cortos. Los parpadeos largos duran 1000 milisegundos y los parpardeos cortos 300 milisegundos. ¿Te animas a recrear la señal de S.O.S en el LED conectado al Pin 13?'
                 }
                 toolBox="6"
+              />
+            }
+          />
+          <Route
+            path="/Problema2Clase2"
+            element={
+              <Desafio
+                titulo="Problema 1: Parpadear el Semaforo"
+                consigna={'¿Cómo hacemos para hacer parpadear 3 veces A-C-E?'}
+                toolBox="7"
               />
             }
           />
