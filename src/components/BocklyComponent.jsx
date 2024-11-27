@@ -112,43 +112,57 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
     initialBlock.setDeletable(false)
 
     const onWorkspaceChange = () => {
-      // Recorre todos los bloques en el workspace
-      workspaceRef.current.getAllBlocks().forEach(block => {
-        // Verifica si el bloque no es del tipo 'ejecutar_una_vez'
-        if (block.type !== 'ejecutar_una_vez') {
+      const allBlocks = workspaceRef.current.getAllBlocks()
+      let shouldDisableAll = false
+
+      allBlocks.forEach(block => {
+        const isInsideEjecutarUnaVez =
+          block.getSurroundParent()?.type === 'ejecutar_una_vez'
+
+        if (toolBoxDesafio !== '1' && isInsideEjecutarUnaVez) {
           if (
-            block.type === 'procedures_defnoreturn' ||
-            block.type === 'procedures_defreturn' ||
-            block.type === 'procedures_callnoreturn'
+            block.type !== 'procedures_defnoreturn' &&
+            block.type !== 'procedures_callnoreturn'
           ) {
-            block.setEnabled(true)
-          } else {
-            let parentBlock = block.getSurroundParent()
-            let isInsideProcedure = false
-            while (parentBlock) {
-              if (
-                parentBlock.type === 'procedures_defnoreturn' ||
-                parentBlock.type === 'procedures_defreturn' ||
-                parentBlock.type === 'ejecutar_una_vez'
-              ) {
-                isInsideProcedure = true
-                break
-              }
-              parentBlock = parentBlock.getSurroundParent()
-            }
-            if (isInsideProcedure) {
-              block.setEnabled(true)
-            } else {
-              block.setEnabled(false)
-            }
+            // Si algún bloque no válido está dentro de `ejecutar_una_vez`, marcamos para deshabilitar todo
+            shouldDisableAll = true
           }
         }
       })
 
-      // Genera el código para todo el workspace
-      const generatedCode = desafio1Generator.workspaceToCode(
-        workspaceRef.current
-      )
+      allBlocks.forEach(block => {
+        if (shouldDisableAll) {
+          block.setEnabled(false) // Deshabilitar todos los bloques
+        } else {
+          if (
+            block.type === 'procedures_defnoreturn' ||
+            block.type === 'ejecutar_una_vez'
+          ) {
+            block.setEnabled(true) // Mantener procedimientos y `ejecutar_una_vez` habilitados
+          } else {
+            let parentBlock = block.getSurroundParent()
+            let isInsideValidParent = false
+
+            while (parentBlock) {
+              if (
+                parentBlock.type === 'procedures_defnoreturn' ||
+                parentBlock.type === 'ejecutar_una_vez'
+              ) {
+                isInsideValidParent = true
+                break
+              }
+              parentBlock = parentBlock.getSurroundParent()
+            }
+
+            block.setEnabled(isInsideValidParent)
+          }
+        }
+      })
+
+      // Generar código solo si no hay bloques deshabilitados globalmente
+      const generatedCode = shouldDisableAll
+        ? ''
+        : desafio1Generator.workspaceToCode(workspaceRef.current)
       setCode(generatedCode)
     }
 
