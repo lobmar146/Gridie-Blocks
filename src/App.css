@@ -42,7 +42,6 @@ h1 {
 /* ESTILOS DEL WORKSPACE */
 .blockly-container {
   display: flex;
-  height: 82vh; /* Ajustar altura total del contenedor */
   width: 100vw; /* Ajustar anchura total del contenedor */
   position: relative;
   padding-inline: 8px;
