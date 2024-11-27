@@ -39,6 +39,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
   const workspaceRef = useRef(null) // Referencia al workspace
   const [code, setCode] = useState('')
   const [showCode, setShowCode] = useState(false)
+  const alertShownRef = useRef(false) // Usamos useRef en lugar de useState
 
   // Definir todos los toolboxes disponibles en un objeto
   const toolboxMap = {
@@ -115,53 +116,36 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
       const allBlocks = workspaceRef.current.getAllBlocks()
       let shouldDisableAll = false
 
+      // Determinar si todos los bloques deben deshabilitarse
       allBlocks.forEach(block => {
         const isInsideEjecutarUnaVez =
           block.getSurroundParent()?.type === 'ejecutar_una_vez'
-
         if (toolBoxDesafio !== '1' && isInsideEjecutarUnaVez) {
           if (
             block.type !== 'procedures_defnoreturn' &&
             block.type !== 'procedures_callnoreturn'
           ) {
-            // Si algún bloque no válido está dentro de `ejecutar_una_vez`, marcamos para deshabilitar todo
             shouldDisableAll = true
           }
         }
       })
 
+      // Deshabilitar o habilitar bloques
       allBlocks.forEach(block => {
-        if (shouldDisableAll) {
-          block.setEnabled(false) // Deshabilitar todos los bloques
-        } else {
-          if (
-            block.type === 'procedures_defnoreturn' ||
-            block.type === 'ejecutar_una_vez'
-          ) {
-            block.setEnabled(true) // Mantener procedimientos y `ejecutar_una_vez` habilitados
-          } else {
-            let parentBlock = block.getSurroundParent()
-            let isInsideValidParent = false
-
-            while (parentBlock) {
-              if (
-                parentBlock.type === 'procedures_defnoreturn' ||
-                parentBlock.type === 'ejecutar_una_vez'
-              ) {
-                isInsideValidParent = true
-                break
-              }
-              parentBlock = parentBlock.getSurroundParent()
-            }
-
-            block.setEnabled(isInsideValidParent)
-          }
-        }
+        block.setEnabled(!shouldDisableAll)
       })
 
-      // Generar código solo si no hay bloques deshabilitados globalmente
+      // Mostrar la alerta solo una vez cuando se deshabilitan todos los bloques
+      if (shouldDisableAll && !alertShownRef.current) {
+        alert('Todos los bloques han sido deshabilitados.')
+        alertShownRef.current = true // Actualizar ref para que la alerta no se muestre de nuevo
+      } else if (!shouldDisableAll && alertShownRef.current) {
+        alertShownRef.current = false // Restablecer para permitir futuras alertas
+      }
+
+      // Generar y mostrar código
       const generatedCode = shouldDisableAll
-        ? `En ejecutar 1 vez solo se \npermiten procedimientos.\n\n¡Planea tu estrategia de solución!`
+        ? 'En ejecutar 1 vez solo se permiten procedimientos.\n\n¡Planea tu estrategia de solución!'
         : desafio1Generator.workspaceToCode(workspaceRef.current)
       setCode(generatedCode)
     }
