@@ -161,7 +161,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
 
       // Generar código solo si no hay bloques deshabilitados globalmente
       const generatedCode = shouldDisableAll
-        ? ''
+        ? `En ejecutar 1 vez solo se \npermiten procedimientos.\n\n¡Planea tu estrategia de solución!`
         : desafio1Generator.workspaceToCode(workspaceRef.current)
       setCode(generatedCode)
     }
