@@ -13,6 +13,7 @@ import { toolboxDesafio2 } from '../toolbox/toolboxDesafio2'
 import { toolboxDesafio2Clase2 } from '../toolbox/toolboxDesafio2Clase2'
 import { toolboxDesafio3 } from '../toolbox/toolboxDesafio3'
 import '../App.css'
+import toast from 'react-hot-toast'
 import { toolboxDesafio3Clase2 } from '@/toolbox/toolboxDesafio3Clase2'
 import { toolboxDesafio4Clase2 } from '../toolbox/toolboxDesafio4Clase2'
 
@@ -137,7 +138,19 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
 
       // Mostrar la alerta solo una vez cuando se deshabilitan todos los bloques
       if (shouldDisableAll && !alertShownRef.current) {
-        alert('Todos los bloques han sido deshabilitados.')
+        toast(
+          `Recuerda: 
+          \nEn el bloque 'Ejecutar 1 vez 'solo puedes incluir procedimientos. \n\n ¡Planifica tu estrategia de solución con cuidado para asegurar el éxito de tu programa!.`,
+          {
+            icon: '❗',
+            style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              fontSize: '20px'
+            }
+          }
+        )
         alertShownRef.current = true // Actualizar ref para que la alerta no se muestre de nuevo
       } else if (!shouldDisableAll && alertShownRef.current) {
         alertShownRef.current = false // Restablecer para permitir futuras alertas
@@ -145,7 +158,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
 
       // Generar y mostrar código
       const generatedCode = shouldDisableAll
-        ? 'En ejecutar 1 vez solo se permiten procedimientos.\n\n¡Planea tu estrategia de solución!'
+        ? `Recuerda: En el bloque \n'Ejecutar 1 vez 'solo puedes incluir\nprocedimientos. \n\n ¡Planifica tu estrategia de solución con cuidado para asegurar el éxito de tu programa!.`
         : desafio1Generator.workspaceToCode(workspaceRef.current)
       setCode(generatedCode)
     }

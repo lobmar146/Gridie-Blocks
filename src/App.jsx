@@ -2,6 +2,7 @@
 import React from 'react'
 import BlocklyComponent from './components/BocklyComponent'
 import './App.css'
+import { Toaster } from 'react-hot-toast'
 import { Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from '@/components/theme-provider'
 import Desafio from './routes/Desafio'
@@ -10,6 +11,7 @@ import Home from './routes/Home'
 const App = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <Toaster />
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
