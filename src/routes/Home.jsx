@@ -86,7 +86,7 @@ const Home = () => {
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
             <p className="font-semibold">
-              Ejercicio 2: Intensidad del led con Repetitivas
+              Ejercicio 2: Parpadeando el LED con Repetitivas.
             </p>
           </Link>
           <Link

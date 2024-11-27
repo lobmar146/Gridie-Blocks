@@ -63,9 +63,9 @@ const App = () => {
             path="/Ejercicio2Clase2"
             element={
               <Desafio
-                titulo="Ejercicio 2: Parpeando con Repetitivas"
+                titulo="Ejercicio 2: Parpadeando con Repetitivas"
                 consigna={
-                  '¿Cómo hacemos para subir y bajar gradualmente la luz del LED usando repetitivas?'
+                  'Ahora, tenemos una nueva herramienta, se llaman Repetitivas. ¿Te animas a hacer parpadear el LED 5 veces utilizando las repetitivas? ¡Recorda que tenes que seguir usando procedimientos!'
                 }
                 toolBox="5"
               />
