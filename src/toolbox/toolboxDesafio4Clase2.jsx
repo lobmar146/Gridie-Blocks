@@ -5,6 +5,8 @@ export const toolboxDesafio4Clase2 = {
       kind: 'category',
       name: 'Primitivas', // Nueva categoría que agrupa todos los bloques de comandos y semáforo
       contents: [
+        { kind: 'block', type: 'aumentar_intensidad_led' },
+        { kind: 'block', type: 'poner_intensidad_led_variante' },
         {
           kind: 'block',
           type: 'esperar_un_segundo' // Bloque 'esperar_un_segundo'

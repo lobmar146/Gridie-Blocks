@@ -21,7 +21,7 @@ const App = () => {
               <Desafio
                 titulo="Ejercicio 1: Encender un Led"
                 consigna={
-                  'Como primer paso deberemos encender un led. Ayudas a la placa Arduino a encender el led?'
+                  'Como primer Programa para nuestra placa, encenderemos un LED. Para hacerlo, tendremos que Ejecutar 1 vez la primitiva "Encender Led conectado en Pin13. ¿Te animas a completar el desafío?'
                 }
                 toolBox="1"
               />
@@ -32,9 +32,8 @@ const App = () => {
             element={
               <Desafio
                 titulo="Ejercicio1: Parpadear"
-                consigna={
-                  'Ahora queremos que parpadee. Puedes ayudar a la placa Arduino a hacerlo?'
-                }
+                consigna={`Ahora queremos que el led Parpadee 1 vez. Para esto, deberemos:
+                1)Encender el Led por un segundo. 2) Apagar el Led por un segundo. El problema esta en que no tenemos esas dos intrucciones... ¿Y si usamos procedimientos?.`}
                 toolBox="2"
               />
             }
@@ -44,7 +43,9 @@ const App = () => {
             element={
               <Desafio
                 titulo="Ejercicio 2: Encender el Semaforo"
-                consigna={'¿Cómo hacemos para encender A-B-C en secuencia?'}
+                consigna={
+                  'Ya sabemos hacer encender, apagar y parpadear un Led. Ahora, vamos a trabajar con varios a la vez. Conecta correctamente el semaforo y luego: ¿Cómo hacemos para encender A-B-C en secuencia? EXTRA: ¿Cómo hacemos para que Parpadee A, luego B y luego C?'
+                }
                 toolBox="3"
               />
             }
@@ -88,7 +89,9 @@ const App = () => {
             element={
               <Desafio
                 titulo="Problema 1: Parpadear el Semaforo"
-                consigna={'¿Cómo hacemos para hacer parpadear 3 veces A-C-E?'}
+                consigna={
+                  '¿Te acordas del semaforo? ¡Volvio, en forma de repetitivas! ¿Cómo hacemos para hacer parpadear 3 veces A-C-E?'
+                }
                 toolBox="7"
               />
             }

@@ -110,7 +110,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
     const initialBlock = workspaceRef.current.newBlock('ejecutar_una_vez')
     initialBlock.initSvg()
     initialBlock.render()
-    initialBlock.moveBy(20, 20)
+    initialBlock.moveBy(10, 10)
     initialBlock.setDeletable(false)
 
     const onWorkspaceChange = () => {
@@ -194,21 +194,70 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
     }
   }, [altura])
 
+  // Función para copiar el código al portapapeles
+  const copyToClipboard = () => {
+    navigator.clipboard
+      .writeText(code)
+      .then(() => {
+        toast.success(
+          'Código copiado al portapapeles. Recorda pegarlo en el Arduino IDE y subirlo a la placa.',
+          {
+            style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff'
+            }
+          }
+        )
+      })
+      .catch(() => {
+        toast.error('Error al copiar el código', {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff'
+          }
+        })
+      })
+  }
+
   return (
     <div className="blockly-container" style={{ height: altura }}>
       <div
         ref={blocklyDiv}
         className={showCode ? 'blockly-workspace' : 'blockly-workspace-full'}
-      ></div>
+      >
+        {parseInt(toolBoxDesafio) > 6 && (
+          <div
+            className={
+              showCode
+                ? 'monitor-variable mostrando-codigo'
+                : 'monitor-variable'
+            }
+          >
+            <p>Grados del Servo</p>
+            <span>1</span>
+          </div>
+        )}
+        <button
+          onClick={copyToClipboard}
+          className={
+            showCode ? 'monitor-variable mostrando-codigo' : 'monitor-variable'
+          }
+          style={{ top: '70px' }}
+        >
+          Copiar Código
+        </button>
+        <button
+          onClick={() => setShowCode(!showCode)}
+          className="blockly-toggle-button"
+        >
+          {showCode ? 'Ocultar Código' : 'Mostrar Código'}
+        </button>
+      </div>
       {showCode && (
         <textarea value={code} readOnly className="blockly-code-area" />
       )}
-      <button
-        onClick={() => setShowCode(!showCode)}
-        className="blockly-toggle-button"
-      >
-        {showCode ? 'Ocultar Código' : 'Mostrar Código'}
-      </button>
     </div>
   )
 }
