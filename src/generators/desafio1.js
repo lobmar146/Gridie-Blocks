@@ -1,10 +1,97 @@
 import * as Blockly from 'blockly'
 
 export const desafio1Generator = new Blockly.Generator('DESAFIO1')
+// Objeto para almacenar el código generado por cada bloque y los pines ya configurados
+let codeMap = {
+  libraries: '', //
+  pinMode: '', // Código que irá en pinMode
+  variables: '', // Variables definidas
+  setup: '', // Código que irá en setup
+  loop: '' // Código que irá en loop
+}
+
+// Objeto para almacenar los pines configurados para no repetir pinMode
+let configuredPins = {}
+
+// Objeto para almacenar las variables para no repetir en el espacio de definicion
+let definedVariables = {}
+
+// Objeto para almacenar las librerias utilizada
+let definedLibraries = {}
 
 // Inicializamos el valor de ORDER_ATOMIC al principio para evitar problemas de precedencia
 if (typeof desafio1Generator.ORDER_ATOMIC === 'undefined') {
   desafio1Generator.ORDER_ATOMIC = 0 // Valor por defecto
+}
+
+//El corazon del generador de codigo
+// Define una función para generar el código combinado de todos los bloques
+desafio1Generator.workspaceToCode = function (workspace) {
+  // Inicializa el generador
+  this.init(workspace)
+
+  // Asegurarse de que nameDB_ esté inicializada correctamente
+  if (!this.nameDB_) {
+    this.nameDB_ = new Blockly.Names(Blockly.Procedures.NAME_TYPE)
+  }
+
+  // Limpia el mapa de código y pines configurados
+  codeMap = {
+    libraries: '', //Código de las librerias que carga el programa
+    pinMode: '', // Código para pinMode que debe estar al principio de setup
+    variables: '', // Variables que deben estar al principio
+    setup: '', // Código que irá en setup
+    loop: '' // Código que irá en loop
+  }
+  configuredPins = {} // Resetear pines configurados
+  definedVariables = {} // Resetear variables definidas
+  definedLibraries = {} //Resetear librerias definidas
+
+  // Almacena las definiciones de los procedimientos
+  let procedureDefinitions = ''
+
+  // Obtiene todos los bloques conectados en el workspace
+  const blocks = workspace.getAllBlocks()
+
+  // Genera el código combinado de todos los bloques
+  blocks.forEach(block => {
+    if (block.type === 'ejecutar_una_vez') {
+      this[block.type](block) // Genera el código para el bloque 'ejecutar_una_vez'
+    } else if (
+      block.type === 'procedures_defnoreturn' ||
+      block.type === 'procedures_defreturn'
+    ) {
+      procedureDefinitions += this[block.type](block) || '' // Agrega la definición del procedimiento
+    }
+  })
+
+  // Añadir comentarios sobre pines, variables y librerias si están definidos
+  const pinModeComment = codeMap.pinMode
+    ? '/** Definimos los pines como entrada y salida **\n'
+    : ''
+  const variablesComment = codeMap.variables
+    ? '/** Definimos las variables que usará nuestro programa**\n'
+    : ''
+  const librareisComment = codeMap.libraries
+    ? '/** Definimos las librerias que utiliza el programa **\n'
+    : ''
+
+  // Genera la estructura básica con setup y loop, colocando pinMode al inicio del setup
+  let finalCode = `\n${indentCode(
+    librareisComment + codeMap.libraries,
+    1
+  )}\n\n${indentCode(
+    variablesComment + codeMap.variables,
+    1
+  )}\n${procedureDefinitions}\nvoid setup() {\n${indentCode(
+    pinModeComment + codeMap.pinMode,
+    1
+  )}\n${indentCode(codeMap.setup, 1)}}\n\nvoid loop() {\n${indentCode(
+    codeMap.loop,
+    1
+  )}}\n`
+
+  return finalCode.trim() // Elimina espacios en blanco alrededor del código
 }
 
 // Asegurarse de que el generador pueda manejar bloques 'math_number'
@@ -24,32 +111,27 @@ desafio1Generator['math_number'] = function (block) {
   return [code, desafio1Generator.ORDER_ATOMIC] // Devolver el valor y el orden atómico
 }
 
-// Objeto para almacenar el código generado por cada bloque y los pines ya configurados
-let codeMap = {
-  pinMode: '', // Código que irá en pinMode
-  variables: '', // Variables definidas
-  setup: '', // Código que irá en setup
-  loop: '' // Código que irá en loop
-}
-
-// Objeto para almacenar los pines configurados para no repetir pinMode
-let configuredPins = {}
-
-// Objeto para almacenar si la variable "intensidad" ya ha sido declarada
-let definedVariables = {}
-
 // Función para agregar pinMode en el setup
-function addPinModeIfNotDefined(pin) {
-  if (!configuredPins[pin]) {
-    codeMap.pinMode += `pinMode(${pin}, OUTPUT);\n`
+function addPinModeIfNotDefined(pin, variableName, comment) {
+  if (!configuredPins[pin] && variableName != 'Servo') {
+    codeMap.pinMode += `pinMode(${pin}, OUTPUT);\n\n`
+    configuredPins[pin] = true // Marcar pin como configurado
+  } else if (!configuredPins[pin] && variableName == 'Servo') {
+    codeMap.pinMode += `//${comment}\nservo.attach(${pin});\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   }
 }
 
-// Función para agregar la variable "intensidad" si no está definida
+// Función para agregar la variable si no está definida
 function addVariableIfNotDefined(variableName, initialValue, comment) {
-  if (!definedVariables[variableName]) {
-    codeMap.variables += `// ${comment}\nint ${variableName} = ${initialValue};\n`
+  //Definimos una variable normal
+  if (!definedVariables[variableName] && variableName != 'Servo') {
+    codeMap.variables += `//${comment}\nint ${variableName} = ${initialValue};\n\n`
+    definedVariables[variableName] = true // Marcar la variable como definida
+  }
+  //Estamos definiendo un servo
+  else if (!definedVariables[variableName] && variableName == 'Servo') {
+    codeMap.variables += `//${comment}\n${variableName} ${initialValue};\n\n`
     definedVariables[variableName] = true // Marcar la variable como definida
   }
 }
@@ -57,6 +139,13 @@ function addVariableIfNotDefined(variableName, initialValue, comment) {
 // Función para generar analogWrite con comentario
 function generateAnalogWrite(pin, value, comment) {
   return `// ${comment}\nanalogWrite(${pin}, ${value});\n`
+}
+//Función para agregar libreria si no esta definida
+function addLibraryIfNotDefined(libraryName, comment) {
+  if (!definedLibraries[libraryName] && libraryName == 'Servo') {
+    codeMap.libraries += `${comment}\n#include <Servo.h>\n\n`
+    definedLibraries[libraryName] = true // Marcar Libreria como agregada
+  }
 }
 
 // Función para aplicar indentación
@@ -215,85 +304,34 @@ desafio1Generator['ejecutar_una_vez'] = function (block) {
   return ''
 }
 
-// Define una función para generar el código combinado de todos los bloques
-desafio1Generator.workspaceToCode = function (workspace) {
-  // Inicializa el generador
-  this.init(workspace)
-
-  // Asegurarse de que nameDB_ esté inicializada correctamente
-  if (!this.nameDB_) {
-    this.nameDB_ = new Blockly.Names(Blockly.Procedures.NAME_TYPE)
-  }
-
-  // Limpia el mapa de código y pines configurados
-  codeMap = {
-    pinMode: '', // Código para pinMode que debe estar al principio de setup
-    variables: '', // Variables que deben estar al principio
-    setup: '', // Código que irá en setup
-    loop: '' // Código que irá en loop
-  }
-  configuredPins = {} // Resetear pines configurados
-  definedVariables = {} // Resetear variables definidas
-
-  // Almacena las definiciones de los procedimientos
-  let procedureDefinitions = ''
-
-  // Obtiene todos los bloques conectados en el workspace
-  const blocks = workspace.getAllBlocks()
-
-  // Genera el código combinado de todos los bloques
-  blocks.forEach(block => {
-    if (block.type === 'ejecutar_una_vez') {
-      this[block.type](block) // Genera el código para el bloque 'ejecutar_una_vez'
-    } else if (
-      block.type === 'procedures_defnoreturn' ||
-      block.type === 'procedures_defreturn'
-    ) {
-      procedureDefinitions += this[block.type](block) || '' // Agrega la definición del procedimiento
-    }
-  })
-
-  // Añadir comentarios sobre pines y variables si están definidos
-  const pinModeComment = codeMap.pinMode
-    ? '// Definimos los pines como entrada y salida\n'
-    : ''
-  const variablesComment = codeMap.variables
-    ? '// Definimos las variables que usará nuestro programa\n'
-    : ''
-
-  // Genera la estructura básica con setup y loop, colocando pinMode al inicio del setup
-  let finalCode = `${procedureDefinitions}\n${variablesComment}${indentCode(
-    codeMap.variables,
-    1
-  )}\nvoid setup() {\n${indentCode(
-    pinModeComment + codeMap.pinMode,
-    1
-  )}\n${indentCode(codeMap.setup, 1)}}\n\nvoid loop() {\n${indentCode(
-    codeMap.loop,
-    1
-  )}}\n`
-
-  return finalCode.trim() // Elimina espacios en blanco alrededor del código
-}
-
 // Procedimiento sin retorno (procedures_defnoreturn)
 desafio1Generator['procedures_defnoreturn'] = function (block) {
-  var funcName = this.nameDB_.getName(
+  if (!desafio1Generator.nameDB_) {
+    console.error('Error: nameDB_ no está inicializado en el generador.')
+    return ''
+  }
+
+  var funcName = desafio1Generator.nameDB_.getName(
     block.getFieldValue('NAME'),
     Blockly.Procedures.NAME_TYPE
   )
 
-  // Procesa los bloques dentro del procedimiento (con recursividad)
   let branch = ''
   let currentBlock = block.getInputTargetBlock('STACK')
+
   while (currentBlock) {
-    branch += this[currentBlock.type](currentBlock) || '' // Llamada recursiva
+    if (desafio1Generator[currentBlock.type]) {
+      branch += desafio1Generator[currentBlock.type](currentBlock) || ''
+    } else {
+      console.warn(
+        `Advertencia: No hay generador definido para el bloque '${currentBlock.type}'`
+      )
+    }
     currentBlock = currentBlock.getNextBlock()
   }
 
-  // Genera el código del procedimiento
-  var code = 'void ' + funcName + '() {\n' + indentCode(branch, 1) + '}\n'
-  return code // Devuelve el código del procedimiento
+  var code = `void ${funcName}() {\n${indentCode(branch, 1)}}\n`
+  return code
 }
 
 // Procedimiento con retorno (procedures_defreturn)
@@ -513,6 +551,69 @@ desafio1Generator['esperar_x_milisegundos'] = function (block) {
 
   // Generar el código con el comentario
   const code = `// Esperando ${milliseconds} milisegundos\ndelay(${milliseconds});\n`
+
+  return code
+}
+// Bloque 'reducir' (Controla el acumulador de grados para el Servo)
+desafio1Generator['reducir_grados_servo'] = function (block) {
+  const gradosChange = Number(block.getFieldValue('GRADOS')) // Obtener el valor del bloque
+
+  addLibraryIfNotDefined('Servo', 'Importamos la libreria para usar el Servo')
+  // Asegurar que la variable "grados" solo se define una vez
+  addVariableIfNotDefined(
+    'grados',
+    0, // Valor inicial
+    'Definimos la variable que controla los grados'
+  )
+  // Asegurar que se crea una sola instancia del servo
+  addVariableIfNotDefined(
+    'Servo',
+    'servo', // Valor inicial
+    'Creamos una Instancia de Servo'
+  )
+
+  //Definimos el attach en pinmode
+  addPinModeIfNotDefined(
+    2,
+    'Servo',
+    'Definimos el Pin al cual el servo se va utilizar'
+  )
+
+  //Retorno el codigo armado con los parametros enviados
+  // Incrementar la variable "grados" en función del valor del bloque
+  const code = `// Aumentamos los grados para poder mover el Servo\ngrados -= ${gradosChange};\nservo.write(grados);\n\n`
+
+  return code
+}
+
+// Bloque 'aumentar_grados_servo' (Controla el acumulador de grados para el Servo)
+desafio1Generator['aumentar_grados_servo'] = function (block) {
+  const gradosChange = Number(block.getFieldValue('GRADOS')) // Obtener el valor del bloque
+
+  addLibraryIfNotDefined('Servo', 'Importamos la libreria para usar el Servo')
+  // Asegurar que la variable "grados" solo se define una vez
+  addVariableIfNotDefined(
+    'grados',
+    0, // Valor inicial
+    'Definimos la variable que controla los grados'
+  )
+  // Asegurar que se crea una sola instancia del servo
+  addVariableIfNotDefined(
+    'Servo',
+    'servo', // Valor inicial
+    'Creamos una Instancia de Servo'
+  )
+
+  //Definimos el attach en pinmode
+  addPinModeIfNotDefined(
+    2,
+    'Servo',
+    'Definimos el Pin al cual el servo se va utilizar'
+  )
+
+  //Retorno el codigo armado con los parametros enviados
+  // Incrementar la variable "grados" en función del valor del bloque
+  const code = `// Aumentamos los grados para poder mover el Servo\ngrados += ${gradosChange};\nservo.write(grados);\n\n`
 
   return code
 }

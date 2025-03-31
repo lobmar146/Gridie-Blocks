@@ -491,5 +491,63 @@ export const blocksDesafio1 =
       tooltip:
         'Espera la cantidad de milisegundos especificada antes de continuar',
       helpUrl: ''
+    },
+    {
+      type: 'aumentar_grados_servo',
+      message0: 'Aumentar los grados del Servo en %1 %2',
+      args0: [
+        {
+          type: 'field_number', // Campo numérico para el valor de la grados
+          name: 'GRADOS',
+          value: 0, // Valor predeterminado de grados
+          min: 0, // Valor mínimo
+          max: 180 // Valor máximo
+        },
+
+        {
+          type: 'field_image', // Imagen del servo
+          src: '/img/ejercicio3Clase2/servo.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+
+      inputsInline: true, // Asegura que los elementos estén en línea
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#006400', // Verde oscuro con buen contraste
+      tooltip: 'Aumentar los grados para utilizarlos luego en el servo',
+      helpUrl: ''
+    },
+    {
+      type: 'reducir_grados_servo',
+      message0: 'Reducir los grados del Servo en %1 %2',
+      args0: [
+        {
+          type: 'field_number', // Campo numérico para el valor de la grados
+          name: 'GRADOS',
+          value: 0, // Valor predeterminado los grados
+          min: 0, // Valor mínimo
+          max: 180 // Valor máximo
+        },
+
+        {
+          type: 'field_image', // Imagen del servo
+          src: '/img/ejercicio3Clase2/servo.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+
+      inputsInline: true, // Asegura que los elementos estén en línea
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#006400', // Verde oscuro con buen contraste
+      tooltip: 'Aumentar los grados para utilizarlos luego en el servo',
+      helpUrl: ''
     }
   ])

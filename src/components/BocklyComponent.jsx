@@ -227,7 +227,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
         ref={blocklyDiv}
         className={showCode ? 'blockly-workspace' : 'blockly-workspace-full'}
       >
-        {parseInt(toolBoxDesafio) > 6 && (
+        {/* {parseInt(toolBoxDesafio) > 6 && (
           <div
             className={
               showCode
@@ -238,7 +238,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
             <p>Grados del Servo</p>
             <span>1</span>
           </div>
-        )}
+        )} */}
         <button
           onClick={copyToClipboard}
           className={
