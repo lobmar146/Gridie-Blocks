@@ -67,13 +67,13 @@ desafio1Generator.workspaceToCode = function (workspace) {
 
   // Añadir comentarios sobre pines, variables y librerias si están definidos
   const pinModeComment = codeMap.pinMode
-    ? '/** Definimos los pines como entrada y salida **\n'
+    ? '/** Definimos los pines como entrada y salida **/\n'
     : ''
   const variablesComment = codeMap.variables
-    ? '/** Definimos las variables que usará nuestro programa**\n'
+    ? '/** Definimos las variables que usará nuestro programa**/\n'
     : ''
   const librareisComment = codeMap.libraries
-    ? '/** Definimos las librerias que utiliza el programa **\n'
+    ? '/** Definimos las librerias que utiliza el programa **/\n'
     : ''
 
   // Genera la estructura básica con setup y loop, colocando pinMode al inicio del setup
