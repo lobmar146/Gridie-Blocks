@@ -96,6 +96,16 @@ const App = () => {
               />
             }
           />
+          <Route
+            path="/AgusBlockPlayGround"
+            element={
+              <Desafio
+                titulo="Agus Block PlayGround"
+                consigna={'Mira que lindo todos estos bloques'}
+                toolBox="8"
+              />
+            }
+          />
         </Routes>
       </div>
     </ThemeProvider>
