@@ -67,13 +67,13 @@ desafio1Generator.workspaceToCode = function (workspace) {
 
   // Añadir comentarios sobre pines, variables y librerias si están definidos
   const pinModeComment = codeMap.pinMode
-    ? '/** Definimos los pines como entrada y salida **/\n'
+    ? '/** Definimos los pines como entrada y salida **//\n'
     : ''
   const variablesComment = codeMap.variables
-    ? '/** Definimos las variables que usará nuestro programa**/\n'
+    ? '/** Definimos las variables que usará nuestro programa**//\n'
     : ''
   const librareisComment = codeMap.libraries
-    ? '/** Definimos las librerias que utiliza el programa **/\n'
+    ? '/** Definimos las librerias que utiliza el programa **//\n'
     : ''
 
   // Genera la estructura básica con setup y loop, colocando pinMode al inicio del setup
@@ -136,6 +136,11 @@ function addVariableIfNotDefined(variableName, initialValue, comment) {
   }
 }
 
+// Función para generar digitalWrite con comentario
+function generateDigitalWrite(pin, value, comment) {
+  return `// ${comment}\ndigitalWrite(${pin}, ${value});\n`
+}
+
 // Función para generar analogWrite con comentario
 function generateAnalogWrite(pin, value, comment) {
   return `// ${comment}\nanalogWrite(${pin}, ${value});\n`
@@ -162,7 +167,7 @@ desafio1Generator['encerled'] = function (block) {
   const pin = 13
   addPinModeIfNotDefined(pin) // Asegura que pinMode se coloca en el setup
   const comment = 'Encendiendo LED en Pin Digital 13' // Comentario para encender LED
-  const code = generateAnalogWrite(pin, 'HIGH', comment)
+  const code = generateDigitalWrite(pin, 'HIGH', comment)
   return code
 }
 
@@ -171,7 +176,7 @@ desafio1Generator['apagarled'] = function (block) {
   const pin = 13
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando LED en Pin Digital 13' // Comentario para apagar LED
-  const code = generateAnalogWrite(pin, 'LOW', comment)
+  const code = generateDigitalWrite(pin, 'LOW', comment)
   return code
 }
 
