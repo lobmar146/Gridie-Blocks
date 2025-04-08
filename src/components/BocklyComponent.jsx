@@ -14,7 +14,7 @@ import { toolboxDesafio2Clase2 } from '../toolbox/toolboxDesafio2Clase2'
 import { toolboxDesafio3 } from '../toolbox/toolboxDesafio3'
 import '../App.css'
 import toast from 'react-hot-toast'
-import { agusBlockPlayGround } from '@/toolbox/AgusBlockPlayground'
+import { agusBlockPlayGround } from '@/toolbox/agusBlockPlayground'
 import { toolboxDesafio3Clase2 } from '@/toolbox/toolboxDesafio3Clase2'
 import { toolboxDesafio4Clase2 } from '../toolbox/toolboxDesafio4Clase2'
 
