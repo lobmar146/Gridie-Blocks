@@ -1,6 +1,19 @@
 import * as Blockly from 'blockly'
 
 export const desafio1Generator = new Blockly.Generator('DESAFIO1')
+desafio1Generator.ORDER_ATOMIC = 0
+desafio1Generator.ORDER_UNARY_POSTFIX = 1
+desafio1Generator.ORDER_UNARY_PREFIX = 2
+desafio1Generator.ORDER_MULTIPLICATIVE = 3
+desafio1Generator.ORDER_ADDITIVE = 4
+desafio1Generator.ORDER_RELATIONAL = 5
+desafio1Generator.ORDER_EQUALITY = 6
+desafio1Generator.ORDER_LOGICAL_AND = 7
+desafio1Generator.ORDER_LOGICAL_OR = 8
+desafio1Generator.ORDER_CONDITIONAL = 9
+desafio1Generator.ORDER_ASSIGNMENT = 10
+desafio1Generator.ORDER_NONE = 99
+
 // Objeto para almacenar el código generado por cada bloque y los pines ya configurados
 let codeMap = {
   libraries: '', //
@@ -93,6 +106,20 @@ desafio1Generator.workspaceToCode = function (workspace) {
 
   return finalCode.trim() // Elimina espacios en blanco alrededor del código
 }
+desafio1Generator['sensor_fuego'] = function (block) {
+  const pin = 7
+  const variableName = 'sensor_fuego'
+
+  console.log('Generando sensor_fuego...')
+
+  addVariableIfNotDefined(variableName, pin, 'Definimos el sensor de fuego')
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+
+  return [
+    `(digitalRead(${variableName}) == 1)`,
+    desafio1Generator.ORDER_EQUALITY
+  ]
+}
 
 // Asegurarse de que el generador pueda manejar bloques 'math_number'
 desafio1Generator['math_number'] = function (block) {
@@ -118,6 +145,9 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'Servo') {
     codeMap.pinMode += `//${comment}\nservo.attach(${pin});\n\n`
+    configuredPins[pin] = true // Marcar pin como configurado
+  } else if (!configuredPins[pin] && variableName == 'sensor_fuego') {
+    codeMap.pinMode += `pinMode(${pin}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   }
 }
@@ -620,5 +650,62 @@ desafio1Generator['aumentar_grados_servo'] = function (block) {
   // Incrementar la variable "grados" en función del valor del bloque
   const code = `// Aumentamos los grados para poder mover el Servo\ngrados += ${gradosChange};\nservo.write(grados);\n\n`
 
+  return code
+}
+
+desafio1Generator['controls_if'] = function (block) {
+  // Número de cláusulas IF/ELSE IF
+  const n = block.elseifCount_ || 0
+  const hasElse = block.elseCount_ || false
+  let code = ''
+
+  // Primera condición (IF)
+  const condition =
+    desafio1Generator.valueToCode(block, 'IF0', desafio1Generator.ORDER_NONE) ||
+    'false'
+
+  console.log('CONDICIÓN DEL IF:', condition)
+
+  let branch = ''
+  let currentBlock = block.getInputTargetBlock('DO0')
+  while (currentBlock) {
+    branch += this[currentBlock.type](currentBlock) || ''
+    currentBlock = currentBlock.getNextBlock()
+  }
+  branch = indentCode(branch, 2)
+  code += `if (${condition}) {\n${branch}}`
+
+  // ELSE IFs
+  for (let i = 1; i <= n; i++) {
+    const elseifCondition =
+      desafio1Generator.valueToCode(
+        block,
+        `IF${i}`,
+        desafio1Generator.ORDER_NONE
+      ) || 'false'
+
+    let elseifBranch = ''
+    let elseifBlock = block.getInputTargetBlock(`DO${i}`)
+    while (elseifBlock) {
+      elseifBranch += this[elseifBlock.type](elseifBlock) || ''
+      elseifBlock = elseifBlock.getNextBlock()
+    }
+    elseifBranch = indentCode(elseifBranch, 2)
+    code += ` else if (${elseifCondition}) {\n${elseifBranch}}`
+  }
+
+  // ELSE
+  if (hasElse) {
+    let elseBranch = ''
+    let elseBlock = block.getInputTargetBlock('ELSE')
+    while (elseBlock) {
+      elseBranch += this[elseBlock.type](elseBlock) || ''
+      elseBlock = elseBlock.getNextBlock()
+    }
+    elseBranch = indentCode(elseBranch, 2)
+    code += ` else {\n${elseBranch}}`
+  }
+
+  code += '\n'
   return code
 }
