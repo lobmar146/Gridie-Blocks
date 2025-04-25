@@ -582,5 +582,29 @@ export const blocksDesafio1 =
       tooltip:
         'Devuelve verdadero si el sensor de fuego detecta una señal en el pin 7.',
       helpUrl: ''
+    },
+    {
+      type: 'custom_if_condition',
+      message0: 'Si %1',
+      args0: [
+        {
+          type: 'input_value',
+          name: 'CONDITION',
+          check: 'Boolean' // Mantenemos el check para la conexión visual correcta
+        }
+      ],
+      message1: 'entonces %1',
+      args1: [
+        {
+          type: 'input_statement',
+          name: 'DO'
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#264653', // Mismo color que tu if original
+      tooltip:
+        'Ejecuta los bloques dentro si la condición es verdadera ( workaround sin valueToCode ).',
+      helpUrl: ''
     }
   ])

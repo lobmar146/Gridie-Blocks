@@ -9,9 +9,8 @@ export const toolboxDesafio4Clase2 = {
         { kind: 'block', type: 'reducir_grados_servo' },
 
         { kind: 'block', type: 'esperar_x_milisegundos' },
-        { kind: 'block', type: 'controls_if' },
-        { kind: 'block', type: 'sensor_fuego' },
-        { kind: 'block', type: 'controls_for' }
+        { kind: 'block', type: 'custom_if_condition' },
+        { kind: 'block', type: 'sensor_fuego' }
       ]
     },
     {
