@@ -549,5 +549,38 @@ export const blocksDesafio1 =
       colour: '#006400', // Verde oscuro con buen contraste
       tooltip: 'Aumentar los grados para utilizarlos luego en el servo',
       helpUrl: ''
+    },
+    //Bloque if
+    {
+      type: 'controls_if',
+      message0: 'Si %1',
+      args0: [
+        {
+          type: 'input_value',
+          name: 'IF0',
+          check: 'Boolean'
+        }
+      ],
+      message1: 'entonces %1',
+      args1: [
+        {
+          type: 'input_statement',
+          name: 'DO0'
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#264653', // Color personalizado (azul petróleo)
+      tooltip: 'Ejecuta los bloques dentro si la condición es verdadera.',
+      helpUrl: ''
+    },
+    {
+      type: 'sensor_fuego',
+      message0: '¿Está detectando fuego el sensor conectado al pin 7? 🔥',
+      output: 'Boolean', // ✅ es un bloque de tipo valor
+      colour: '#F4511E',
+      tooltip:
+        'Devuelve verdadero si el sensor de fuego detecta una señal en el pin 7.',
+      helpUrl: ''
     }
   ])
