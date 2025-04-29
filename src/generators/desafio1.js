@@ -151,7 +151,7 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     codeMap.pinMode += `//${comment}\nservo.attach(${pin});\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'sensor_fuego') {
-    codeMap.pinMode += `pinMode(${pin}, INPUT);\n\n`
+    codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'sensor_pepa') {
     codeMap.pinMode += `pinMode(${pin}, INPUT);\n\n`
