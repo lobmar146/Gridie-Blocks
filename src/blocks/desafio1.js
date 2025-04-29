@@ -606,5 +606,24 @@ export const blocksDesafio1 =
       tooltip:
         'Ejecuta los bloques dentro si la condición es verdadera ( workaround sin valueToCode ).',
       helpUrl: ''
+    },
+    {
+      type: 'sensor_pepa',
+      message0: '¿Está detectando pepa el sensor conectado al pin 7? %1',
+      args0: [
+        {
+          type: 'field_image',
+          src: '/img/ejercicio1/led_encendido.png',
+          width: 59,
+          height: 59,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean', // ✅ es un bloque de tipo valor
+      colour: '#F4511E',
+      tooltip:
+        'Devuelve verdadero si el sensor de fuego detecta una señal en el pin 7.',
+      helpUrl: ''
     }
   ])
