@@ -792,6 +792,3 @@ desafio1Generator['custom_if_condition'] = function (block) {
 
   return code
 }
-
-// Asegúrate de que las propiedades de orden estén definidas en tu generador
-// desafio1Generator.ORDER_NONE = 99; // o el valor que tengas definido
