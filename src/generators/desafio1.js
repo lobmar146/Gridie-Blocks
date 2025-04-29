@@ -153,6 +153,9 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
   } else if (!configuredPins[pin] && variableName == 'sensor_fuego') {
     codeMap.pinMode += `pinMode(${pin}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
+  } else if (!configuredPins[pin] && variableName == 'sensor_pepa') {
+    codeMap.pinMode += `pinMode(${pin}, INPUT);\n\n`
+    configuredPins[pin] = true // Marcar pin como configurado
   }
 }
 
@@ -791,4 +794,20 @@ desafio1Generator['custom_if_condition'] = function (block) {
   const code = `if (${conditionCode}) {\n${this.addLoopTrap(doCode)}}\n` // Puedes añadir this.addLoopTrap si lo usas
 
   return code
+}
+
+//generador sensor pepa
+desafio1Generator['sensor_pepa'] = function (block) {
+  const pin = 7
+  const variableName = 'sensor_pepa'
+
+  console.log('Generando sensor_pepa...')
+
+  addVariableIfNotDefined(variableName, pin, 'Definimos el sensor de pepa')
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del pepa')
+
+  return [
+    `(digitalRead(${variableName}) == 1)`,
+    desafio1Generator.ORDER_EQUALITY
+  ]
 }
