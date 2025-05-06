@@ -15,6 +15,8 @@ import { toolboxDesafio3 } from '../toolbox/toolboxDesafio3'
 import '../App.css'
 import toast from 'react-hot-toast'
 import { toolboxDesafio3Clase2 } from '@/toolbox/toolboxDesafio3Clase2'
+import { toolboxDesafio5Clase2 } from '@/toolbox/toolboxDesafio5Clase2'
+import { toolboxDesafio6Clase2 } from '@/toolbox/toolboxDesafio6Clase2'
 import { toolboxDesafio4Clase2 } from '../toolbox/toolboxDesafio4Clase2'
 
 // Sobrescribe los mensajes de los bloques de procedimientos
@@ -50,7 +52,9 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
     4: toolboxDesafio1Clase2,
     5: toolboxDesafio2Clase2,
     6: toolboxDesafio3Clase2,
-    7: toolboxDesafio4Clase2
+    7: toolboxDesafio4Clase2,
+    8: toolboxDesafio5Clase2,
+    9: toolboxDesafio6Clase2
     // Agrega aquí otros toolboxes si los tienes
   }
   const darkTheme = Blockly.Theme.defineTheme('darkTheme', {

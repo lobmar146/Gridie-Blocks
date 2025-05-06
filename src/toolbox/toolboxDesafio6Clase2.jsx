@@ -1,10 +1,13 @@
-export const toolboxDesafio4Clase2 = {
+export const toolboxDesafio6Clase2 = {
   kind: 'categoryToolbox',
   contents: [
     {
       kind: 'category',
       name: 'Primitivas', // Nueva categoría que agrupa todos los bloques de comandos y semáforo
       contents: [
+        { kind: 'block', type: 'aumentar_grados_servo' },
+        { kind: 'block', type: 'reducir_grados_servo' },
+        { kind: 'block', type: 'esperar_x_milisegundos' },
         {
           kind: 'block',
           type: 'EncenderRojoA' // Semáforo: Encender Rojo Semáforo 1
@@ -29,12 +32,6 @@ export const toolboxDesafio4Clase2 = {
           kind: 'block',
           type: 'ApagarVerdeE' // Semáforo: Apagar Verde Semáforo 1
         }
-        // { kind: 'block', type: 'aumentar_grados_servo' },
-        // { kind: 'block', type: 'reducir_grados_servo' },
-
-        // { kind: 'block', type: 'esperar_x_milisegundos' },
-        // { kind: 'block', type: 'custom_if_condition' },
-        // { kind: 'block', type: 'sensor_fuego' }
       ]
     },
     {

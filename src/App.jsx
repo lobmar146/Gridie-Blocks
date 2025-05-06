@@ -90,9 +90,33 @@ const App = () => {
               <Desafio
                 titulo="Problema 1: Parpadear el Semaforo"
                 consigna={
-                  '¿Te acordas del semaforo? ¡Volvio, en forma de repetitivas! ¿Cómo hacemos para hacer parpadear 3 veces A-C-E?'
+                  '🚦¿Te acordas del semaforo? ¡Volvio, en forma de repetitivas! 🧠¿Cómo hacemos para hacer parpadear 3 veces la luz A, luego 3 veces la B y después 3 veces la C.'
                 }
                 toolBox="7"
+              />
+            }
+          />
+          <Route
+            path="/Ejercicio3Clase2"
+            element={
+              <Desafio
+                titulo="Ejercicio 2: Servo Motor"
+                consigna={
+                  'Comencemos a aprender a utilizar el Servomotor. Para eso, vamos a 1) Llevarlo a un angulo de 180 grados 2)Volver a 0 grados. Recorda ver las primitivas ;)'
+                }
+                toolBox="8"
+              />
+            }
+          />
+          <Route
+            path="/Problema3Clase2"
+            element={
+              <Desafio
+                titulo="Problema 3: La Barrera"
+                consigna={
+                  'Ahora vamos a hacer una barrera, como los trenes! Para esto, necesitas tener conectado el semaforo tambien. 1) Debes subir (90°) y luego bajar la barrera (0°) lentamente. 2) Cuando la barrera este arriba, debe encenderse la luz verde del semaforo. 3) Cuando la barrera este abajo, debe encenderse la luz roja del semaforo. Te animas a completarlo? recordá usar repetitivas. '
+                }
+                toolBox="9"
               />
             }
           />

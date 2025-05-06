@@ -105,13 +105,35 @@ const Home = () => {
             className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
             <img
-              src="img/ejercicio1/led_encendido.png"
+              src="img/desafio2/semaforo.png"
               alt="Imagen 1"
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
             <p className="font-semibold">
               Problema 2: Repetitivas con Semaforo
             </p>
+          </Link>
+          <Link
+            to="/Ejercicio3Clase2"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/ejercicio3Clase2/servo.svg"
+              alt="Imagen 1"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">Ejercicio 3: La barrera</p>
+          </Link>
+          <Link
+            to="/Problema3Clase2"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/problema3Clase2/barrera.gif"
+              alt="Imagen 1"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">Ejercicio 3: La barrera</p>
           </Link>
         </div>
       </section>
