@@ -117,6 +117,35 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
     initialBlock.moveBy(10, 10)
     initialBlock.setDeletable(false)
 
+    //funcion para saber si es un bloque flotante.
+    // Función para saber si el bloque está flotando (fuera de ejecutar_una_vez o de un procedimiento)
+    const isFloatingBlock = block => {
+      let current = block.getParent()
+      let isInsideProcedure = false
+
+      while (current) {
+        if (current.type === 'procedures_defnoreturn') {
+          isInsideProcedure = true
+          break
+        }
+        current = current.getParent()
+      }
+
+      const parentBlock = block.getSurroundParent()
+      const isInsideEjecutar = parentBlock?.type === 'ejecutar_una_vez'
+      const isProcedureBlock =
+        block.type === 'procedures_defnoreturn' ||
+        block.type === 'procedures_callnoreturn'
+      const isEjecutarBlock = block.type === 'ejecutar_una_vez'
+
+      return (
+        !isInsideEjecutar &&
+        !isInsideProcedure &&
+        !isProcedureBlock &&
+        !isEjecutarBlock
+      )
+    }
+
     const onWorkspaceChange = () => {
       const allBlocks = workspaceRef.current.getAllBlocks()
       let shouldDisableAll = false
@@ -138,6 +167,12 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
       // Deshabilitar o habilitar bloques
       allBlocks.forEach(block => {
         block.setEnabled(!shouldDisableAll)
+
+        //evaluamos aparte, si el bloque es un bloque floante.
+        const shouldDisableFloatingBlock = isFloatingBlock(block)
+        if (shouldDisableFloatingBlock) {
+          block.setEnabled(false)
+        }
       })
 
       // Mostrar la alerta solo una vez cuando se deshabilitan todos los bloques
