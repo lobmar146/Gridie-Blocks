@@ -21,6 +21,16 @@ export const toolboxDesafio1Clase2 = {
     },
     {
       kind: 'category',
+      name: 'Repetitivas',
+      contents: [
+        {
+          kind: 'block',
+          type: 'controls_repeat_ext' // Bloque de repetición
+        }
+      ]
+    },
+    {
+      kind: 'category',
       name: 'Procedimientos',
       custom: 'PROCEDURE' // Añadir los bloques de procedimientos aquí
     }

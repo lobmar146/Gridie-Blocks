@@ -3,7 +3,7 @@ export const toolboxDesafio2Clase2 = {
   contents: [
     {
       kind: 'category',
-      name: 'Primitivas', // Nueva categoría que agrupa todos los bloques de comandos y semáforo
+      name: 'Primitivas',
       contents: [
         {
           kind: 'block',
@@ -15,18 +15,17 @@ export const toolboxDesafio2Clase2 = {
         },
         {
           kind: 'block',
-          type: 'esperar_un_segundo' // Bloque 'esperar_un_segundo'
+          type: 'esperar_x_milisegundos' // Bloque 'esperar_x_milisegundos'
         }
       ]
     },
-
     {
       kind: 'category',
       name: 'Bucles',
       contents: [
         {
           kind: 'block',
-          type: 'controls_repeat_ext' // Bloque de repetición
+          type: 'controls_repeat_ext'
         }
       ]
     },

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { Link } from 'react-router-dom'
 import { ChevronRightIcon, HomeIcon } from '@radix-ui/react-icons'
 import BlocklyComponent from '../components/BocklyComponent'
@@ -46,9 +47,30 @@ const App = ({ titulo, consigna, toolBox }) => {
 
       <div
         ref={consignaRef}
-        className="mx-2 mb-2 mt-1 rounded-xl p-5 dark:bg-[#202020]"
+        className="mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020]"
       >
-        {consigna}
+        <ReactMarkdown
+          components={{
+            ul: ({ children }) => (
+              <ul className="list-inside list-disc">{children}</ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="list-inside list-decimal">{children}</ol>
+            ),
+            li: ({ children }) => <li className="mb-1">{children}</li>,
+            h3: ({ node, children }) => {
+              // Detectamos si es el primer nodo del árbol
+              const isFirst = node?.position?.start?.line === 1
+              const className = isFirst
+                ? 'text-lg font-bold mb-2'
+                : 'text-lg font-bold mt-5 mb-2'
+              return <h3 className={className}>{children}</h3>
+            },
+            p: ({ children }) => <p className="mb-3">{children}</p>
+          }}
+        >
+          {consigna}
+        </ReactMarkdown>
       </div>
 
       <BlocklyComponent toolBoxDesafio={toolBox} altura={blocklyHeight} />

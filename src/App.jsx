@@ -20,9 +20,18 @@ const App = () => {
             element={
               <Desafio
                 titulo="Ejercicio 1: Encender un Led"
-                consigna={
-                  'Como primer Programa para nuestra placa, encenderemos un LED. Para hacerlo, tendremos que Ejecutar 1 vez la primitiva "Encender Led conectado en Pin13. ¿Te animas a completar el desafío?'
-                }
+                consigna={`### 💡 Ejercicio 1: Encender un LED
+
+Como primer programa para nuestra placa, vamos a **encender un LED**.
+
+🧠 **Objetivo:** Ejecutar correctamente nuestra primer primitiva.
+
+1. Usá el bloque **"Ejecutar 1 vez"** como estructura principal.
+2. Dentro de él, colocá la primitiva **"Encender Led conectado en Pin 13"**.
+3. Asegurate de que esté todo bien conectado antes de ejecutar.
+
+🚀 *Este es el primer paso para aprender a progamar con robots. ¡Vamos con todo!*
+`}
                 toolBox="1"
               />
             }
@@ -31,9 +40,22 @@ const App = () => {
             path="/Problema1"
             element={
               <Desafio
-                titulo="Ejercicio1: Parpadear"
-                consigna={`Ahora queremos que el led Parpadee 1 vez. Para esto, deberemos:
-                1)Encender el Led por un segundo. 2) Apagar el Led por un segundo. El problema esta en que no tenemos esas dos intrucciones... ¿Y si usamos procedimientos?.`}
+                titulo="Problema 1: Parpadear"
+                consigna={`### ✴️ Problema 1: Parpadear
+
+Ahora queremos que el **LED parpadee una vez**.
+
+🧠 **Objetivo:** Hacer que el LED se encienda y apague con pausas de 1 segundo.
+
+1. **Encendé** el LED durante **1 segundo**.
+2. Luego, **apagalo** durante **1 segundo**.
+
+😬 El problema es que **no tenemos** primtiivas como: **"Prender por un 1 segundo"** o **"Apagar por un segundo"**...
+
+💡 ¿Y si usamos **procedimientos** para crear nuestras propias los primitivas?
+
+✨ *Animate a resolverlo usando lo que aprendiste. ¡Estás cada vez más de crear tus propias primitivas 😎*
+`}
                 toolBox="2"
               />
             }
@@ -43,9 +65,26 @@ const App = () => {
             element={
               <Desafio
                 titulo="Ejercicio 2: Encender el Semaforo"
-                consigna={
-                  'Ya sabemos hacer encender, apagar y parpadear un Led. Ahora, vamos a trabajar con varios a la vez. Conecta correctamente el semaforo y luego: ¿Cómo hacemos para encender A-B-C en secuencia? EXTRA: ¿Cómo hacemos para que Parpadee A, luego B y luego C?'
-                }
+                consigna={`### 🚦 Ejercicio 2: Encender el Semáforo
+
+Ya sabés **encender**, **apagar** y **parpadear** un LED. Ahora vamos a trabajar con **varios LEDs a la vez**, como si fueran un semáforo.
+
+🧠 **Objetivo:** Encender los LEDs A, B y C en orden.
+
+1. Conectá correctamente el semáforo a tu placa.
+2. Encendé los LEDs **A → B → C** en secuencia.
+3. Asegurate de que se vean claramente los cambios.
+
+
+
+### 🔁 Extra: Parpadeo Secuencial
+
+¡Felicitaciones! Si llegaste hasta acá, ya sos una experta/experto en encender Leds 🎇
+
+Te proponemos un desafío final: Hacé que **parpadee A**, luego **parpadee B**, y finalmente **parpadee C**.
+
+💡 *Pensá cómo podrías reutilizar procedimientos o repetir patrones. ¡Este ejercicio pone a prueba tu creatividad!*
+`}
                 toolBox="3"
               />
             }
@@ -54,33 +93,73 @@ const App = () => {
             path="/Ejercicio1Clase2"
             element={
               <Desafio
-                titulo="Ejercicio 1: Parpadear 5 veces"
-                consigna={'¿Cómo hacemos para hacer parpadear el LED 5 veces? '}
+                titulo="Ejercicio 1: Parpadear 30 veces"
+                consigna={`### ✴️ Ejercicio 1: Parpadear 5 veces
+
+¿Cómo hacemos para que el **LED parpadee 5 veces**?
+
+🧠 **Objetivo:** Repetir una secuencia de encendido y apagado varias veces.
+
+1. Encendé el LED y dejalo prendido por 1 segundo.
+2. Apagalo durante 1 segundo.
+3. Repetí esta secuencia **30 veces**. **SI, 30 VECES** 🤯.
+
+
+🔁Esto de **Repetir** se hace un poco tedioso... ¿No habra una solución mejor 🤬?
+
+💡 *¡Recordá que todo debe estar organizado usando **procedimientos**! Eso te va a permitir que tu código sea más legible y plantea tu estrategía de solución.*`}
                 toolBox="4"
               />
             }
           />
-          <Route
+          {/* <Route
             path="/Ejercicio2Clase2"
             element={
               <Desafio
                 titulo="Ejercicio 2: Parpadeando con Repetitivas"
-                consigna={
-                  'Ahora, tenemos una nueva herramienta, se llaman Repetitivas. ¿Te animas a hacer parpadear el LED 5 veces utilizando las repetitivas? ¡Recorda que tenes que seguir usando procedimientos!'
-                }
+                consigna={`### 🔁 Ejercicio 2: Parpadeando con Repetitivas
+
+Ahora tenemos una nueva herramienta: las **repetitivas**.
+
+🧠 **Objetivo:** Usar estructuras repetitivas junto con procedimientos para hacer parpadear un LED.
+
+1. Usá el  **Repetir** para ejecutar un bloque varias veces.
+2. Recordá seguir usando los **procedimiento** para el parpadeo (encender, esperar, apagar, esperar).
+3. Repetí esta secuencia **30 veces**. SI, 30 VECES 🤯.
+
+
+`}
                 toolBox="5"
               />
             }
-          />
+          /> */}
           <Route
             path="/Problema1Clase2"
             element={
               <Desafio
                 titulo="Problema 1: Señal de S.O.S"
-                consigna={
-                  'La señal de S.O.S, esta compuesta por 3 parpadeos cortos , luego 3 parpadeos largos y nuevamente 3 parpadeos cortos. Los parpadeos largos duran 1000 milisegundos y los parpardeos cortos 300 milisegundos. ¿Te animas a recrear la señal de S.O.S en el LED conectado al Pin 13?'
-                }
-                toolBox="6"
+                consigna={`### 🚨 Problema 1: Señal de S.O.S
+
+Vamos a recrear una **señal de auxilio clásica** con tu LED: la señal de **S.O.S**.
+
+🧠 **Objetivo:** Usar temporizaciones y repeticiones para representar una secuencia con significado.
+
+La señal está compuesta por:
+
+- **3 parpadeos cortos** (duración: 300 milisegundos)
+- **3 parpadeos largos** (duración: 1000 milisegundos)
+- **3 parpadeos cortos** nuevamente
+
+📏 Recordá:
+
+- Parpadeo **corto** = 300 ms  
+- Parpadeo **largo** = 1000 ms  
+
+💡 *Usá **procedimientos** para no repetir bloques innecesariamente. Podés tener uno para parpadeo corto y otro para parpadeo largo.*
+
+🚀 ¿Te animás a codificar un mensaje de auxilio visual?
+`}
+                toolBox="5"
               />
             }
           />
@@ -88,23 +167,39 @@ const App = () => {
             path="/Problema2Clase2"
             element={
               <Desafio
-                titulo="Problema 1: Parpadear el Semaforo"
-                consigna={
-                  '🚦¿Te acordas del semaforo? ¡Volvio, en forma de repetitivas! 🧠¿Cómo hacemos para hacer parpadear 3 veces la luz A, luego 3 veces la B y después 3 veces la C.'
-                }
-                toolBox="7"
+                titulo="Problema 2: Parpadear el Semaforo"
+                consigna={`### 🚦 Problema: Parpadear el Semáforo
+
+¿Te acordás del semáforo? ¡Volvió, en forma de **repetitivas**! 😄
+
+🧠 **Objetivo:** Hacer parpadear cada luz del semáforo por separado, usando repeticiones.
+
+1. Hacé que la luz **A** parpadee **3 veces**.
+2. Luego, hacé que la luz **B** parpadee **3 veces**.
+3. Finalmente, hacé que la luz **C** parpadee **3 veces**.
+
+💡 *Recordá usar **procedimientos** para cada color, y repetitivas para no repetir bloques manualmente. ¡Animate a ordenar tu código como un profesional!*
+`}
+                toolBox="6"
               />
             }
           />
           <Route
-            path="/Ejercicio3Clase2"
+            path="/Ejercicio2Clase2"
             element={
               <Desafio
                 titulo="Ejercicio 2: Servo Motor"
-                consigna={
-                  'Comencemos a aprender a utilizar el Servomotor. Para eso, vamos a 1) Llevarlo a un angulo de 180 grados 2)Volver a 0 grados. Recorda ver las primitivas ;)'
-                }
-                toolBox="8"
+                consigna={`### ⚙️ Ejercicio 2: Servomotor
+
+¡Vamos a comenzar a trabajar con el **servomotor**!
+
+🧠 **Objetivo:** Aprender a mover el servomotor a posiciones específicas.
+
+1. Mové el servomotor a **180 grados**.
+2. Luego, regresalo a **0 grados**.
+
+🔎 *Recordá revisar las **primitivas disponibles** para controlar el servomotor.*`}
+                toolBox="7"
               />
             }
           />
@@ -113,10 +208,21 @@ const App = () => {
             element={
               <Desafio
                 titulo="Problema 3: La Barrera"
-                consigna={
-                  'Ahora vamos a hacer una barrera, como los trenes! Para esto, necesitas tener conectado el semaforo tambien. 1) Debes subir (90°) y luego bajar la barrera (0°) lentamente. 2) Cuando la barrera este arriba, debe encenderse la luz verde del semaforo. 3) Cuando la barrera este abajo, debe encenderse la luz roja del semaforo. Te animas a completarlo? recordá usar repetitivas. '
-                }
-                toolBox="9"
+                consigna={`### 🚧 Problema 3: La Barrera
+
+Ahora vamos a hacer una barrera, ¡como la de los trenes! 🚧🚅 Para esto, necesitás tener conectado el **semáforo** también.
+
+🧠 **Objetivo:** Controlar el movimiento del servomotor y sincronizarlo con luces del semáforo.
+
+1. Debés **subir la barrera a 90°** lentamente.
+2. Luego, **bajarla a 0°** lentamente.
+3. Mientras la barrera está **arriba**, debe encenderse la **luz verde** del semáforo.
+4. Cuando la barrera está **abajo**, debe encenderse la **luz roja**.
+
+💡 *Recordá usar **repetitivas** y **procedimientos** para organizar bien los pasos y movimientos.*
+
+      `}
+                toolBox="8"
               />
             }
           />

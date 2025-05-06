@@ -76,7 +76,7 @@ const Home = () => {
             />
             <p className="font-semibold">Ejercicio 1: Parpadear 5 veces</p>
           </Link>
-          <Link
+          {/* <Link
             to="/Ejercicio2Clase2"
             className="card-flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
@@ -88,7 +88,7 @@ const Home = () => {
             <p className="font-semibold">
               Ejercicio 2: Parpadeando el LED con Repetitivas.
             </p>
-          </Link>
+          </Link> */}
           <Link
             to="/Problema1Clase2"
             className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
@@ -109,12 +109,10 @@ const Home = () => {
               alt="Imagen 1"
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
-            <p className="font-semibold">
-              Problema 2: Repetitivas con Semaforo
-            </p>
+            <p className="font-semibold">Problema 2: Parpadear el Semaforo</p>
           </Link>
           <Link
-            to="/Ejercicio3Clase2"
+            to="/Ejercicio2Clase2"
             className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
             <img
@@ -122,7 +120,7 @@ const Home = () => {
               alt="Imagen 1"
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
-            <p className="font-semibold">Ejercicio 3: La barrera</p>
+            <p className="font-semibold">Ejercicio 2: Servomotor</p>
           </Link>
           <Link
             to="/Problema3Clase2"
@@ -133,7 +131,7 @@ const Home = () => {
               alt="Imagen 1"
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
-            <p className="font-semibold">Ejercicio 3: La barrera</p>
+            <p className="font-semibold">Problema 3: La barrera</p>
           </Link>
         </div>
       </section>

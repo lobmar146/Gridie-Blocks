@@ -7,7 +7,31 @@ export const toolboxDesafio5Clase2 = {
       contents: [
         { kind: 'block', type: 'aumentar_grados_servo' },
         { kind: 'block', type: 'reducir_grados_servo' },
-        { kind: 'block', type: 'esperar_x_milisegundos' }
+        { kind: 'block', type: 'esperar_x_milisegundos' },
+        {
+          kind: 'block',
+          type: 'EncenderRojoA' // Semáforo: Encender Rojo Semáforo 1
+        },
+        {
+          kind: 'block',
+          type: 'ApagarRojoA' // Semáforo: Apagar Rojo Semáforo 1
+        },
+        {
+          kind: 'block',
+          type: 'EncenderAmarilloC' // Semáforo: Encender Amarillo Semáforo 1
+        },
+        {
+          kind: 'block',
+          type: 'ApagarAmarilloC' // Semáforo: Apagar Amarillo Semáforo 1
+        },
+        {
+          kind: 'block',
+          type: 'EncenderVerdeE' // Semáforo: Encender Verde Semáforo 1
+        },
+        {
+          kind: 'block',
+          type: 'ApagarVerdeE' // Semáforo: Apagar Verde Semáforo 1
+        }
       ]
     },
     {
