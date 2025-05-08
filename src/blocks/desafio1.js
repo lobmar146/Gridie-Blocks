@@ -584,6 +584,33 @@ export const blocksDesafio1 =
       helpUrl: ''
     },
     {
+      type: 'sensor_ultrasonico',
+      message0: '¿El sensor ultrasonico %1 esta detectando un objeto a %2 cm?',
+      args0: [
+        {
+          type: 'field_image',
+          src: '/img/agusBlockPlayground/sensor_ultrasonic.png',
+          width: 59,
+          height: 59,
+          alt: '*',
+          flipRtl: false
+        },
+        {
+          type: 'field_number',
+          name: 'DISTANCIA',
+          value: 10,
+          min: 0,
+          max: 400
+        }
+      ],
+      output: 'Boolean',
+      colour: '#F4511E',
+      tooltip:
+        'Devuelve verdadero si el sensor ultrasonico detecta una señal en el pin 8.',
+      helpUrl: ''
+    },
+    
+    {
       type: 'custom_if_condition',
       message0: 'Si %1',
       args0: [
