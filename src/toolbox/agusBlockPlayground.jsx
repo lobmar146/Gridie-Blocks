@@ -12,9 +12,10 @@ export const agusBlockPlayGround = {
         { kind: 'block', type: 'custom_if_condition' },
 
         { kind: 'block', type: 'sensor_fuego' },
-        
+
         //Agregado el sensor_ultrasonico a la categoría de primitivas
         { kind: 'block', type: 'sensor_ultrasonico' },
+        { kind: 'block', type: 'sensor_obstaculo' },
 
         { kind: 'block', type: 'sensor_pepa' }
       ]

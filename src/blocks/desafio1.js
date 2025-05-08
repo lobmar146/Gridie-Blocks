@@ -585,7 +585,7 @@ export const blocksDesafio1 =
     },
     {
       type: 'sensor_ultrasonico',
-      message0: '¿El sensor ultrasonico %1 esta detectando un objeto a %2 cm?',
+      message0: '¿El sensor ultrasonico %1 (PIN 8) esta detectando un objeto a %2 cm?',
       args0: [
         {
           type: 'field_image',
@@ -609,7 +609,25 @@ export const blocksDesafio1 =
         'Devuelve verdadero si el sensor ultrasonico detecta una señal en el pin 8.',
       helpUrl: ''
     },
-    
+    {
+      type: 'sensor_obstaculo',
+      message0: '¿Detecta un obstáculo el sensor IR %1 conectado al pin 9?',
+      args0: [
+        {
+          type: 'field_image',
+          src: '/img/agusBlockPlayground/sensor_ir.png',
+          width: 59,
+          height: 59,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean',
+      colour: '#F4511E',
+      tooltip:
+        'Devuelve verdadero si el sensor IR detecta una señal en el pin 9.',
+      helpUrl: ''
+    },
     {
       type: 'custom_if_condition',
       message0: 'Si %1',

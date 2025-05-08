@@ -137,6 +137,21 @@ desafio1Generator['sensor_ultrasonico'] = function (block) {
   ]
 }
 
+desafio1Generator['sensor_obstaculo'] = function (block) {
+  const pin = 9
+  const variableName = 'sensor_obstaculo'
+
+  console.log('Generando sensor_obstaculo...')
+
+  addVariableIfNotDefined(variableName, pin, 'Definimos el sensor obstaculo')
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor obstaculo')
+
+  return [
+    `(digitalRead(${variableName}) == 1)`,
+    desafio1Generator.ORDER_EQUALITY
+  ]
+}
+
 // Asegurarse de que el generador pueda manejar bloques 'math_number'
 desafio1Generator['math_number'] = function (block) {
   // Registro de depuración para verificar si el bloque es llamado correctamente
@@ -160,7 +175,8 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     !configuredPins[pin] &&
     variableName != 'Servo' &&
     variableName != 'sensor_fuego' &&
-    variableName != 'sensor_ultrasonico' 
+    variableName != 'sensor_ultrasonico' &&
+    variableName != 'sensor_obstaculo'
   ) {
     codeMap.pinMode += `pinMode(${pin}, OUTPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
@@ -174,6 +190,9 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     codeMap.pinMode += `pinMode(${pin}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'sensor_ultrasonico') {
+    codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
+    configuredPins[pin] = true // Marcar pin como configurado
+  } else if (!configuredPins[pin] && variableName == 'sensor_obstaculo') {
     codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   }
