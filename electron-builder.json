@@ -1,0 +1,24 @@
+{
+  "appId": "gridieblocks",
+  "productName": "GridieBlocks",
+  "directories": {
+    "buildResources": "assets",
+    "output": "dist-electron"
+  },
+  "files": ["dist/**", "electron/**"],
+  "extraMetadata": {
+    "main": "electron/main.js"
+  },
+  "win": {
+    "target": "nsis",
+    "icon": "assets/icon.ico"
+  },
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "icon": "assets"
+  },
+  "mac": {
+    "target": "dmg",
+    "icon": "assets/icon.icns"
+  }
+}
