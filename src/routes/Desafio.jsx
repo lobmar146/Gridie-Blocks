@@ -5,6 +5,9 @@ import { ChevronRightIcon, HomeIcon } from '@radix-ui/react-icons'
 import BlocklyComponent from '../components/BocklyComponent'
 
 const App = ({ titulo, consigna, toolBox }) => {
+  const [placas, setPlacas] = useState([])
+  const [placaSeleccionada, setPlacaSeleccionada] = useState('')
+
   const consignaRef = useRef(null) // Referencia al div de la consigna
   const [blocklyHeight, setBlocklyHeight] = useState('82vh') // Altura dinámica de Blockly
 
@@ -19,6 +22,25 @@ const App = ({ titulo, consigna, toolBox }) => {
     }
 
     updateBlocklyHeight() // Calcula la altura inicialmente
+
+    const cargarPlacas = async () => {
+      try {
+        const salida = await window.electronAPI.listarPlacas()
+        const lineas = salida.trim().split('\n').slice(1) // Saltamos el header
+        const datos = lineas.map(linea => {
+          const partes = linea.trim().split(/\s{2,}/) // Divide por múltiples espacios
+          return {
+            puerto: partes[0],
+            nombre: partes[2] || '',
+            fqbn: partes[3] || ''
+          }
+        })
+        setPlacas(datos)
+      } catch (error) {
+        console.error('Error al listar placas:', error)
+      }
+    }
+    cargarPlacas()
     window.addEventListener('resize', updateBlocklyHeight) // Recalcula en caso de cambio de tamaño
 
     return () => {
@@ -29,6 +51,20 @@ const App = ({ titulo, consigna, toolBox }) => {
   return (
     <>
       <div className="dark:bg-[#202020]">
+        <div className="flex items-center justify-between px-5 py-2">
+          <select
+            className="rounded bg-[#202020] px-2 py-1 text-sm text-white"
+            value={placaSeleccionada}
+            onChange={e => setPlacaSeleccionada(e.target.value)}
+          >
+            <option value="">Seleccionar placa</option>
+            {placas.map((p, idx) => (
+              <option key={idx} value={p.puerto}>
+                {p.nombre} ({p.puerto})
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="flex items-center justify-between px-5 py-2">
           <h1 className="rounded-[20px] bg-white px-[5px] py-[2px]">
             <span className="texto-verde">GrID</span>
