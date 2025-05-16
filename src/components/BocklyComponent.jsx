@@ -36,7 +36,7 @@ Blockly.Blocks['procedures_ifreturn'] = null
 // Define los bloques una vez fuera del componente
 Blockly.common.defineBlocks(blocksDesafio1)
 
-const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
+const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
   const blocklyDiv = useRef(null)
   const workspaceRef = useRef(null) // Referencia al workspace
   const [code, setCode] = useState('')
@@ -81,6 +81,12 @@ const BlocklyComponent = ({ toolBoxDesafio, altura }) => {
       scrollbarOpacity: 0.8
     }
   })
+
+  useEffect(() => {
+    if (onCodeChange) {
+      onCodeChange(code) // Notifica al componente padre cada vez que `code` cambie
+    }
+  }, [code, onCodeChange])
 
   useEffect(() => {
     // Acceder dinámicamente al toolbox según el prop

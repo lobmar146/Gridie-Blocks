@@ -7,6 +7,7 @@ import BlocklyComponent from '../components/BocklyComponent'
 const App = ({ titulo, consigna, toolBox }) => {
   const [placas, setPlacas] = useState([])
   const [placaSeleccionada, setPlacaSeleccionada] = useState('')
+  const [generatedCode, setGeneratedCode] = useState('')
 
   const consignaRef = useRef(null) // Referencia al div de la consigna
   const [blocklyHeight, setBlocklyHeight] = useState('82vh') // Altura dinámica de Blockly
@@ -48,6 +49,30 @@ const App = ({ titulo, consigna, toolBox }) => {
     }
   }, [])
 
+  const handleCodeChange = code => {
+    setGeneratedCode(code) // Actualiza el estado con el código generado
+  }
+
+  const subirCodigo = async () => {
+    if (!placaSeleccionada) {
+      alert('Por favor, selecciona una placa antes de subir el código.')
+      return
+    }
+
+    try {
+      alert(`Código a subir: ${generatedCode}`) // Muestra el código en un alert (opcional)
+      alert(`Subiendo código a la placa: ${placaSeleccionada}`) // Muestra un mensaje de carga
+      const respuesta = await window.electronAPI.subirCodigo(
+        placaSeleccionada,
+        generatedCode
+      )
+      alert(`Código subido exitosamente: ${respuesta}`)
+    } catch (error) {
+      console.log('Error al subir el código:', error)
+      alert(`Error: al subir el código`)
+    }
+  }
+
   return (
     <>
       <div className="dark:bg-[#202020]">
@@ -65,6 +90,12 @@ const App = ({ titulo, consigna, toolBox }) => {
             ))}
           </select>
         </div>
+        <button
+          onClick={subirCodigo}
+          className="ml-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+        >
+          Subir Código
+        </button>
         <div className="flex items-center justify-between px-5 py-2">
           <h1 className="rounded-[20px] bg-white px-[5px] py-[2px]">
             <span className="texto-verde">GrID</span>
@@ -109,7 +140,11 @@ const App = ({ titulo, consigna, toolBox }) => {
         </ReactMarkdown>
       </div>
 
-      <BlocklyComponent toolBoxDesafio={toolBox} altura={blocklyHeight} />
+      <BlocklyComponent
+        toolBoxDesafio={toolBox}
+        altura={blocklyHeight}
+        onCodeChange={handleCodeChange}
+      />
     </>
   )
 }
