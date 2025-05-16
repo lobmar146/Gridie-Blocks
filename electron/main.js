@@ -1,6 +1,7 @@
 import { exec } from 'child_process'
 import fs from 'fs'
 import path from 'path'
+import process from 'process'
 import { fileURLToPath } from 'url'
 import { app, BrowserWindow, ipcMain } from 'electron'
 
@@ -24,11 +25,19 @@ const createWindow = () => {
 
 app.whenReady().then(createWindow)
 
-// 🔽 Paso 3: Manejo del comando arduino-cli
+// Ruta a arduino-cli y a la carpeta de cores/tools locales
+const arduinoCliPath = path.join(__dirname, 'arduino-cli.exe')
+const arduinoDataDir = path.join(__dirname, 'arduino')
+
+// Helper para ejecutar arduino-cli con el entorno adecuado
+function execArduinoCli(command, callback) {
+  exec(`"${arduinoCliPath}" ${command}`, { env: process.env }, callback)
+}
+
+// Listar placas conectadas
 ipcMain.handle('arduino:listBoards', async () => {
   return new Promise((resolve, reject) => {
-    const arduinoCliPath = path.join(__dirname, 'arduino-cli.exe') // Ruta completa al ejecutable
-    exec(`"${arduinoCliPath}" board list`, (error, stdout, stderr) => {
+    execArduinoCli('board list', (error, stdout, stderr) => {
       if (error) {
         reject(error.message)
         return
@@ -42,64 +51,22 @@ ipcMain.handle('arduino:listBoards', async () => {
   })
 })
 
-// Manejo del comando arduino-cli para subir código
+// Subir código a la placa
 ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
   return new Promise((resolve, reject) => {
-    const arduinoCliPath = path.join(__dirname, 'arduino-cli.exe') // Ruta completa al ejecutable
     const tempFilePath = path.join(__dirname, 'build', 'build.ino') // Archivo temporal para el código
     const buildPath = path.join(__dirname, 'build') // Carpeta para los archivos compilados
     const fqbn = 'arduino:avr:uno' // Cambia esto según tu placa
 
-    // Función para verificar si el core está instalado
-    const verificarCoreInstalado = () => {
-      return new Promise((resolve, reject) => {
-        exec(`"${arduinoCliPath}" core list`, (error, stdout, stderr) => {
-          if (error) {
-            reject(error.message)
-            return
-          }
-          if (stdout.includes('arduino:avr')) {
-            resolve(true) // El core está instalado
-          } else {
-            resolve(false) // El core no está instalado
-          }
-        })
-      })
-    }
-
-    // Función para instalar el core
-    const instalarCore = () => {
-      return new Promise((resolve, reject) => {
-        exec(
-          `"${arduinoCliPath}" core install arduino:avr`,
-          (error, stdout, stderr) => {
-            if (error) {
-              reject(`Error al instalar el core: ${error.message}`)
-              return
-            }
-            resolve(stdout) // Core instalado correctamente
-          }
-        )
-      })
-    }
-
     // Lógica principal
     ;(async () => {
       try {
-        // Verificar si el core está instalado
-        const coreInstalado = await verificarCoreInstalado()
-        if (!coreInstalado) {
-          console.log('El core arduino:avr no está instalado. Instalando...')
-          await instalarCore()
-          console.log('Core arduino:avr instalado correctamente.')
-        }
-
         // Escribir el código en un archivo temporal
         fs.writeFileSync(tempFilePath, codigo)
 
         // Compilar el archivo .ino
-        exec(
-          `"${arduinoCliPath}" compile --fqbn ${fqbn} --output-dir "${buildPath}" "${tempFilePath}"`,
+        execArduinoCli(
+          `compile --fqbn ${fqbn} --output-dir "${buildPath}" "${tempFilePath}"`,
           (compileError, compileStdout, compileStderr) => {
             if (compileError) {
               reject(`Error al compilar: ${compileError.message}`)
@@ -114,8 +81,8 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
 
             // Subir el archivo compilado (.hex)
             const hexFilePath = path.join(buildPath, 'build.ino.hex')
-            exec(
-              `"${arduinoCliPath}" upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`,
+            execArduinoCli(
+              `upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`,
               (uploadError, uploadStdout, uploadStderr) => {
                 if (uploadError) {
                   reject(`Error al subir: ${uploadError.message}`)
