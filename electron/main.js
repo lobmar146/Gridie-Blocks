@@ -18,7 +18,7 @@ const createWindow = () => {
       contextIsolation: true
     }
   })
-
+  win.maximize() // Esto inicia la ventana maximizada
   win.setMenu(null)
   win.loadURL('http://localhost:5173')
 }
