@@ -1,13 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
 import { Link } from 'react-router-dom'
-import { ChevronRightIcon, HomeIcon } from '@radix-ui/react-icons'
+import {
+  ChevronRightIcon,
+  HomeIcon,
+  UpdateIcon,
+  UploadIcon
+} from '@radix-ui/react-icons'
+import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import BlocklyComponent from '../components/BocklyComponent'
 
 const App = ({ titulo, consigna, toolBox }) => {
   const [placas, setPlacas] = useState([])
   const [placaSeleccionada, setPlacaSeleccionada] = useState('')
   const [generatedCode, setGeneratedCode] = useState('')
+  const [isUploading, setIsUploading] = useState(false)
 
   const consignaRef = useRef(null) // Referencia al div de la consigna
   const [blocklyHeight, setBlocklyHeight] = useState('82vh') // Altura dinámica de Blockly
@@ -37,10 +52,16 @@ const App = ({ titulo, consigna, toolBox }) => {
           }
         })
         setPlacas(datos)
+
+        const placaGuardada = localStorage.getItem('placaSeleccionada')
+        if (placaGuardada) {
+          setPlacaSeleccionada(placaGuardada)
+        }
       } catch (error) {
         console.error('Error al listar placas:', error)
       }
     }
+
     cargarPlacas()
     window.addEventListener('resize', updateBlocklyHeight) // Recalcula en caso de cambio de tamaño
 
@@ -49,67 +70,112 @@ const App = ({ titulo, consigna, toolBox }) => {
     }
   }, [])
 
+  useEffect(() => {
+    if (placaSeleccionada) {
+      localStorage.setItem('placaSeleccionada', placaSeleccionada)
+    }
+  }, [placaSeleccionada])
+
   const handleCodeChange = code => {
     setGeneratedCode(code) // Actualiza el estado con el código generado
   }
 
   const subirCodigo = async () => {
     if (!placaSeleccionada) {
-      alert('Por favor, selecciona una placa antes de subir el código.')
+      toast.error('Por favor, selecciona una placa antes de subir el código.', {
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          fontSize: '20px'
+        }
+      })
       return
     }
 
+    setIsUploading(true)
+
     try {
-      alert(`Código a subir: ${generatedCode}`) // Muestra el código en un alert (opcional)
-      alert(`Subiendo código a la placa: ${placaSeleccionada}`) // Muestra un mensaje de carga
       const respuesta = await window.electronAPI.subirCodigo(
         placaSeleccionada,
         generatedCode
       )
-      alert(`Código subido exitosamente: ${respuesta}`)
+      toast.success('Código subido exitosamente', {
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          fontSize: '20px'
+        }
+      })
     } catch (error) {
+      toast.error(`Error: al subir el código: ${error}`, {
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          fontSize: '20px'
+        }
+      })
       console.log('Error al subir el código:', error)
       alert(`Error: al subir el código`)
+    } finally {
+      setIsUploading(false)
     }
   }
 
   return (
     <>
       <div className="dark:bg-[#202020]">
-        <div className="flex items-center justify-between px-5 py-2">
-          <select
-            className="rounded bg-[#202020] px-2 py-1 text-sm text-white"
-            value={placaSeleccionada}
-            onChange={e => setPlacaSeleccionada(e.target.value)}
-          >
-            <option value="">Seleccionar placa</option>
-            {placas.map((p, idx) => (
-              <option key={idx} value={p.puerto}>
-                {p.nombre} ({p.puerto})
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          onClick={subirCodigo}
-          className="ml-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-        >
-          Subir Código
-        </button>
-        <div className="flex items-center justify-between px-5 py-2">
-          <h1 className="rounded-[20px] bg-white px-[5px] py-[2px]">
-            <span className="texto-verde">GrID</span>
-            <span className="texto-rojo">IE</span>
-          </h1>{' '}
-          <div className="flex gap-1">
+        <header className="flex items-center justify-between px-5 py-2">
+          <div className="flex items-center space-x-4">
             <Link to="/">
-              <HomeIcon className="h-6 w-6" />
+              <h1 className="rounded-md bg-white px-[5px] py-[2px] font-bold">
+                <span className="text-green-700">GrID</span>
+                <span className="texto-rojo">IE</span>
+              </h1>{' '}
             </Link>
-            <ChevronRightIcon className="h-6 w-6" />
-            <span>Blocks - {titulo}</span>
+            <div className="flex items-center text-gray-300">
+              <Link to="/">
+                <HomeIcon className="h-4 w-4" />
+              </Link>
+              <ChevronRightIcon className="mx-1 h-3 w-3" />
+              <span className="text-sm">Blocks - {titulo}</span>
+            </div>
           </div>
-          <Link to="/">Volver a los niveles</Link>
-        </div>
+          {/* Right section: Board selection and upload */}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center">
+              <span className="mr-1.5 text-xs text-gray-300">Placa:</span>
+              <Select
+                value={placaSeleccionada}
+                onValueChange={setPlacaSeleccionada}
+              >
+                <SelectTrigger className="h-8 w-[200px] border-gray-700 bg-gray-800 text-sm">
+                  <SelectValue placeholder="Seleccionar placa" />
+                </SelectTrigger>
+                <SelectContent className="border-gray-700 bg-gray-800">
+                  {placas.map((placa, idx) => (
+                    <SelectItem key={idx} value={placa.puerto}>
+                      {placa.nombre} ({placa.puerto})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              variant="default"
+              size="sm"
+              className={`bg-green-600 text-white hover:bg-green-700 ${isUploading ? 'opacity-70' : ''}`}
+              onClick={subirCodigo}
+              disabled={isUploading}
+            >
+              <UploadIcon className="mr-1.5 h-3.5 w-3.5" />
+              {isUploading ? 'Subiendo...' : 'Subir Código'}
+            </Button>
+          </div>
+        </header>
       </div>
 
       <div
