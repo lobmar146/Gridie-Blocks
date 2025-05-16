@@ -31,8 +31,9 @@ const App = ({ titulo, consigna, toolBox }) => {
     const updateBlocklyHeight = () => {
       if (consignaRef.current) {
         const consignaHeight = consignaRef.current.offsetHeight // Altura del div de la consigna
+        console.log(consignaHeight)
         const windowHeight = window.innerHeight // Altura de la ventana
-        const remainingHeight = windowHeight - consignaHeight - 60 // Espacio restante
+        const remainingHeight = windowHeight - consignaHeight - 66 // Espacio restante
         setBlocklyHeight(`${remainingHeight}px`)
       }
     }
