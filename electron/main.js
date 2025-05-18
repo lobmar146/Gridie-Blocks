@@ -18,9 +18,15 @@ const createWindow = () => {
       contextIsolation: true
     }
   })
-  win.maximize() // Esto inicia la ventana maximizada
+  // win.maximize() // Esto inicia la ventana maximizada
   win.setMenu(null)
-  win.loadURL('http://localhost:5173')
+  // Open dev tools
+  // win.webContents.openDevTools()
+  if (process.env.NODE_ENV === 'development') {
+    win.loadURL('http://localhost:5173')
+  } else {
+    win.loadFile(path.join(__dirname, '../dist/index.html'))
+  }
 }
 
 app.whenReady().then(createWindow)
