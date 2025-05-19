@@ -8,7 +8,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/ejercicio1/led_encendido.png',
+          src: './img/ejercicio1/led_encendido.png',
           width: 59,
           height: 59,
           alt: '*',
@@ -27,7 +27,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/ejercicio1/led_apagado.png',
+          src: './img/ejercicio1/led_apagado.png',
           width: 59,
           height: 59,
           alt: '*',
@@ -46,7 +46,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/rojo_encendido_a.png',
+          src: './img/desafio2/rojo_encendido_a.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -64,7 +64,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/rojo_apagado_a.png',
+          src: './img/desafio2/rojo_apagado_a.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -82,7 +82,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/amarillo_encender_c.png',
+          src: './img/desafio2/amarillo_encender_c.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -100,7 +100,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/amarillo_apagado_c.png',
+          src: './img/desafio2/amarillo_apagado_c.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -118,7 +118,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/verde_encender_e.png',
+          src: './img/desafio2/verde_encender_e.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -136,7 +136,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/verde_apagar_e.png',
+          src: './img/desafio2/verde_apagar_e.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -154,7 +154,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/rojo_encender_b.png',
+          src: './img/desafio2/rojo_encender_b.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -172,7 +172,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/rojo_apagado_b.png',
+          src: './img/desafio2/rojo_apagado_b.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -190,7 +190,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/amarillo_encender_d.png',
+          src: './img/desafio2/amarillo_encender_d.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -208,7 +208,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/amarillo_apagado_d.png',
+          src: './img/desafio2/amarillo_apagado_d.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -226,7 +226,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/verde_encender_e.png',
+          src: './img/desafio2/verde_encender_e.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -244,7 +244,7 @@ export const blocksDesafio1 =
       args0: [
         {
           type: 'field_image',
-          src: '/img/desafio2/verde_apagar_e.png',
+          src: './img/desafio2/verde_apagar_e.png',
           width: 45,
           height: 45,
           alt: '*'
@@ -319,7 +319,7 @@ export const blocksDesafio1 =
       args1: [
         {
           type: 'field_image',
-          src: '/img/ejercicio1Clase2/Intensidad_Led_ascendente.png',
+          src: './img/ejercicio1Clase2/Intensidad_Led_ascendente.png',
           width: 300,
           height: 100,
           alt: '*',
@@ -348,7 +348,7 @@ export const blocksDesafio1 =
       args1: [
         {
           type: 'field_image',
-          src: '/img/ejercicio1Clase2/Intensidad_Led_descendente.png',
+          src: './img/ejercicio1Clase2/Intensidad_Led_descendente.png',
           width: 300,
           height: 100,
           alt: '*',
@@ -375,7 +375,7 @@ export const blocksDesafio1 =
       args1: [
         {
           type: 'field_image',
-          src: '/img/ejercicio1Clase2/Intensidad_Led_ascendente.png', // Imagen igual a la de aumentar
+          src: './img/ejercicio1Clase2/Intensidad_Led_ascendente.png', // Imagen igual a la de aumentar
           width: 300,
           height: 100,
           alt: '*',
@@ -445,7 +445,7 @@ export const blocksDesafio1 =
       args1: [
         {
           type: 'field_image',
-          src: '/img/ejercicio1Clase2/Intensidad_Led_ascendente.png', // Imagen igual a la de aumentar intensidad
+          src: './img/ejercicio1Clase2/Intensidad_Led_ascendente.png', // Imagen igual a la de aumentar intensidad
           width: 300,
           height: 100,
           alt: '*',
@@ -506,7 +506,7 @@ export const blocksDesafio1 =
 
         {
           type: 'field_image', // Imagen del servo
-          src: '/img/ejercicio3Clase2/servo.svg',
+          src: './img/ejercicio3Clase2/servo.svg',
           width: 70,
           height: 80,
           alt: '*',
@@ -535,7 +535,7 @@ export const blocksDesafio1 =
 
         {
           type: 'field_image', // Imagen del servo
-          src: '/img/ejercicio3Clase2/servo.svg',
+          src: './img/ejercicio3Clase2/servo.svg',
           width: 70,
           height: 80,
           alt: '*',
