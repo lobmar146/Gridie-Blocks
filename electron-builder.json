@@ -6,6 +6,16 @@
     "output": "dist-electron"
   },
   "files": ["dist/**", "electron/**"],
+  "extraResources": [
+    {
+      "from": "electron/arduino-cli.exe",
+      "to": "arduino-cli.exe"
+    },
+    {
+      "from": "electron/arduino",
+      "to": "arduino"
+    }
+  ],
   "extraMetadata": {
     "main": "electron/main.js"
   },
