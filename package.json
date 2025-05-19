@@ -1,7 +1,9 @@
 {
   "name": "gridieblocks",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A Blockly-based IDE for Arduino",
+  "author": "Gridie",
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
