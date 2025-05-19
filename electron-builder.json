@@ -1,0 +1,34 @@
+{
+  "appId": "gridieblocks",
+  "productName": "GridieBlocks",
+  "directories": {
+    "buildResources": "assets",
+    "output": "dist-electron"
+  },
+  "files": ["dist/**", "electron/**"],
+  "extraResources": [
+    {
+      "from": "electron/arduino-cli.exe",
+      "to": "arduino-cli.exe"
+    },
+    {
+      "from": "electron/arduino",
+      "to": "arduino"
+    }
+  ],
+  "extraMetadata": {
+    "main": "electron/main.js"
+  },
+  "win": {
+    "target": "nsis",
+    "icon": "public/favicon.ico"
+  },
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "icon": "assets"
+  },
+  "mac": {
+    "target": "dmg",
+    "icon": "assets/icon.icns"
+  }
+}

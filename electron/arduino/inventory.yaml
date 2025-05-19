@@ -1,0 +1,8 @@
+cache:
+    builder-api:
+        v3/boards/byvid/pid/0x2341/0x0043:
+            data: '[{"name":"Arduino Uno","fqbn":"arduino:avr:uno"}]'
+            ts: 2025-05-16T10:14:30.5546888-03:00
+installation:
+    id: 709fea1b-a084-4077-8d39-eac0e3291b0b
+    secret: 931db665-6e6a-4c19-a96d-8b128a7a27d7
