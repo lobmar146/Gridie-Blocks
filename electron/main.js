@@ -31,9 +31,13 @@ const createWindow = () => {
 
 app.whenReady().then(createWindow)
 
-// Ruta a arduino-cli y a la carpeta de cores/tools locales
-const arduinoCliPath = path.join(__dirname, 'arduino-cli.exe')
-const arduinoDataDir = path.join(__dirname, 'arduino')
+// Ruta a arduino-cli
+let arduinoCliPath
+if (process.defaultApp || process.env.NODE_ENV === 'development') {
+  arduinoCliPath = path.join(__dirname, 'arduino-cli.exe')
+} else {
+  arduinoCliPath = path.join(process.resourcesPath, 'arduino-cli.exe')
+}
 
 // Helper para ejecutar arduino-cli con el entorno adecuado
 function execArduinoCli(command, callback) {
@@ -57,11 +61,26 @@ ipcMain.handle('arduino:listBoards', async () => {
   })
 })
 
+// Helper para obtener rutas de build y archivos temporales
+function getBuildPaths() {
+  let buildPath
+  if (process.defaultApp || process.env.NODE_ENV === 'development') {
+    buildPath = path.join(__dirname, 'build')
+  } else {
+    buildPath = path.join(app.getPath('userData'), 'build')
+  }
+  if (!fs.existsSync(buildPath)) {
+    fs.mkdirSync(buildPath, { recursive: true })
+  }
+  const tempFilePath = path.join(buildPath, 'build.ino')
+  const hexFilePath = path.join(buildPath, 'build.ino.hex')
+  return { buildPath, tempFilePath, hexFilePath }
+}
+
 // Subir código a la placa
 ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
   return new Promise((resolve, reject) => {
-    const tempFilePath = path.join(__dirname, 'build', 'build.ino') // Archivo temporal para el código
-    const buildPath = path.join(__dirname, 'build') // Carpeta para los archivos compilados
+    const { buildPath, tempFilePath, hexFilePath } = getBuildPaths()
     const fqbn = 'arduino:avr:uno' // Cambia esto según tu placa
 
     // Lógica principal
@@ -86,7 +105,6 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
             console.log('Compilación exitosa:', compileStdout)
 
             // Subir el archivo compilado (.hex)
-            const hexFilePath = path.join(buildPath, 'build.ino.hex')
             execArduinoCli(
               `upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`,
               (uploadError, uploadStdout, uploadStderr) => {
