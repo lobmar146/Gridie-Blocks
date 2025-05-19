@@ -21,7 +21,7 @@
   },
   "win": {
     "target": "nsis",
-    "icon": "assets/icon.ico"
+    "icon": "public/favicon.ico"
   },
   "linux": {
     "target": ["AppImage", "deb"],
