@@ -27,6 +27,32 @@ const App = ({ titulo, consigna, toolBox }) => {
   const consignaRef = useRef(null) // Referencia al div de la consigna
   const [blocklyHeight, setBlocklyHeight] = useState('82vh') // Altura dinámica de Blockly
 
+  const cargarPlacas = async () => {
+    try {
+      const salida = await window.electronAPI.listarPlacas()
+      const lineas = salida.trim().split('\n').slice(1) // Saltamos el header
+      const datos = lineas.map(linea => {
+        const partes = linea.trim().split(/\s{2,}/) // Divide por múltiples espacios
+        return {
+          puerto: partes[0],
+          nombre: partes[2] || '',
+          fqbn: partes[3] || ''
+        }
+      })
+      setPlacas(datos)
+
+      const placaGuardada = localStorage.getItem('placaSeleccionada')
+      if (placaGuardada && datos.some(p => p.puerto === placaGuardada)) {
+        setPlacaSeleccionada(placaGuardada)
+      } else {
+        setPlacaSeleccionada('')
+        localStorage.removeItem('placaSeleccionada')
+      }
+    } catch (error) {
+      console.error('Error al listar placas:', error)
+    }
+  }
+
   useEffect(() => {
     const updateBlocklyHeight = () => {
       if (consignaRef.current) {
@@ -38,29 +64,6 @@ const App = ({ titulo, consigna, toolBox }) => {
     }
 
     updateBlocklyHeight() // Calcula la altura inicialmente
-
-    const cargarPlacas = async () => {
-      try {
-        const salida = await window.electronAPI.listarPlacas()
-        const lineas = salida.trim().split('\n').slice(1) // Saltamos el header
-        const datos = lineas.map(linea => {
-          const partes = linea.trim().split(/\s{2,}/) // Divide por múltiples espacios
-          return {
-            puerto: partes[0],
-            nombre: partes[2] || '',
-            fqbn: partes[3] || ''
-          }
-        })
-        setPlacas(datos)
-
-        const placaGuardada = localStorage.getItem('placaSeleccionada')
-        if (placaGuardada) {
-          setPlacaSeleccionada(placaGuardada)
-        }
-      } catch (error) {
-        console.error('Error al listar placas:', error)
-      }
-    }
 
     cargarPlacas()
     window.addEventListener('resize', updateBlocklyHeight) // Recalcula en caso de cambio de tamaño
@@ -150,6 +153,9 @@ const App = ({ titulo, consigna, toolBox }) => {
               <Select
                 value={placaSeleccionada}
                 onValueChange={setPlacaSeleccionada}
+                onOpenChange={open => {
+                  if (open) cargarPlacas()
+                }}
               >
                 <SelectTrigger className="h-8 w-[200px] border-gray-700 bg-gray-800 text-sm">
                   <SelectValue placeholder="Seleccionar placa" />
