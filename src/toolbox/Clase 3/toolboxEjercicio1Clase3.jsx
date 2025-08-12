@@ -8,10 +8,6 @@ export const toolboxEjercicio1Clase3= {
         {
           kind: 'block',
           type: 'encerled' // Bloque 'encerled' dentro de la categoría 'Comandos'
-        },
-        {
-          kind:'block',
-          type: 'aumentar_grados_servo'
         }
       ]
     },
@@ -31,7 +27,7 @@ export const toolboxEjercicio1Clase3= {
       contents: [
         {
           kind: 'block',
-          type: 'sensor_fuego' 
+          type: 'sensor_obstaculos' 
         }
       ]
     },

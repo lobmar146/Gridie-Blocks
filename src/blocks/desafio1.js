@@ -1,4 +1,5 @@
 import * as Blockly from 'blockly'
+const SENSORES= '#806000'; // AAA con blanco (13.27:1)
 
 export const blocksDesafio1 =
   Blockly.common.createBlockDefinitionsFromJsonArray([
@@ -620,4 +621,23 @@ export const blocksDesafio1 =
       tooltip: 'Código que se ejecutará por siempre',
       helpUrl: ''
     },
+    {
+    type: 'sensor_obstaculos',
+    message0: '¿Está detectando un obstáculo el sensor conectado al pin 2? %1  ',
+    args0: [
+      {
+        type: 'field_image',
+        src: './img/clase3/sensorObstaculos.svg',
+        width: 70,
+        height: 80,
+        alt: '*',
+        flipRtl: false
+      }
+    ],
+    output: 'Boolean',
+    colour: SENSORES,
+    tooltip: 'Devuelve verdadero si el sensor IR de obstáculos detecta algo en el pin 2.',
+    helpUrl: ''
+  },
+
   ])

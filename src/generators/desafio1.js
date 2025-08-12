@@ -766,3 +766,18 @@ desafio1Generator['ejecutar_por_siempre'] = function (block) {
   }
   return ''
 }
+
+desafio1Generator['sensor_obstaculos'] = function (block) {
+  const pin = 2
+  const variableName = 'sensor_obstaculos'
+
+  console.log('Generando sensor_obstaculos...')
+
+  addVariableIfNotDefined(variableName, pin, 'Definimos el sensor de fuego')
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+
+  return [
+    `(digitalRead(${variableName}) == 1)`,
+    desafio1Generator.ORDER_EQUALITY
+  ]
+}
