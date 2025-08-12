@@ -90,6 +90,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
   }, [code, onCodeChange])
 
   useEffect(() => {
+     const toolboxIndex = Number(toolBoxDesafio) || 1
     // Acceder dinámicamente al toolbox según el prop
     const selectedToolbox = toolboxMap[toolBoxDesafio] || toolboxDesafio1 // Default toolbox in case of no match
 
@@ -116,14 +117,19 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
       }
     })
 
-    const initialBlock = workspaceRef.current.newBlock('ejecutar_una_vez')
+
+    // Crear bloque raíz según etapa:
+    // <9 => Ejecutar 1 vez | >=9 => Ejecutar por siempre
+    const rootType =
+      toolboxIndex >= 9 ? 'ejecutar_por_siempre' : 'ejecutar_una_vez'
+    const initialBlock = workspaceRef.current.newBlock(rootType)
     initialBlock.initSvg()
     initialBlock.render()
     initialBlock.moveBy(10, 10)
     initialBlock.setDeletable(false)
 
     //funcion para saber si es un bloque flotante.
-    // Función para saber si el bloque está flotando (fuera de ejecutar_una_vez o de un procedimiento)
+    // Función para saber si el bloque está flotando (ni dentro de ejecutar_una_vez / ejecutar_por_siempre ni dentro de un procedimiento)
     const isFloatingBlock = block => {
       let current = block.getParent()
       let isInsideProcedure = false
@@ -141,13 +147,16 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
       const isProcedureBlock =
         block.type === 'procedures_defnoreturn' ||
         block.type === 'procedures_callnoreturn'
-      const isEjecutarBlock = block.type === 'ejecutar_una_vez'
+      const isRootBlock =
+        block.type === 'ejecutar_una_vez' ||
+        block.type === 'ejecutar_por_siempre'
+
 
       return (
         !isInsideEjecutar &&
         !isInsideProcedure &&
         !isProcedureBlock &&
-        !isEjecutarBlock
+        !isRootBlock
       )
     }
 
@@ -157,9 +166,11 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
 
       // Determinar si todos los bloques deben deshabilitarse
       allBlocks.forEach(block => {
-        const isInsideEjecutarUnaVez =
-          block.getSurroundParent()?.type === 'ejecutar_una_vez'
-        if (toolBoxDesafio !== '1' && isInsideEjecutarUnaVez) {
+        const parentType = block.getSurroundParent()?.type
+        const isInsideEjecutarUnaVez = parentType === 'ejecutar_una_vez'
+        const isInsideEjecutarPorSiempre = parentType === 'ejecutar_por_siempre'
+    
+        if (toolBoxDesafio !== '1' && (isInsideEjecutarUnaVez || isInsideEjecutarPorSiempre ) ){
           if (
             block.type !== 'procedures_defnoreturn' &&
             block.type !== 'procedures_callnoreturn'
@@ -168,6 +179,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
           }
         }
       })
+
 
       // Deshabilitar o habilitar bloques
       allBlocks.forEach(block => {
@@ -179,22 +191,25 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
           block.setEnabled(false)
         }
       })
-
+      const msg =
+          toolboxIndex >= 9
+            ? `Recuerda: 
+          \nEn el bloque 'Ejecutar por siempre' solo puedes incluir procedimientos. \n\n ¡Planifica tu estrategia de solución con cuidado para asegurar el éxito de tu programa!.`
+            : `Recuerda: 
+          \nEn el bloque 'Ejecutar 1 vez 'solo puedes incluir procedimientos. \n\n ¡Planifica tu estrategia de solución con cuidado para asegurar el éxito de tu programa!.`
       // Mostrar la alerta solo una vez cuando se deshabilitan todos los bloques
       if (shouldDisableAll && !alertShownRef.current) {
-        toast(
-          `Recuerda: 
-          \nEn el bloque 'Ejecutar 1 vez 'solo puedes incluir procedimientos. \n\n ¡Planifica tu estrategia de solución con cuidado para asegurar el éxito de tu programa!.`,
-          {
-            icon: '❗',
-            style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              fontSize: '20px'
-            }
+        
+        toast(msg, {
+          icon: '❗',
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            fontSize: '20px'
           }
-        )
+        })
+        
         alertShownRef.current = true // Actualizar ref para que la alerta no se muestre de nuevo
       } else if (!shouldDisableAll && alertShownRef.current) {
         alertShownRef.current = false // Restablecer para permitir futuras alertas
@@ -202,7 +217,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
 
       // Generar y mostrar código
       const generatedCode = shouldDisableAll
-        ? `Recuerda: En el bloque \n'Ejecutar 1 vez 'solo puedes incluir\nprocedimientos. \n\n ¡Planifica tu estrategia de solución con cuidado para asegurar el éxito de tu programa!.`
+        ? msg
         : desafio1Generator.workspaceToCode(workspaceRef.current)
       setCode(generatedCode)
     }

@@ -70,7 +70,9 @@ desafio1Generator.workspaceToCode = function (workspace) {
   blocks.forEach(block => {
     if (block.type === 'ejecutar_una_vez') {
       this[block.type](block) // Genera el código para el bloque 'ejecutar_una_vez'
-    } else if (
+    } else if (block.type === 'ejecutar_por_siempre') {
+      this[block.type](block)}    
+    else if (
       block.type === 'procedures_defnoreturn' ||
       block.type === 'procedures_defreturn'
     ) {
@@ -751,3 +753,16 @@ desafio1Generator['custom_if_condition'] = function (block) {
   return `if (${conditionCode}) {\n${branch}}\n`;
 };
 
+desafio1Generator['ejecutar_por_siempre'] = function (block) {
+  let currentBlock = block.getInputTargetBlock('LOOP_CODE')
+
+  // Procesa todos los bloques conectados dentro de 'ejecutar_una_vez'
+  while (currentBlock) {
+    const code = this[currentBlock.type](currentBlock)
+    if (code) {
+      codeMap.loop += code // No aplicar indentación extra a `setup`
+    }
+    currentBlock = currentBlock.getNextBlock() // Mueve al siguiente bloque en la cadena
+  }
+  return ''
+}

@@ -606,5 +606,18 @@ export const blocksDesafio1 =
       tooltip:
         'Ejecuta los bloques dentro si la condición es verdadera ( workaround sin valueToCode ).',
       helpUrl: ''
-    }
+    },
+    {
+      type: 'ejecutar_por_siempre',
+      message0: 'Ejecutar por siempre %1',
+      args0: [
+        {
+          type: 'input_statement',
+          name: 'LOOP_CODE'
+        }
+      ],
+      colour: '#00796B', 
+      tooltip: 'Código que se ejecutará por siempre',
+      helpUrl: ''
+    },
   ])
