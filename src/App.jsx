@@ -226,7 +226,34 @@ Ahora vamos a hacer una barrera, ¡como la de los trenes! 🚧🚅 Para esto, ne
               />
             }
           />
+          <Route
+            path="/Ejercicio1Clase3"
+            element={
+              <Desafio
+                titulo="Ejercicio 1: Detección de obstaculos"
+                consigna={`# 🚦 Detectar obstáculo con Sensor IR y encender LED
+
+🧠 **Objetivo:**  
+Leer el estado de un **sensor de obstáculo IR** y **encender un LED** cuando detecte algo delante, usando la nueva categoría **Alternativa condicional** y los bloques de **Sensores**.
+
+🔁 **Importante:**  
+**De ahora en más, deberás programar dentro del **Ejecutar por siempre** para que el programa repita continuamente la acción y pueda sensar todo el tiempo.
+
+---
+
+1. Usar una **alternativa condicional** para:  
+   - **Si detecta un obstáculo** ➜ encender el LED.  
+
+💡 *Recordá usar la categoría **Sensores** para leer el estado del IR y **Alternativa condicional** para tomar la decisión.*
+
+
+      `}
+                toolBox="9"
+              />
+            }
+          />
         </Routes>
+        
       </div>
     </ThemeProvider>
   )

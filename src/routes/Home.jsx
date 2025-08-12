@@ -135,6 +135,29 @@ const Home = () => {
           </Link>
         </div>
       </section>
+       {/* Clase 3 */}
+      <section>
+        <h2 className="border-y p-5 text-2xl font-extrabold dark:text-white">
+          Clase 3: Alternativa Condicional
+        </h2>
+
+        <div className="grid grid-cols-3 gap-4 py-5">
+          <Link
+            to="/Ejercicio1Clase3"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/ejercicio1/led_encendido.png"
+              alt="Led subir y bajar"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">Ejercicio 1: Detección de obstaculos</p>
+          </Link>
+         
+        </div>
+      </section>
+      {/* Clase 2 */}
+      <section></section>
     </section>
   )
 }

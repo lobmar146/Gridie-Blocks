@@ -715,83 +715,39 @@ desafio1Generator['controls_if'] = function (block) {
 }
 
 desafio1Generator['custom_if_condition'] = function (block) {
-  // Este generador maneja la condición manualmente, SIN usar valueToCode
+  const CONDITION = 'CONDITION';
+  const DO = 'DO';
 
-  const conditionInputName = 'CONDITION'
-  const doStatementName = 'DO'
-
-  // 1. Obtener el bloque conectado a la entrada de condición
-  const conditionBlock = block.getInputTargetBlock(conditionInputName)
-
-  let conditionCode = 'false' // Valor por defecto si no hay bloque o falla la generación
-
+  // 1) Condición manual
+  let conditionCode = 'false';
+  const conditionBlock = block.getInputTargetBlock(CONDITION);
   if (conditionBlock) {
-    const blockType = conditionBlock.type
-    console.log(
-      `Custom IF: Block type connected to ${conditionInputName}:`,
-      blockType
-    )
-
-    // 2. Buscar manualmente la función generadora para el tipo de bloque conectado
-    const blockGeneratorFunc = this[blockType]
-    console.log(
-      `Custom IF: Generator function found for ${blockType}:`,
-      typeof blockGeneratorFunc === 'function'
-        ? blockGeneratorFunc
-        : 'Not found'
-    )
-
-    // 3. Si la función generadora existe, llamarla manualmente
-    if (typeof blockGeneratorFunc === 'function') {
-      try {
-        // Llamar la función generadora. Usamos .call(this, ...) para asegurar que 'this' dentro
-        // de la función generadora sea la instancia correcta del generador.
-        // Esperamos un array [código, orden] como lo devuelve tu generador sensor_fuego
-        const result = blockGeneratorFunc.call(this, conditionBlock)
-
-        // Verificar si el resultado es el formato esperado [código, orden]
-        if (Array.isArray(result) && result.length >= 1) {
-          conditionCode = result[0] // Obtenemos solo el código
-          // Aquí NO estamos manejando el 'orden' ni envolviendo en paréntesis.
-          // Para el bloque sensor_fuego, que probablemente ya devuelve '(codigo == 1)', esto debería estar bien.
-        } else {
-          console.warn(
-            `Custom IF: Generator for ${blockType} returned unexpected format:`,
-            result
-          )
-          conditionCode = 'false' // Usar por defecto si el generador no devuelve el formato esperado
-        }
-
-        console.log(
-          `Custom IF: Generated code for condition (${blockType}):`,
-          conditionCode
-        )
-      } catch (error) {
-        console.error(
-          `Custom IF: Error calling generator for ${blockType}:`,
-          error
-        )
-        conditionCode = 'false' // Usar por defecto si la llamada falla
-      }
+    const genFn = this[conditionBlock.type];
+    if (typeof genFn === 'function') {
+      const res = genFn.call(this, conditionBlock);
+      conditionCode = Array.isArray(res) ? (res[0] ?? 'false') : (res || 'false');
     } else {
-      console.warn(
-        `Custom IF: No generator function found for block type ${blockType}.`
-      )
-      conditionCode = 'false' // Usar por defecto si no hay generador
+      console.warn(`No generator for ${conditionBlock.type}`);
     }
-  } else {
-    console.log(`Custom IF: No block connected to ${conditionInputName} input.`)
-    conditionCode = 'false' // Usar por defecto si no hay bloque
   }
 
-  // 4. Generar el código para los bloques dentro del 'DO' (esto sí usa statementToCode normal)
-  const doCode = this.statementToCode(block, doStatementName)
+  // 2) Cuerpo manual, recorremos todos los bloques del arreglo de bloques 
+  let branch = '';
+  let current = block.getInputTargetBlock(DO);
+  while (current) {
+    const fn = this[current.type];
+    if (typeof fn === 'function') {
+      branch += fn.call(this, current) || '';
+    } else {
+      console.warn(`No generator for ${current.type}`);
+    }
+    current = current.getNextBlock();
+  }
 
-  // 5. Combinar todo en la estructura del if
-  const code = `if (${conditionCode}) {\n${this.addLoopTrap(doCode)}}\n` // Puedes añadir this.addLoopTrap si lo usas
+  // 3) (opcional) trampa de bucle
+  const trapped = this.addLoopTrap ? this.addLoopTrap(branch, block.id) : branch;
+  if (typeof trapped === 'string') branch = trapped;
 
-  return code
-}
+  return `if (${conditionCode}) {\n${branch}}\n`;
+};
 
-// Asegúrate de que las propiedades de orden estén definidas en tu generador
-// desafio1Generator.ORDER_NONE = 99; // o el valor que tengas definido

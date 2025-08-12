@@ -17,7 +17,7 @@ import toast from 'react-hot-toast'
 import { toolboxDesafio3Clase2 } from '@/toolbox/toolboxDesafio3Clase2'
 import { toolboxDesafio5Clase2 } from '@/toolbox/toolboxDesafio5Clase2'
 import { toolboxDesafio4Clase2 } from '../toolbox/toolboxDesafio4Clase2'
-
+import {toolboxEjercicio1Clase3} from '../toolbox/Clase 3/toolboxEjercicio1Clase3'
 // Sobrescribe los mensajes de los bloques de procedimientos
 Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'] = 'Definir'
 Blockly.Msg['PROCEDURES_DEFNORETURN_DO'] = 'hacer'
@@ -52,7 +52,8 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
     5: toolboxDesafio2Clase2,
     6: toolboxDesafio3Clase2,
     7: toolboxDesafio4Clase2,
-    8: toolboxDesafio5Clase2
+    8: toolboxDesafio5Clase2,
+    9: toolboxEjercicio1Clase3
     // Agrega aquí otros toolboxes si los tienes
   }
   const darkTheme = Blockly.Theme.defineTheme('darkTheme', {
