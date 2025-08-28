@@ -6,18 +6,19 @@ import 'blockly/msg/es'
 import { blocksArduino } from '../blocks/blocksArduino'
 import { forBlock } from '../generators/customGeneratos'
 import { generatorArduino } from '../generators/generatorArduino'
-import { toolboxJS } from '../toolbox/toolbox'
-import { toolboxDesafio1 } from '../toolbox/toolboxDesafio1'
-import { toolboxDesafio1Clase2 } from '../toolbox/toolboxDesafio1Clase2'
-import { toolboxDesafio2 } from '../toolbox/toolboxDesafio2'
-import { toolboxDesafio2Clase2 } from '../toolbox/toolboxDesafio2Clase2'
-import { toolboxDesafio3 } from '../toolbox/toolboxDesafio3'
+import { toolboxJS } from '../toolbox/Clase 1/toolbox'
+import { toolboxDesafio1 } from '../toolbox/Clase 1/toolboxDesafio1'
+import { toolboxDesafio2 } from '../toolbox/Clase 1/toolboxDesafio2'
+import { toolboxDesafio3 } from '../toolbox/Clase 1/toolboxDesafio3'
+import { toolboxDesafio1Clase2 } from '../toolbox/Clase 2/toolboxDesafio1Clase2'
+import { toolboxDesafio2Clase2 } from '../toolbox/Clase 2/toolboxDesafio2Clase2'
 import '../App.css'
 import toast from 'react-hot-toast'
-import { toolboxDesafio3Clase2 } from '@/toolbox/toolboxDesafio3Clase2'
-import { toolboxDesafio5Clase2 } from '@/toolbox/toolboxDesafio5Clase2'
-import { toolboxDesafio4Clase2 } from '../toolbox/toolboxDesafio4Clase2'
-import {toolboxEjercicio1Clase3} from '../toolbox/Clase 3/toolboxEjercicio1Clase3'
+import { toolboxDesafio3Clase2 } from '@/toolbox/Clase 2/toolboxDesafio3Clase2'
+import { toolboxDesafio5Clase2 } from '@/toolbox/Clase 2/toolboxDesafio5Clase2'
+import { toolboxDesafio4Clase2 } from '../toolbox/Clase 2/toolboxDesafio4Clase2'
+import { toolboxEjercicio1Clase3 } from '../toolbox/Clase 3/toolboxEjercicio1Clase3'
+
 // Sobrescribe los mensajes de los bloques de procedimientos
 Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'] = 'Definir'
 Blockly.Msg['PROCEDURES_DEFNORETURN_DO'] = 'hacer'
@@ -90,7 +91,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
   }, [code, onCodeChange])
 
   useEffect(() => {
-     const toolboxIndex = Number(toolBoxDesafio) || 1
+    const toolboxIndex = Number(toolBoxDesafio) || 1
     // Acceder dinámicamente al toolbox según el prop
     const selectedToolbox = toolboxMap[toolBoxDesafio] || toolboxDesafio1 // Default toolbox in case of no match
 
@@ -116,7 +117,6 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
         snap: true // Los bloques se alinearán a la cuadrícula cuando se suelten
       }
     })
-
 
     // Crear bloque raíz según etapa:
     // <9 => Ejecutar 1 vez | >=9 => Ejecutar por siempre
@@ -151,7 +151,6 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
         block.type === 'ejecutar_una_vez' ||
         block.type === 'ejecutar_por_siempre'
 
-
       return (
         !isInsideEjecutar &&
         !isInsideProcedure &&
@@ -169,8 +168,11 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
         const parentType = block.getSurroundParent()?.type
         const isInsideEjecutarUnaVez = parentType === 'ejecutar_una_vez'
         const isInsideEjecutarPorSiempre = parentType === 'ejecutar_por_siempre'
-    
-        if (toolBoxDesafio !== '1' && (isInsideEjecutarUnaVez || isInsideEjecutarPorSiempre ) ){
+
+        if (
+          toolBoxDesafio !== '1' &&
+          (isInsideEjecutarUnaVez || isInsideEjecutarPorSiempre)
+        ) {
           if (
             block.type !== 'procedures_defnoreturn' &&
             block.type !== 'procedures_callnoreturn'
@@ -179,7 +181,6 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
           }
         }
       })
-
 
       // Deshabilitar o habilitar bloques
       allBlocks.forEach(block => {
@@ -192,14 +193,13 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
         }
       })
       const msg =
-          toolboxIndex >= 9
-            ? `Recuerda: 
+        toolboxIndex >= 9
+          ? `Recuerda: 
           \nEn el bloque 'Ejecutar por siempre' solo puedes incluir procedimientos. \n\n ¡Planifica tu estrategia de solución con cuidado para asegurar el éxito de tu programa!.`
-            : `Recuerda: 
+          : `Recuerda: 
           \nEn el bloque 'Ejecutar 1 vez 'solo puedes incluir procedimientos. \n\n ¡Planifica tu estrategia de solución con cuidado para asegurar el éxito de tu programa!.`
       // Mostrar la alerta solo una vez cuando se deshabilitan todos los bloques
       if (shouldDisableAll && !alertShownRef.current) {
-        
         toast(msg, {
           icon: '❗',
           style: {
@@ -209,7 +209,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
             fontSize: '20px'
           }
         })
-        
+
         alertShownRef.current = true // Actualizar ref para que la alerta no se muestre de nuevo
       } else if (!shouldDisableAll && alertShownRef.current) {
         alertShownRef.current = false // Restablecer para permitir futuras alertas

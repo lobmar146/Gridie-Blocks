@@ -1,4 +1,4 @@
-export const toolboxEjercicio1Clase3= {
+export const toolboxEjercicio1Clase3 = {
   kind: 'categoryToolbox',
   contents: [
     {
@@ -17,11 +17,11 @@ export const toolboxEjercicio1Clase3= {
       contents: [
         {
           kind: 'block',
-          type: 'custom_if_condition' 
+          type: 'custom_if_condition'
         },
-                {
+        {
           kind: 'block',
-          type: 'custom_if_else_condition' 
+          type: 'custom_if_else_condition'
         }
       ]
     },
@@ -31,12 +31,13 @@ export const toolboxEjercicio1Clase3= {
       contents: [
         {
           kind: 'block',
-          type: 'sensor_obstaculos' 
+          type: 'sensor_obstaculos'
         },
         {
           kind: 'block',
-          type: 'sensor_ultrasonico' 
-        }
+          type: 'sensor_ultrasonico_mayor15'
+        },
+        { kind: 'block', type: 'sensor_ultrasonico_rango' }
       ]
     },
     {

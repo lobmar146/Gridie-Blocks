@@ -1,8 +1,9 @@
 import * as Blockly from 'blockly'
-const SENSORES= '#806000'; // AAA con blanco (13.27:1)
 
-export const blocksArduino =
-  Blockly.common.createBlockDefinitionsFromJsonArray([
+const SENSORES = '#806000' // AAA con blanco (13.27:1)
+
+export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
+  [
     {
       type: 'encerled',
       message0: 'Encender Led Conectado en Pin 13 %1',
@@ -609,35 +610,35 @@ export const blocksArduino =
       helpUrl: ''
     },
     {
-    type: 'custom_if_else_condition',
-    message0: 'Si %1',
-    args0: [
-      {
-        type: 'input_value',
-        name: 'CONDITION',
-        check: 'Boolean'
-      }
-    ],
-    message1: 'entonces %1',
-    args1: [
-      {
-        type: 'input_statement',
-        name: 'DO'
-      }
-    ],
-    message2: 'sino %1',
-    args2: [
-      {
-        type: 'input_statement',
-        name: 'ELSE'
-      }
-    ],
-    previousStatement: null,
-    nextStatement: null,
-    colour: '#264653',
-    tooltip:
-      'Si la condición es verdadera ejecuta "entonces", de lo contrario ejecuta "sino". (compatible con el workaround).',
-    helpUrl: ''
+      type: 'custom_if_else_condition',
+      message0: 'Si %1',
+      args0: [
+        {
+          type: 'input_value',
+          name: 'CONDITION',
+          check: 'Boolean'
+        }
+      ],
+      message1: 'entonces %1',
+      args1: [
+        {
+          type: 'input_statement',
+          name: 'DO'
+        }
+      ],
+      message2: 'sino %1',
+      args2: [
+        {
+          type: 'input_statement',
+          name: 'ELSE'
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#264653',
+      tooltip:
+        'Si la condición es verdadera ejecuta "entonces", de lo contrario ejecuta "sino". (compatible con el workaround).',
+      helpUrl: ''
     },
     {
       type: 'ejecutar_por_siempre',
@@ -648,27 +649,29 @@ export const blocksArduino =
           name: 'LOOP_CODE'
         }
       ],
-      colour: '#00796B', 
+      colour: '#00796B',
       tooltip: 'Código que se ejecutará por siempre',
       helpUrl: ''
     },
     {
-    type: 'sensor_obstaculos',
-    message0: '¿Está detectando un obstáculo el sensor conectado al pin 2? %1  ',
-    args0: [
-      {
-        type: 'field_image',
-        src: './img/clase3/sensorObstaculos.svg',
-        width: 70,
-        height: 80,
-        alt: '*',
-        flipRtl: false
-      }
-    ],
-    output: 'Boolean',
-    colour: SENSORES,
-    tooltip: 'Devuelve verdadero si el sensor IR de obstáculos detecta algo en el pin 2.',
-    helpUrl: ''
+      type: 'sensor_obstaculos',
+      message0:
+        '¿Está detectando un obstáculo el sensor conectado al pin 2? %1  ',
+      args0: [
+        {
+          type: 'field_image',
+          src: './img/clase3/sensorObstaculos.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean',
+      colour: SENSORES,
+      tooltip:
+        'Devuelve verdadero si el sensor IR de obstáculos detecta algo en el pin 2.',
+      helpUrl: ''
     },
     {
       type: 'sensor_ultrasonico_mayor15',
@@ -689,9 +692,23 @@ export const blocksArduino =
       helpUrl: ''
     },
     {
-      type: 'sensor_ultrasonico_entre10_15',
-      message0: '¿Detecta un obstaculo a una distancia entre 10 y 15 cm? %1',
+      type: 'sensor_ultrasonico_rango',
+      message0: '¿Detecta un obstáculo entre %1 cm y %2 cm? %3',
       args0: [
+        {
+          type: 'field_number',
+          name: 'MIN',
+          value: 5, // valor por defecto
+          min: 1, // límite inferior
+          max: 400 // alcance típico de HC-SR04
+        },
+        {
+          type: 'field_number',
+          name: 'MAX',
+          value: 10, // valor por defecto
+          min: 1,
+          max: 400
+        },
         {
           type: 'field_image',
           src: './img/clase3/sensorUltrasonico.svg',
@@ -701,30 +718,11 @@ export const blocksArduino =
           flipRtl: false
         }
       ],
-      output: 'Boolean',
+      output: 'Boolean', // devuelve true/false
       colour: SENSORES,
-      tooltip: 'Devuelve en CM la distancia detectada.',
-      helpUrl: ''
-    },
-    ,
-    {
-      type: 'sensor_ultrasonico_entre5_10',
-      message0: '¿Detecta un obstaculo a una distancia entre 5 y 10 cm? %1',
-      args0: [
-        {
-          type: 'field_image',
-          src: './img/clase3/sensorUltrasonico.svg',
-          width: 70,
-          height: 80,
-          alt: '*',
-          flipRtl: false
-        }
-      ],
-      output: 'Boolean',
-      colour: SENSORES,
-      tooltip: 'Devuelve en CM la distancia detectada.',
+      tooltip:
+        'Devuelve verdadero si el sensor ultrasónico detecta un obstáculo dentro del rango especificado.',
       helpUrl: ''
     }
-  
-
-  ])
+  ]
+)
