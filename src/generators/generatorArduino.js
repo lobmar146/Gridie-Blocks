@@ -71,8 +71,8 @@ generatorArduino.workspaceToCode = function (workspace) {
     if (block.type === 'ejecutar_una_vez') {
       this[block.type](block) // Genera el código para el bloque 'ejecutar_una_vez'
     } else if (block.type === 'ejecutar_por_siempre') {
-      this[block.type](block)}    
-    else if (
+      this[block.type](block)
+    } else if (
       block.type === 'procedures_defnoreturn' ||
       block.type === 'procedures_defreturn'
     ) {
@@ -186,6 +186,15 @@ function addLibraryIfNotDefined(libraryName, comment) {
   if (!definedLibraries[libraryName] && libraryName == 'Servo') {
     codeMap.libraries += `${comment}\n#include <Servo.h>\n\n`
     definedLibraries[libraryName] = true // Marcar Libreria como agregada
+  }
+}
+
+// Función para agregar helpers (funciones C++) una sola vez en la sección "libraries"
+function addHelperFunctionIfNotDefined(key, code, comment = '') {
+  if (!definedLibraries[key]) {
+    if (comment) codeMap.libraries += `// ${comment}\n`
+    codeMap.libraries += `${code}\n\n`
+    definedLibraries[key] = true
   }
 }
 
@@ -447,11 +456,8 @@ generatorArduino['controls_count_with_intensity'] = function (block) {
       generatorArduino.ORDER_ATOMIC
     ) || '0'
   var to =
-    generatorArduino.valueToCode(
-      block,
-      'TO',
-      generatorArduino.ORDER_ATOMIC
-    ) || '0'
+    generatorArduino.valueToCode(block, 'TO', generatorArduino.ORDER_ATOMIC) ||
+    '0'
 
   // Asegurar que la variable intensidad se declara una sola vez
   addVariableIfNotDefined(
@@ -717,43 +723,42 @@ generatorArduino['controls_if'] = function (block) {
 }
 
 generatorArduino['custom_if_condition'] = function (block) {
-  const CONDITION = 'CONDITION';
-  const DO = 'DO';
+  const CONDITION = 'CONDITION'
+  const DO = 'DO'
 
   // 1) Condición manual
-  let conditionCode = 'false';
-  const conditionBlock = block.getInputTargetBlock(CONDITION);
+  let conditionCode = 'false'
+  const conditionBlock = block.getInputTargetBlock(CONDITION)
   if (conditionBlock) {
-    const genFn = this[conditionBlock.type];
+    const genFn = this[conditionBlock.type]
     if (typeof genFn === 'function') {
-      const res = genFn.call(this, conditionBlock);
-      conditionCode = Array.isArray(res) ? (res[0] ?? 'false') : (res || 'false');
+      const res = genFn.call(this, conditionBlock)
+      conditionCode = Array.isArray(res) ? (res[0] ?? 'false') : res || 'false'
     } else {
-      console.warn(`No generator for ${conditionBlock.type}`);
+      console.warn(`No generator for ${conditionBlock.type}`)
     }
   }
 
   // 2) Cuerpo manual
-  let branch = '';
-  let current = block.getInputTargetBlock(DO);
+  let branch = ''
+  let current = block.getInputTargetBlock(DO)
   while (current) {
-    const fn = this[current.type];
+    const fn = this[current.type]
     if (typeof fn === 'function') {
-      branch += fn.call(this, current) || '';
+      branch += fn.call(this, current) || ''
     } else {
-      console.warn(`No generator for ${current.type}`);
+      console.warn(`No generator for ${current.type}`)
     }
-    current = current.getNextBlock();
+    current = current.getNextBlock()
   }
 
   // 3) Trampa de bucle y **indentación interna**
-  const trapped = this.addLoopTrap ? this.addLoopTrap(branch, block.id) : branch;
-  branch = (typeof trapped === 'string') ? trapped : branch;
-  branch = indentCode(branch, 2); // 👈️ indentamos el contenido del if
+  const trapped = this.addLoopTrap ? this.addLoopTrap(branch, block.id) : branch
+  branch = typeof trapped === 'string' ? trapped : branch
+  branch = indentCode(branch, 2) // 👈️ indentamos el contenido del if
 
-  return `if (${conditionCode}) {\n${branch}}\n`;
-};
-
+  return `if (${conditionCode}) {\n${branch}}\n`
+}
 
 generatorArduino['ejecutar_por_siempre'] = function (block) {
   let currentBlock = block.getInputTargetBlock('LOOP_CODE')
@@ -769,49 +774,48 @@ generatorArduino['ejecutar_por_siempre'] = function (block) {
   return ''
 }
 generatorArduino['custom_if_else_condition'] = function (block) {
-  const CONDITION = 'CONDITION';
-  const DO = 'DO';
-  const ELSE = 'ELSE';
+  const CONDITION = 'CONDITION'
+  const DO = 'DO'
+  const ELSE = 'ELSE'
 
   // 1) Condición
-  let conditionCode = 'false';
-  const conditionBlock = block.getInputTargetBlock(CONDITION);
+  let conditionCode = 'false'
+  const conditionBlock = block.getInputTargetBlock(CONDITION)
   if (conditionBlock) {
-    const genFn = this[conditionBlock.type];
+    const genFn = this[conditionBlock.type]
     if (typeof genFn === 'function') {
-      const res = genFn.call(this, conditionBlock);
-      conditionCode = Array.isArray(res) ? (res[0] ?? 'false') : (res || 'false');
+      const res = genFn.call(this, conditionBlock)
+      conditionCode = Array.isArray(res) ? (res[0] ?? 'false') : res || 'false'
     } else {
-      console.warn(`No generator for ${conditionBlock.type}`);
+      console.warn(`No generator for ${conditionBlock.type}`)
     }
   }
 
   // Helper para recolectar, atrapar e **indentar** una rama
-  const collectBranchCode = (inputName) => {
-    let out = '';
-    let current = block.getInputTargetBlock(inputName);
+  const collectBranchCode = inputName => {
+    let out = ''
+    let current = block.getInputTargetBlock(inputName)
     while (current) {
-      const fn = this[current.type];
+      const fn = this[current.type]
       if (typeof fn === 'function') {
-        out += fn.call(this, current) || '';
+        out += fn.call(this, current) || ''
       } else {
-        console.warn(`No generator for ${current.type}`);
+        console.warn(`No generator for ${current.type}`)
       }
-      current = current.getNextBlock();
+      current = current.getNextBlock()
     }
-    const trapped = this.addLoopTrap ? this.addLoopTrap(out, block.id) : out;
-    out = (typeof trapped === 'string') ? trapped : out;
-    return indentCode(out, 2); // 👈️ indentamos el contenido de la rama
-  };
+    const trapped = this.addLoopTrap ? this.addLoopTrap(out, block.id) : out
+    out = typeof trapped === 'string' ? trapped : out
+    return indentCode(out, 2) // 👈️ indentamos el contenido de la rama
+  }
 
   // 2) Ramas
-  const branchIf = collectBranchCode(DO);
-  const branchElse = collectBranchCode(ELSE);
+  const branchIf = collectBranchCode(DO)
+  const branchElse = collectBranchCode(ELSE)
 
   // 3) Emitir if...else
-  return `if (${conditionCode}) {\n${branchIf}} \nelse {\n${branchElse}}\n`;
-};
-
+  return `if (${conditionCode}) {\n${branchIf}} \nelse {\n${branchElse}}\n`
+}
 
 generatorArduino['sensor_obstaculos'] = function (block) {
   const pin = 2
@@ -826,4 +830,45 @@ generatorArduino['sensor_obstaculos'] = function (block) {
     `(digitalRead(${variableName}) == 1)`,
     generatorArduino.ORDER_EQUALITY
   ]
+}
+generatorArduino['sensor_ultrasonico_rango'] = function (block) {
+  const min = Number(block.getFieldValue('MIN')) || 0
+  const max = Number(block.getFieldValue('MAX')) || 400
+
+  // Pines fijos
+  const trigPin = 7
+  const echoPin = 6
+
+  // Configuración de pines
+  if (!configuredPins[`trig_${trigPin}`]) {
+    codeMap.pinMode += `pinMode(${trigPin}, OUTPUT);\n`
+    configuredPins[`trig_${trigPin}`] = true
+  }
+  if (!configuredPins[`echo_${echoPin}`]) {
+    codeMap.pinMode += `pinMode(${echoPin}, INPUT);\n`
+    configuredPins[`echo_${echoPin}`] = true
+  }
+
+  // Inyectar helper en "libraries"
+  addHelperFunctionIfNotDefined(
+    'fn_lecturaUltrasonica',
+    `
+long lecturaUltrasonica(int trigPin, int echoPin) {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  long duration = pulseIn(echoPin, HIGH, 30000UL); // timeout 30ms
+  if (duration == 0) return 9999;
+  long distance = duration * 0.034 / 2;
+  return distance;
+}
+`,
+    'Función auxiliar para leer el sensor ultrasónico (cm)'
+  )
+
+  // Devuelve la condición booleana
+  const code = `(lecturaUltrasonica(${trigPin}, ${echoPin}) >= ${min} && lecturaUltrasonica(${trigPin}, ${echoPin}) <= ${max})`
+  return [code, generatorArduino.ORDER_LOGICAL_AND]
 }
