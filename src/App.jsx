@@ -231,18 +231,50 @@ Ahora vamos a hacer una barrera, ¡como la de los trenes! 🚧🚅 Para esto, ne
             element={
               <Desafio
                 titulo="Ejercicio 1: Detección de obstaculos"
-                consigna={`### 📡 Detectar obstáculo con Sensor IR y encender LED
-Comenzamos a trabajar con Sensores 😎. El primero con el cual vamos a ver el el **sensor de obstáctulos IR**. 
+                consigna={`### 📡 Detectar obstáculo con Sensor IR y encender LED  
 
-Necesitamos que **nos ayudes a detectar un obstaculo**, y cuando lo detectemos, **encendamos el LED conectado en el pin 13.**
-Para esto, necesitaremos unas nuevas herramientas para poder **preguntarle** al sensor cuando detecta obstaculos. Te animas?
+Seguimos avanzando con **sensores** 😎. Esta vez vamos a usar el **sensor de obstáculos IR**.  
+
+La idea es simple: cuando el sensor detecte un obstáculo delante, vamos a **encender el LED conectado en el pin 13**.  
+
+Para lograrlo, necesitaremos usar un nuevo tipo de bloque que nos permita **hacer preguntas** al sensor y tomar decisiones según su respuesta.  
 
 🧠 **Objetivo:**  
-Leer el estado de un **sensor de obstáculo IR** y **encender un LED** cuando detecte algo delante, usando la nueva categoría **Alternativa condicional** y los bloques de **Sensores**.
+Leer el estado de un **sensor de obstáculos IR** y **encender un LED** cuando se detecte algo delante, usando la categoría **Alternativa condicional** y los bloques de **Sensores**.  
 
 🔁 **Importante:**  
-De ahora en más, deberás programar dentro del **Ejecutar por siempre** para que el programa repita continuamente la acción y pueda sensar todo el tiempo.`}
+A partir de ahora, siempre que trabajemos con sensores vamos a programar dentro del bloque **Ejecutar por siempre**.  
+De esa manera, el programa repetirá continuamente la acción y podrá “estar atento” todo el tiempo a lo que pasa alrededor.  
+`}
                 toolBox="9"
+              />
+            }
+          />
+
+          <Route
+            path="/Problema1Clase3"
+            element={
+              <Desafio
+                titulo="Problema 1: Dejando de detectar el obstaculo..."
+                consigna={`### 📡 Dejando de detectar el obstaculo...  
+
+Ya sabemos cómo **encender un LED cuando el sensor IR detecta un obstáculo**.  
+Ahora vamos a dar un paso más: cuando el sensor **deje de detectar el obstáculo**, el LED deberá **apagarse automáticamente**.  
+
+De esta manera, el LED funcionará como una **luz de aviso**:  
+- Si hay algo delante 👉 se enciende.  
+- Si ya no hay nada 👉 se apaga.  
+
+🧠 **Objetivo:**  
+Leer continuamente el estado del **sensor de obstáculos IR** y:  
+- **Encender el LED** en el pin 13 si detecta algo.  
+- **Apagar el LED** cuando ya no lo detecte.  
+
+🔁 **Importante:**  
+Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesitamos que el Arduino **chequee todo el tiempo** si aparece o desaparece un obstáculo.  
+
+`}
+                toolBox="10"
               />
             }
           />
