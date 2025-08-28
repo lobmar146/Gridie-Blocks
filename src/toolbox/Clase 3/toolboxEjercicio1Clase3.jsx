@@ -18,6 +18,10 @@ export const toolboxEjercicio1Clase3= {
         {
           kind: 'block',
           type: 'custom_if_condition' 
+        },
+                {
+          kind: 'block',
+          type: 'custom_if_else_condition' 
         }
       ]
     },
@@ -28,6 +32,10 @@ export const toolboxEjercicio1Clase3= {
         {
           kind: 'block',
           type: 'sensor_obstaculos' 
+        },
+        {
+          kind: 'block',
+          type: 'sensor_ultrasonico' 
         }
       ]
     },

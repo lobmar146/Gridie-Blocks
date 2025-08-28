@@ -3,9 +3,9 @@ import * as Blockly from 'blockly/core'
 import 'blockly/blocks'
 import { javascriptGenerator } from 'blockly/javascript'
 import 'blockly/msg/es'
-import { blocksDesafio1 } from '../blocks/desafio1'
+import { blocksArduino } from '../blocks/blocksArduino'
 import { forBlock } from '../generators/customGeneratos'
-import { desafio1Generator } from '../generators/desafio1'
+import { generatorArduino } from '../generators/generatorArduino'
 import { toolboxJS } from '../toolbox/toolbox'
 import { toolboxDesafio1 } from '../toolbox/toolboxDesafio1'
 import { toolboxDesafio1Clase2 } from '../toolbox/toolboxDesafio1Clase2'
@@ -34,7 +34,7 @@ Blockly.Blocks['procedures_callreturn'] = null
 Blockly.Blocks['procedures_ifreturn'] = null
 
 // Define los bloques una vez fuera del componente
-Blockly.common.defineBlocks(blocksDesafio1)
+Blockly.common.defineBlocks(blocksArduino)
 
 const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
   const blocklyDiv = useRef(null)
@@ -218,7 +218,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
       // Generar y mostrar código
       const generatedCode = shouldDisableAll
         ? msg
-        : desafio1Generator.workspaceToCode(workspaceRef.current)
+        : generatorArduino.workspaceToCode(workspaceRef.current)
       setCode(generatedCode)
     }
 
