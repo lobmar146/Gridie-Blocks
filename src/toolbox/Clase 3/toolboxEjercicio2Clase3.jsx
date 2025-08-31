@@ -7,14 +7,6 @@ export const toolboxEjercicio2Clase3 = {
       contents: [
         {
           kind: 'block',
-          type: 'encerled' // Bloque 'encerled' dentro de la categoría 'Comandos'
-        },
-        {
-          kind: 'block',
-          type: 'apagarled' // Bloque 'encerled' dentro de la categoría 'Comandos'
-        },
-        {
-          kind: 'block',
           type: 'parlante_intervalo'
         }
       ]

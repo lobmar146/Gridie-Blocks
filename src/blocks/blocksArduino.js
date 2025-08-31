@@ -766,7 +766,7 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'parlante_intervalo',
-      message0: 'Parlante cada %1 milisegundos con tono %2 Hz %3',
+      message0: 'Sonar parlante cada %1 milisegundos con tono %2 Hz %3',
       args0: [
         {
           type: 'field_number',
