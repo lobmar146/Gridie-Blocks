@@ -278,6 +278,60 @@ Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesi
               />
             }
           />
+          <Route
+            path="/Ejercicio2Clase3"
+            element={
+              <Desafio
+                titulo="Ejercicio 2: Sensando a distancias"
+                consigna={`### 🔊 Sensando a distancias...  
+
+Ya sabemos cómo **encender un LED cuando el sensor IR detecta un obstáculo**.  
+Ahora vamos a dar un paso más: cuando el sensor **deje de detectar el obstáculo**, el LED deberá **apagarse automáticamente**.  
+
+De esta manera, el LED funcionará como una **luz de aviso**:  
+- Si hay algo delante 👉 se enciende.  
+- Si ya no hay nada 👉 se apaga.  
+
+🧠 **Objetivo:**  
+Leer continuamente el estado del **sensor de obstáculos IR** y:  
+- **Encender el LED** en el pin 13 si detecta algo.  
+- **Apagar el LED** cuando ya no lo detecte.  
+
+🔁 **Importante:**  
+Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesitamos que el Arduino **chequee todo el tiempo** si aparece o desaparece un obstáculo.  
+
+`}
+                toolBox="11"
+              />
+            }
+          />
+          <Route
+            path="/Problema2Clase3"
+            element={
+              <Desafio
+                titulo="Problema 2: Sensor de estacionamiento."
+                consigna={`### 🚗 🔊 Problema 2: Sensor de estacionamiento.  
+
+Ya sabemos cómo **encender un LED cuando el sensor IR detecta un obstáculo**.  
+Ahora vamos a dar un paso más: cuando el sensor **deje de detectar el obstáculo**, el LED deberá **apagarse automáticamente**.  
+
+De esta manera, el LED funcionará como una **luz de aviso**:  
+- Si hay algo delante 👉 se enciende.  
+- Si ya no hay nada 👉 se apaga.  
+
+🧠 **Objetivo:**  
+Leer continuamente el estado del **sensor de obstáculos IR** y:  
+- **Encender el LED** en el pin 13 si detecta algo.  
+- **Apagar el LED** cuando ya no lo detecte.  
+
+🔁 **Importante:**  
+Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesitamos que el Arduino **chequee todo el tiempo** si aparece o desaparece un obstáculo.  
+
+`}
+                toolBox="12"
+              />
+            }
+          />
         </Routes>
       </div>
     </ThemeProvider>

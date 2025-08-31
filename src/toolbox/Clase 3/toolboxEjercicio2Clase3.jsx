@@ -1,4 +1,4 @@
-export const toolboxEjercicio1Clase3 = {
+export const toolboxEjercicio2Clase3 = {
   kind: 'categoryToolbox',
   contents: [
     {
@@ -8,6 +8,14 @@ export const toolboxEjercicio1Clase3 = {
         {
           kind: 'block',
           type: 'encerled' // Bloque 'encerled' dentro de la categoría 'Comandos'
+        },
+        {
+          kind: 'block',
+          type: 'apagarled' // Bloque 'encerled' dentro de la categoría 'Comandos'
+        },
+        {
+          kind: 'block',
+          type: 'parlante_intervalo'
         }
       ]
     },
@@ -18,6 +26,10 @@ export const toolboxEjercicio1Clase3 = {
         {
           kind: 'block',
           type: 'custom_if_condition'
+        },
+        {
+          kind: 'block',
+          type: 'custom_if_else_condition'
         }
       ]
     },
@@ -27,7 +39,7 @@ export const toolboxEjercicio1Clase3 = {
       contents: [
         {
           kind: 'block',
-          type: 'sensor_obstaculos'
+          type: 'sensor_ultrasonico_rango'
         }
       ]
     },

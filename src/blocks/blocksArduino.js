@@ -723,6 +723,79 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
       tooltip:
         'Devuelve verdadero si el sensor ultrasónico detecta un obstáculo dentro del rango especificado.',
       helpUrl: ''
+    },
+    {
+      type: 'parlante',
+      message0: 'Tocar la nota %1 durante %2 segundos %3',
+      args0: [
+        {
+          type: 'field_dropdown',
+          name: 'NOTA',
+          options: [
+            ['do', 'DO'],
+            ['re', 'RE'],
+            ['mi', 'MI'],
+            ['fa', 'FA'],
+            ['sol', 'SOL'],
+            ['la', 'LA'],
+            ['si', 'SI']
+          ]
+        },
+        {
+          type: 'field_number',
+          name: 'SEGUNDOS',
+          value: 1,
+          min: 0,
+          precision: 0.1
+        },
+        {
+          type: 'field_image',
+          src: './img/clase3/parlante.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#0D47A1',
+      tooltip:
+        'Reproduce una nota en el buzzer del pin 2 sin bloquear el loop.',
+      helpUrl: ''
+    },
+    {
+      type: 'parlante_intervalo',
+      message0: 'Parlante cada %1 milisegundos con tono %2 Hz %3',
+      args0: [
+        {
+          type: 'field_number',
+          name: 'INTERVALO',
+          value: 500,
+          min: 50,
+          precision: 10
+        },
+        {
+          type: 'field_number',
+          name: 'FREQ',
+          value: 440,
+          min: 50,
+          max: 5000
+        },
+        {
+          type: 'field_image',
+          src: './img/clase3/parlante.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#0D47A1',
+      tooltip: 'Hace beeps periódicos según el intervalo (ms).',
+      helpUrl: ''
     }
   ]
 )

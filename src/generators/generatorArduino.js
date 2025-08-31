@@ -872,3 +872,123 @@ long lecturaUltrasonica(int trigPin, int echoPin) {
   const code = `(lecturaUltrasonica(${trigPin}, ${echoPin}) >= ${min} && lecturaUltrasonica(${trigPin}, ${echoPin}) <= ${max})`
   return [code, generatorArduino.ORDER_LOGICAL_AND]
 }
+
+// ====== PARLANTE (BUZZER) ======
+
+// Frecuencias de la octava 4
+const _PARLANTE_NOTAS_OCT4 = {
+  DO: 262, // C4
+  RE: 294, // D4
+  MI: 330, // E4
+  FA: 349, // F4
+  SOL: 392, // G4
+  LA: 440, // A4
+  SI: 494 // B4
+}
+
+generatorArduino['parlante'] = function (block) {
+  const pin = 2
+
+  // 1) Asegurar pinMode sin duplicar (usa tu helper)
+  addPinModeIfNotDefined(pin, 'parlante', 'Configuramos el pin del parlante')
+
+  // 2) Inyectar helpers C++ una sola vez en "libraries"
+  addHelperFunctionIfNotDefined(
+    'fn_parlanteHelpers',
+    `
+// Parlante (pin 2) ---
+unsigned long _parlanteFinMillis = 0;
+bool _parlanteActivo = false;
+
+void sonarParlanteMillis(uint16_t frecuencia, unsigned long duracion_ms) {
+  tone(2, frecuencia);
+  _parlanteFinMillis = millis() + duracion_ms;
+  _parlanteActivo = true;
+}
+
+void actualizarParlante() {
+  if (_parlanteActivo && (long)(millis() - _parlanteFinMillis) >= 0) {
+    noTone(2);
+    _parlanteActivo = false;
+  }
+}
+
+void silenciarParlante() {
+  noTone(2);
+  _parlanteActivo = false;
+}
+`,
+    'Funciones auxiliares para manejar el parlante sin bloquear'
+  )
+
+  // 3) Hook en el loop (una sola vez)
+  if (!definedLibraries['_parlante_loop_hook']) {
+    codeMap.loop += `  actualizarParlante();\n`
+    definedLibraries['_parlante_loop_hook'] = true
+  }
+
+  // 4) Obtener nota y calcular frecuencia
+  const nota = (block.getFieldValue('NOTA') || 'LA').toUpperCase()
+  const frecuencia = _PARLANTE_NOTAS_OCT4[nota] || 440
+
+  // 5) Segundos -> milisegundos
+  const segundos = Number(block.getFieldValue('SEGUNDOS') || 1)
+  const durMs = Math.max(0, Math.round(segundos * 1000))
+
+  // 6) Emitir llamada no bloqueante
+  return `// Parlante: ${nota} por ${segundos}s\nsonarParlanteMillis(${frecuencia}, ${durMs});\n`
+}
+
+generatorArduino['parlante_intervalo'] = function (block) {
+  const buzzerPin = 2
+  addPinModeIfNotDefined(
+    buzzerPin,
+    'parlante',
+    'Configuramos el pin del parlante'
+  )
+
+  // Inyectar helpers una sola vez
+  addHelperFunctionIfNotDefined(
+    'fn_parlanteIntervalo',
+    `// --- Parlante con intervalo ---
+unsigned long _parlantePrevToggle = 0;
+bool _parlanteStateOn = false;
+
+void actualizarParlanteIntervalo(int buzzerPin, int freq, unsigned long intervalo) {
+  unsigned long now = millis();
+  if (intervalo == 0) {
+    // Sonido continuo
+    if (!_parlanteStateOn) {
+      tone(buzzerPin, freq);
+      _parlanteStateOn = true;
+    }
+    return;
+  }
+  if (now - _parlantePrevToggle >= intervalo) {
+    _parlantePrevToggle = now;
+    if (_parlanteStateOn) {
+      noTone(buzzerPin);
+      _parlanteStateOn = false;
+    } else {
+      tone(buzzerPin, freq);
+      _parlanteStateOn = true;
+    }
+  }
+}
+`,
+    'Helper no bloqueante para parlante con intervalo'
+  )
+
+  // Hook en el loop
+  if (!definedLibraries['_parlante_intervalo_hook']) {
+    codeMap.loop += `  // Mantener beeps del parlante\n`
+    definedLibraries['_parlante_intervalo_hook'] = true
+  }
+
+  // Parámetros desde el bloque
+  const intervalo = Number(block.getFieldValue('INTERVALO') || 500)
+  const freq = Number(block.getFieldValue('FREQ') || 440)
+
+  // Llamada en el loop
+  return `actualizarParlanteIntervalo(${buzzerPin}, ${freq}, ${intervalo});\n`
+}

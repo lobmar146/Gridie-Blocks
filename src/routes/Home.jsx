@@ -168,6 +168,30 @@ const Home = () => {
               Problema 1: Dejando de detectar obstaculos...
             </p>
           </Link>
+          <Link
+            to="/Ejercicio2Clase3"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/clase3/sensorUltrasonico.svg"
+              alt="Led subir y bajar"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">Ejercicio 2: Sensando a distancias</p>
+          </Link>
+          <Link
+            to="/Problema2Clase3"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/clase3/sensorUltrasonico.svg"
+              alt="Led subir y bajar"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">
+              Problema 2: Sensor de estacionamiento.
+            </p>
+          </Link>
         </div>
       </section>
       {/* Clase 2 */}
