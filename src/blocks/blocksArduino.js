@@ -772,8 +772,7 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
           type: 'field_number',
           name: 'INTERVALO',
           value: 500,
-          min: 50,
-          precision: 10
+          min: 0
         },
         {
           type: 'field_number',
@@ -795,6 +794,25 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
       nextStatement: null,
       colour: '#0D47A1',
       tooltip: 'Hace beeps periódicos según el intervalo (ms).',
+      helpUrl: ''
+    },
+    {
+      type: 'parlante_apagar',
+      message0: 'Apagar parlante %1',
+      args0: [
+        {
+          type: 'field_image',
+          src: './img/clase3/parlante.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      previousStatement: null,
+      nextStatement: null,
+      colour: '#0D47A1',
+      tooltip: 'Detiene el parlante inmediatamente (noTone).',
       helpUrl: ''
     }
   ]

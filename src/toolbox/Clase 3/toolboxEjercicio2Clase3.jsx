@@ -8,6 +8,10 @@ export const toolboxEjercicio2Clase3 = {
         {
           kind: 'block',
           type: 'parlante_intervalo'
+        },
+        {
+          kind: 'block',
+          type: 'parlante_apagar'
         }
       ]
     },

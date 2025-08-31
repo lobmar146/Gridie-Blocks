@@ -986,9 +986,22 @@ void actualizarParlanteIntervalo(int buzzerPin, int freq, unsigned long interval
   }
 
   // Parámetros desde el bloque
-  const intervalo = Number(block.getFieldValue('INTERVALO') || 500)
+  const intervalo = Number(block.getFieldValue('INTERVALO'))
   const freq = Number(block.getFieldValue('FREQ') || 440)
 
   // Llamada en el loop
   return `actualizarParlanteIntervalo(${buzzerPin}, ${freq}, ${intervalo});\n`
+}
+
+generatorArduino['parlante_apagar'] = function (block) {
+  const buzzerPin = 2
+  // (Opcional) aseguramos pinMode por prolijidad; no hace falta para noTone, pero mantiene tu patrón:
+  addPinModeIfNotDefined(
+    buzzerPin,
+    'parlante',
+    'Configuramos el pin del parlante'
+  )
+
+  // No necesitamos helpers ni hook en loop: es una acción inmediata.
+  return `// Apagar parlante\nnoTone(${buzzerPin});\n`
 }
