@@ -282,23 +282,21 @@ Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesi
             path="/Ejercicio2Clase3"
             element={
               <Desafio
-                titulo="Ejercicio 2: Sensando a distancias"
-                consigna={`### 🔊 Sensando a distancias...  
+                titulo="Ejercicio 2: Sensor Ultrasónico"
+                consigna={`### 🦇 Sensor Ultrasónico  
 
-Ya sabemos cómo **encender un LED cuando el sensor IR detecta un obstáculo**.  
-Ahora vamos a dar un paso más: cuando el sensor **deje de detectar el obstáculo**, el LED deberá **apagarse automáticamente**.  
+¡Nuevo sensor y nuevo actuador!  
+El **Sensor Ultrasónico 🦇** nos va a permitir detectar obstáculos a distintas distancias.  
+El **parlante** nos permitirá emitir sonidos cuando lo deseemos... entonces, ¿cómo los combinamos?  
 
-De esta manera, el LED funcionará como una **luz de aviso**:  
-- Si hay algo delante 👉 se enciende.  
-- Si ya no hay nada 👉 se apaga.  
+Para ir conociéndolos, te proponemos armar una pequeña **alarma** que suene de forma diferente según la distancia:  
+
+- **Si hay un obstáculo muy cerca** (distancia entre **1 y 10 cm**), el parlante deberá **sonar cada 500 milisegundos**.  
+- **Si hay un obstáculo cerca** (distancia entre **11 y 15 cm**), el parlante deberá **sonar cada 1000 milisegundos**.  
+- **Si hay un obstáculo lejos** (distancia entre **16 y 100 cm**), el parlante deberá **no sonar**.  
 
 🧠 **Objetivo:**  
-Leer continuamente el estado del **sensor de obstáculos IR** y:  
-- **Encender el LED** en el pin 13 si detecta algo.  
-- **Apagar el LED** cuando ya no lo detecte.  
-
-🔁 **Importante:**  
-Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesitamos que el Arduino **chequee todo el tiempo** si aparece o desaparece un obstáculo.  
+Leer continuamente el estado del **sensor ultrasónico** y controlar el **parlante** para que funcione como una alarma, variando su comportamiento según la distancia del obstáculo.  
 
 `}
                 toolBox="11"
@@ -311,21 +309,27 @@ Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesi
               <Desafio
                 titulo="Problema 2: Sensor de estacionamiento."
                 consigna={`### 🚗 🔊 Problema 2: Sensor de estacionamiento.  
+Ya sabemos cómo utilizar el **Sensor Ultrasónico 🦇** y el **Parlante 🔊**. Si a esto le agregamos el **Semáforo 🚦**, podemos crear nuestro propio **Sensor de estacionamiento**, tal como usan los autos modernos.  
 
-Ya sabemos cómo **encender un LED cuando el sensor IR detecta un obstáculo**.  
-Ahora vamos a dar un paso más: cuando el sensor **deje de detectar el obstáculo**, el LED deberá **apagarse automáticamente**.  
+El objetivo es combinar el sensor para medir la distancia de un obstáculo, junto con el parlante y el semáforo, para dar **indicaciones visuales y sonoras** sobre qué tan cerca está el objeto.  
 
-De esta manera, el LED funcionará como una **luz de aviso**:  
-- Si hay algo delante 👉 se enciende.  
-- Si ya no hay nada 👉 se apaga.  
+¿Te animás a armarlo siguiendo estas instrucciones?  
 
-🧠 **Objetivo:**  
-Leer continuamente el estado del **sensor de obstáculos IR** y:  
-- **Encender el LED** en el pin 13 si detecta algo.  
-- **Apagar el LED** cuando ya no lo detecte.  
+🚨 **Muy cerca de chocar (1–7 cm):**  
+- Encender **las tres luces**.  
+- Hacer sonar el parlante cada **0 ms** (sonido constante).  
 
-🔁 **Importante:**  
-Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesitamos que el Arduino **chequee todo el tiempo** si aparece o desaparece un obstáculo.  
+🟡 **Distancia media (8–11 cm):**  
+- Encender **luz amarilla y verde**.  
+- Hacer sonar el parlante cada **300 ms**.  
+
+🟢 **Próximo (13–20 cm):**  
+- Encender **luz verde**.  
+- Hacer sonar el parlante cada **600 ms**.  
+
+⚪ **Lejos (21-100 cm):**  
+- No encender ninguna luz.  
+- El parlante debe permanecer **apagado**.  
 
 `}
                 toolBox="12"

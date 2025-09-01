@@ -836,8 +836,8 @@ generatorArduino['sensor_ultrasonico_rango'] = function (block) {
   const max = Number(block.getFieldValue('MAX')) || 400
 
   // Pines fijos
-  const trigPin = 7
-  const echoPin = 6
+  const trigPin = 8
+  const echoPin = 9
 
   // Configuración de pines
   if (!configuredPins[`trig_${trigPin}`]) {
@@ -887,7 +887,7 @@ const _PARLANTE_NOTAS_OCT4 = {
 }
 
 generatorArduino['parlante'] = function (block) {
-  const pin = 2
+  const pin = 3
 
   // 1) Asegurar pinMode sin duplicar (usa tu helper)
   addPinModeIfNotDefined(pin, 'parlante', 'Configuramos el pin del parlante')
