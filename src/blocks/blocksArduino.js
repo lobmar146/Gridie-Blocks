@@ -496,16 +496,8 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'aumentar_grados_servo',
-      message0: 'Aumentar los grados del Servo en %1 %2',
+      message0: 'Aumentar los grados del Servo en 10° %1',
       args0: [
-        {
-          type: 'field_number', // Campo numérico para el valor de la grados
-          name: 'GRADOS',
-          value: 0, // Valor predeterminado de grados
-          min: 0, // Valor mínimo
-          max: 180 // Valor máximo
-        },
-
         {
           type: 'field_image', // Imagen del servo
           src: './img/ejercicio3Clase2/servo.svg',
@@ -525,16 +517,8 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'reducir_grados_servo',
-      message0: 'Reducir los grados del Servo en %1 %2',
+      message0: 'Reducir los grados del Servo en 10° %1',
       args0: [
-        {
-          type: 'field_number', // Campo numérico para el valor de la grados
-          name: 'GRADOS',
-          value: 0, // Valor predeterminado los grados
-          min: 0, // Valor mínimo
-          max: 180 // Valor máximo
-        },
-
         {
           type: 'field_image', // Imagen del servo
           src: './img/ejercicio3Clase2/servo.svg',

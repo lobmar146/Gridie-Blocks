@@ -603,9 +603,7 @@ generatorArduino['esperar_x_milisegundos'] = function (block) {
 }
 // Bloque 'reducir' (Controla el acumulador de grados para el Servo)
 generatorArduino['reducir_grados_servo'] = function (block) {
-  const gradosChange = Number(block.getFieldValue('GRADOS')) // Obtener el valor del bloque
-
-  addLibraryIfNotDefined('Servo', 'Importamos la libreria para usar el Servo')
+  addLibraryIfNotDefined('Servo', '//Importamos la libreria para usar el Servo')
   // Asegurar que la variable "grados" solo se define una vez
   addVariableIfNotDefined(
     'grados',
@@ -628,16 +626,14 @@ generatorArduino['reducir_grados_servo'] = function (block) {
 
   //Retorno el codigo armado con los parametros enviados
   // Incrementar la variable "grados" en función del valor del bloque
-  const code = `// Aumentamos los grados para poder mover el Servo\ngrados -= ${gradosChange};\nservo.write(grados);\n\n`
+  const code = `// Aumentamos los grados para poder mover el Servo\ngrados -= 10;\nservo.write(grados);\n\n`
 
   return code
 }
 
 // Bloque 'aumentar_grados_servo' (Controla el acumulador de grados para el Servo)
 generatorArduino['aumentar_grados_servo'] = function (block) {
-  const gradosChange = Number(block.getFieldValue('GRADOS')) // Obtener el valor del bloque
-
-  addLibraryIfNotDefined('Servo', 'Importamos la libreria para usar el Servo')
+  addLibraryIfNotDefined('Servo', '//Importamos la libreria para usar el Servo')
   // Asegurar que la variable "grados" solo se define una vez
   addVariableIfNotDefined(
     'grados',
@@ -660,7 +656,7 @@ generatorArduino['aumentar_grados_servo'] = function (block) {
 
   //Retorno el codigo armado con los parametros enviados
   // Incrementar la variable "grados" en función del valor del bloque
-  const code = `// Aumentamos los grados para poder mover el Servo\ngrados += ${gradosChange};\nservo.write(grados);\n\n`
+  const code = `// Aumentamos los grados para poder mover el Servo\ngrados += 10;\nservo.write(grados);\n\n`
 
   return code
 }
