@@ -336,6 +336,20 @@ El objetivo es combinar el sensor para medir la distancia de un obstáculo, junt
               />
             }
           />
+          <Route
+            path="/DesafioClase4"
+            element={
+              <Desafio
+                titulo="Desafío: Concept Card."
+                consigna={`### Desafío: Concept Card.
+Lee la Concept y arma flaco (todavia no hay consigna puto el que lee)
+
+
+`}
+                toolBox="13"
+              />
+            }
+          />
         </Routes>
       </div>
     </ThemeProvider>

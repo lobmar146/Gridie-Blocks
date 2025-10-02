@@ -60,34 +60,6 @@ export const toolboxProblema2Clase3 = {
         {
           kind: 'block',
           type: 'sensor_ultrasonico_rango'
-        },
-        {
-          kind: 'block',
-          type: 'sensor_humedad_tierra_baja'
-        },
-        {
-          kind: 'block',
-          type: 'sensor_humedad_tierra_media'
-        },
-        {
-          kind: 'block',
-          type: 'sensor_humedad_tierra_alta'
-        },
-        {
-          kind: 'block',
-          type: 'sensor_fuego'
-        },
-        {
-          kind: 'block',
-          type: 'sensor_gas_bajo'
-        },
-        {
-          kind: 'block',
-          type: 'sensor_gas_medio'
-        },
-        {
-          kind: 'block',
-          type: 'sensor_gas_alto'
         }
       ]
     },

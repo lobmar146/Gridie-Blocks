@@ -194,8 +194,27 @@ const Home = () => {
           </Link>
         </div>
       </section>
-      {/* Clase 2 */}
-      <section></section>
+
+      {/* Clase 3 */}
+      <section>
+        <h2 className="border-y p-5 text-2xl font-extrabold dark:text-white">
+          Clase 4: Concept Cards
+        </h2>
+
+        <div className="grid grid-cols-3 gap-4 py-5">
+          <Link
+            to="/DesafioClase4"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/clase3/sensorObstaculos.svg"
+              alt="Led subir y bajar"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">Desafío: Concept Card</p>
+          </Link>
+        </div>
+      </section>
     </section>
   )
 }
