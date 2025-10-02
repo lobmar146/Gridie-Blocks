@@ -561,15 +561,6 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
       helpUrl: ''
     },
     {
-      type: 'sensor_fuego',
-      message0: '¿Está detectando fuego el sensor conectado al pin 7? 🔥',
-      output: 'Boolean', // ✅ es un bloque de tipo valor
-      colour: '#F4511E',
-      tooltip:
-        'Devuelve verdadero si el sensor de fuego detecta una señal en el pin 7.',
-      helpUrl: ''
-    },
-    {
       type: 'custom_if_condition',
       message0: 'Si %1',
       args0: [
@@ -797,6 +788,132 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
       nextStatement: null,
       colour: '#0D47A1',
       tooltip: 'Detiene el parlante inmediatamente (noTone).',
+      helpUrl: ''
+    },
+    {
+      type: 'sensor_humedad_tierra_baja',
+      message0: '¿La humedad detectada es baja? %1',
+      args0: [
+        {
+          type: 'field_image', // Imagen del servo
+          src: './img/clase4/Sensor_humedad_tierra.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean', // devuelve true/false
+      colour: SENSORES,
+      tooltip: 'Detecta si la humedad en la tierra es baja.',
+      helpUrl: ''
+    },
+    {
+      type: 'sensor_humedad_tierra_media',
+      message0: '¿La humedad detectada es media? %1',
+      args0: [
+        {
+          type: 'field_image', // Imagen del servo
+          src: './img/clase4/Sensor_humedad_tierra_medio.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean', // devuelve true/false
+      colour: SENSORES,
+      tooltip: 'Detecta la humedad de la tierra si es media.',
+      helpUrl: ''
+    },
+    {
+      type: 'sensor_humedad_tierra_alta',
+      message0: '¿La humedad detectada es alta? %1',
+      args0: [
+        {
+          type: 'field_image', // Imagen del servo
+          src: './img/clase4/Sensor_humedad_tierra_alto.svg',
+          width: 70,
+          height: 80,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean', // devuelve true/false
+      colour: SENSORES,
+      tooltip: 'Detecta la humedad de la tierra si es alta.',
+      helpUrl: ''
+    },
+    {
+      type: 'sensor_fuego',
+      message0: '¿Se ha detectado fuego? %1',
+      args0: [
+        {
+          type: 'field_image', // Imagen del servo
+          src: './img/clase4/Sensor_fuego.svg',
+          width: 90,
+          height: 90,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean', // ✅ es un bloque de tipo valor
+      colour: SENSORES,
+      tooltip: 'Devuelve verdadero si se detecta una llama',
+      helpUrl: ''
+    },
+    {
+      type: 'sensor_gas_bajo',
+      message0: '¿Hay bajo nivel de gas? %1',
+      args0: [
+        {
+          type: 'field_image', // Imagen del servo
+          src: './img/clase4/Sensor_gas.svg',
+          width: 100,
+          height: 100,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean', // ✅ es un bloque de tipo valor
+      colour: SENSORES,
+      tooltip: 'Devuelve verdadero si se detecta una llama',
+      helpUrl: ''
+    },
+    {
+      type: 'sensor_gas_medio',
+      message0: '¿Hay nivel de gas medio? %1',
+      args0: [
+        {
+          type: 'field_image', // Imagen del servo
+          src: './img/clase4/Sensor_gas_medio.svg',
+          width: 100,
+          height: 100,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean', // ✅ es un bloque de tipo valor
+      colour: SENSORES,
+      tooltip: 'Devuelve verdadero si se detecta una llama',
+      helpUrl: ''
+    },
+    {
+      type: 'sensor_gas_alto',
+      message0: '¿Hay nivel de gas alto? %1',
+      args0: [
+        {
+          type: 'field_image', // Imagen del servo
+          src: './img/clase4/Sensor_gas_alto.svg',
+          width: 100,
+          height: 100,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean', // ✅ es un bloque de tipo valor
+      colour: SENSORES,
+      tooltip: 'Devuelve verdadero si se detecta una llama',
       helpUrl: ''
     }
   ]

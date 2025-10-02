@@ -145,7 +145,8 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
   if (
     !configuredPins[pin] &&
     variableName != 'Servo' &&
-    variableName != 'sensor_fuego'
+    variableName != 'sensor_fuego' &&
+    variableName != 'sensor_humedad_tierra'
   ) {
     codeMap.pinMode += `pinMode(${pin}, OUTPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
@@ -153,6 +154,9 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     codeMap.pinMode += `//${comment}\nservo.attach(${pin});\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'sensor_fuego') {
+    codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
+    configuredPins[pin] = true // Marcar pin como configurado
+  } else if (!configuredPins[pin] && variableName == 'sensor_humedad_tierra') {
     codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   }
@@ -1000,4 +1004,61 @@ generatorArduino['parlante_apagar'] = function (block) {
 
   // No necesitamos helpers ni hook en loop: es una acción inmediata.
   return `// Apagar parlante\nnoTone(${buzzerPin});\n`
+}
+
+generatorArduino['sensor_humedad_tierra_baja'] = function (block) {
+  const pin = 'A0'
+  const variableName = 'sensor_humedad_tierra'
+
+  console.log('Generando sensor_humedad_tierra...')
+
+  addVariableIfNotDefined(
+    variableName,
+    pin,
+    'Definimos el sensor de humedad en la tierra'
+  )
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+
+  return [
+    `(analogRead(${variableName}) >=0 and analogRead(${variableName})<=50)`,
+    generatorArduino.ORDER_EQUALITY
+  ]
+}
+
+generatorArduino['sensor_humedad_tierra_media'] = function (block) {
+  const pin = 'A0'
+  const variableName = 'sensor_humedad_tierra'
+
+  console.log('Generando sensor_humedad_tierra...')
+
+  addVariableIfNotDefined(
+    variableName,
+    pin,
+    'Definimos el sensor de humedad en la tierra'
+  )
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+
+  return [
+    `(analogRead(${variableName}) >=51 and analogRead(${variableName})<=200)`,
+    generatorArduino.ORDER_EQUALITY
+  ]
+}
+
+generatorArduino['sensor_humedad_tierra_alta'] = function (block) {
+  const pin = 'A0'
+  const variableName = 'sensor_humedad_tierra'
+
+  console.log('Generando sensor_humedad_tierra...')
+
+  addVariableIfNotDefined(
+    variableName,
+    pin,
+    'Definimos el sensor de humedad en la tierra'
+  )
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+
+  return [
+    `(analogRead(${variableName}) >=200)`,
+    generatorArduino.ORDER_EQUALITY
+  ]
 }
