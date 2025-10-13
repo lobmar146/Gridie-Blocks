@@ -340,9 +340,27 @@ El objetivo es combinar el sensor para medir la distancia de un obstáculo, junt
             path="/DesafioClase4"
             element={
               <Desafio
-                titulo="Desafío: Concept Card."
-                consigna={`### Desafío: Concept Card.
-Lee la Concept y arma flaco (todavia no hay consigna puto el que lee)
+                titulo="Desafío: Concept Card. "
+                consigna={`### 💳 **Desafío: Concept Card**
+
+¡Sorpresa! 🎉  
+Ahora tenés **todos los bloques a tu disposición**.  
+Tu tarea es **elegir cuidadosamente** aquellos que correspondan al proyecto que te fue asignado.  
+
+Antes de empezar, **leé con atención la Concept Card** que te tocó y pensá en los siguientes puntos:
+
+1.💡 **¿Qué hay que hacer?**  
+   Identificá el objetivo principal del proyecto.  
+
+2.🔍 **¿Qué sensores y actuadores participan?**  
+   Analizá cuáles son los componentes necesarios y su función.  
+
+3.⚙️ **¿Cómo se conectan en la placa?**  
+   Revisá el esquema de conexión y los pines que utiliza cada componente.  
+
+4.🧩 **Explorá la caja de herramientas**  
+   Seleccioná los bloques que permitan reproducir el funcionamiento del proyecto.
+
 
 
 `}

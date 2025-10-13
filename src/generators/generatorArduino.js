@@ -109,7 +109,7 @@ generatorArduino.workspaceToCode = function (workspace) {
   return finalCode.trim() // Elimina espacios en blanco alrededor del código
 }
 generatorArduino['sensor_fuego'] = function (block) {
-  const pin = 7
+  const pin = 3
   const variableName = 'sensor_fuego'
 
   console.log('Generando sensor_fuego...')
@@ -940,7 +940,7 @@ void silenciarParlante() {
 }
 
 generatorArduino['parlante_intervalo'] = function (block) {
-  const buzzerPin = 2
+  const buzzerPin = 12
   addPinModeIfNotDefined(
     buzzerPin,
     'parlante',
@@ -1049,6 +1049,54 @@ generatorArduino['sensor_humedad_tierra_alta'] = function (block) {
   const variableName = 'sensor_humedad_tierra'
 
   console.log('Generando sensor_humedad_tierra...')
+
+  addVariableIfNotDefined(
+    variableName,
+    pin,
+    'Definimos el sensor de humedad en la tierra'
+  )
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+
+  return [
+    `(analogRead(${variableName}) >=200)`,
+    generatorArduino.ORDER_EQUALITY
+  ]
+}
+generatorArduino['sensor_humedad_tierra_baja'] = function (block) {
+  const pin = 'A0'
+  const variableName = 'sensor_gas'
+
+  console.log('Generando sensor_gas...')
+
+  addVariableIfNotDefined(variableName, pin, 'Definimos el sensor de gas')
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+
+  return [
+    `(analogRead(${variableName}) >=0 and analogRead(${variableName})<=50)`,
+    generatorArduino.ORDER_EQUALITY
+  ]
+}
+
+generatorArduino['sensor_gas_medio'] = function (block) {
+  const pin = 'A0'
+  const variableName = 'sensor_gas_medio'
+
+  console.log('Generando sensor gas...')
+
+  addVariableIfNotDefined(variableName, pin, 'Definimos el sensor de gas')
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+
+  return [
+    `(analogRead(${variableName}) >=51 and analogRead(${variableName})<=200)`,
+    generatorArduino.ORDER_EQUALITY
+  ]
+}
+
+generatorArduino['sensor_gasalto'] = function (block) {
+  const pin = 'A0'
+  const variableName = 'sensor_gas'
+
+  console.log('Generando sensor gas...')
 
   addVariableIfNotDefined(
     variableName,
