@@ -5,10 +5,21 @@ import { Link } from 'react-router-dom'
 import {
   ChevronRightIcon,
   HomeIcon,
+  InfoCircledIcon,
   UpdateIcon,
   UploadIcon
 } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -186,8 +197,40 @@ const App = ({ titulo, consigna, toolBox }) => {
 
       <div
         ref={consignaRef}
-        className="mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020]"
+        className="relative mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020]"
       >
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              className={`absolute right-4 top-4 text-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-500`}
+            >
+              <InfoCircledIcon className="mr-1.5 h-3.5 w-3.5" />
+              <span className="underline decoration-dotted underline-offset-4">
+                ¿Cómo se conecta?
+              </span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Share link</DialogTitle>
+              <DialogDescription>
+                Anyone who has this link will be able to view this.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center gap-2">
+              <div className="grid flex-1 gap-2"></div>
+            </div>
+            <DialogFooter className="sm:justify-start">
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         <ReactMarkdown
           components={{
             ul: ({ children }) => (

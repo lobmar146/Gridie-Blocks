@@ -80,6 +80,7 @@ h1 {
 
 .blocklyToolboxDiv {
   border-radius: 10px;
+  z-index: 50;
 }
 
 .blocklyTreeRow {
@@ -88,42 +89,6 @@ h1 {
   padding-bottom: 25px;
 }
 
-.blockly-toggle-button {
-  position: absolute;
-  top: 10px;
-  right: 30px; /* Ajustar según la posición del textarea */
-  z-index: 1;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.monitor-variable {
-  position: absolute;
-  top: 130px; /* Alineado desde la parte superior del contenedor */
-  right: 30px; /* Alineado desde la izquierda del contenedor */
-  z-index: 1;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
-}
-
-.monitor-variable span {
-  background-color: rgb(32 32 32 / var(--tw-bg-opacity));
-  border-radius: 20px;
-  padding: 0px 20px 0px 20px;
-}
-
-.blockly-toggle-button:hover {
-  background-color: #0056b3;
-}
 /* Estilo para el nombre de las funciones en azul y negrita */
 .function-name {
   color: #2386f0;

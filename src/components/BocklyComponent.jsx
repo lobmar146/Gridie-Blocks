@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { CodeIcon, CopyIcon } from '@radix-ui/react-icons'
 import * as Blockly from 'blockly/core'
+import { Button } from '@/components/ui/button'
 import 'blockly/blocks'
 import { javascriptGenerator } from 'blockly/javascript'
 import 'blockly/msg/es'
@@ -306,21 +308,24 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
             <span>1</span>
           </div>
         )} */}
-        <button
-          onClick={copyToClipboard}
-          className={
-            showCode ? 'monitor-variable mostrando-codigo' : 'monitor-variable'
-          }
-          style={{ top: '70px' }}
-        >
-          Copiar Código
-        </button>
-        <button
+        <Button
           onClick={() => setShowCode(!showCode)}
-          className="blockly-toggle-button"
+          // className="blockly-toggle-button"
+          className="absolute right-8 top-2 z-10 w-[160px] bg-blue-600 text-white hover:bg-blue-700"
         >
+          <CodeIcon className="mr-2 h-4 w-4" />
           {showCode ? 'Ocultar Código' : 'Mostrar Código'}
-        </button>
+        </Button>
+        <Button
+          onClick={copyToClipboard}
+          // className={
+          //   showCode ? 'monitor-variable mostrando-codigo' : 'monitor-variable'
+          // }
+          className="absolute right-8 top-[52px] z-10 w-[160px] bg-green-600 text-white hover:bg-green-700"
+        >
+          <CopyIcon className="mr-2 h-4 w-4" />
+          Copiar Código
+        </Button>
       </div>
       {showCode && (
         <textarea value={code} readOnly className="blockly-code-area" />
