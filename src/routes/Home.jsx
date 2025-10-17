@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const Home = () => {
   return (
-    <section className="container mx-auto my-5 rounded-lg border bg-[#202020] p-5">
+    <section className="m-5 max-w-4xl rounded-lg border bg-[#202020] p-5 lg:mx-auto">
       <h1 className="mb-4 p-5 text-center text-3xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
         Bienvenido a{' '}
         <span className="logo">
@@ -107,7 +107,7 @@ const Home = () => {
             <img
               src="img/desafio2/semaforo.png"
               alt="Imagen 1"
-              className="mb-4 h-32 w-full rounded-full object-contain"
+              className="mb-4 h-32 w-full object-contain"
             />
             <p className="font-semibold">Problema 2: Parpadear el Semaforo</p>
           </Link>
@@ -118,7 +118,7 @@ const Home = () => {
             <img
               src="img/ejercicio3Clase2/servo.svg"
               alt="Imagen 1"
-              className="mb-4 h-32 w-full rounded-full object-contain"
+              className="mb-4 h-32 w-full object-contain"
             />
             <p className="font-semibold">Ejercicio 2: Servomotor</p>
           </Link>
@@ -129,7 +129,7 @@ const Home = () => {
             <img
               src="img/problema3Clase2/barrera.gif"
               alt="Imagen 1"
-              className="mb-4 h-32 w-full rounded-full object-contain"
+              className="mb-4 h-32 w-full object-contain"
             />
             <p className="font-semibold">Problema 3: La barrera</p>
           </Link>
@@ -175,7 +175,7 @@ const Home = () => {
             <img
               src="img/clase3/sensorUltrasonico.svg"
               alt="Led subir y bajar"
-              className="mb-4 h-32 w-full rounded-full object-contain"
+              className="mb-4 h-32 w-full object-contain"
             />
             <p className="font-semibold">Ejercicio 2: Sensando a distancias</p>
           </Link>
@@ -186,7 +186,7 @@ const Home = () => {
             <img
               src="img/clase3/sensorUltrasonico.svg"
               alt="Led subir y bajar"
-              className="mb-4 h-32 w-full rounded-full object-contain"
+              className="mb-4 h-32 w-full object-contain"
             />
             <p className="font-semibold">
               Problema 2: Sensor de estacionamiento.
