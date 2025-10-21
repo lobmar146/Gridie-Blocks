@@ -85,18 +85,44 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
     const fqbn = 'arduino:avr:uno' // Cambia esto según tu placa
 
     // Copiar librerías locales (si existen) dentro de build/libraries para que arduino-cli las detecte
+    let finalLibrariesPath = '' // <-- nuevo: ruta final que pasaremos a arduino-cli
     try {
-      const localLibsDir = path.join(__dirname, 'libraries') // colocar aqui tu carpeta con Servo/
+      // Buscar librerías locales en varios lugares:
+      // 1) durante desarrollo: __dirname/libraries
+      // 2) en la app empaquetada: process.resourcesPath/libraries
+      // 3) si usas extraResources con carpeta 'arduino', también revisar process.resourcesPath/arduino/libraries
+      // Priorizar las librerías fuera del asar (process.resourcesPath/libraries)
+      const candidates = [
+        path.join(process.resourcesPath || __dirname, 'libraries'),
+        path.join(process.resourcesPath || __dirname, 'arduino', 'libraries'),
+        path.join(__dirname, 'libraries')
+      ]
+
+      // Filtrar rutas existentes y evitar las que estén dentro de app.asar
+      const existing = candidates.filter(p => fs.existsSync(p))
+      const unpacked = existing.filter(
+        p => !p.split(path.sep).some(part => part.includes('app.asar'))
+      )
+      const localLibsDir = unpacked.length ? unpacked[0] : existing[0] || null
       const destLibsDir = path.join(buildPath, 'libraries')
 
-      if (fs.existsSync(localLibsDir)) {
+      if (localLibsDir) {
         // limpiar destino si existe
         if (fs.existsSync(destLibsDir)) {
           fs.rmSync(destLibsDir, { recursive: true, force: true })
         }
         // copiar recursivamente (Node >=16 soporta fs.cpSync)
         if (fs.cpSync) {
-          fs.cpSync(localLibsDir, destLibsDir, { recursive: true })
+          try {
+            fs.cpSync(localLibsDir, destLibsDir, { recursive: true })
+            finalLibrariesPath = destLibsDir
+          } catch (copyErr) {
+            console.warn(
+              'fs.cpSync falló, usaremos la ruta original en resources:',
+              copyErr
+            )
+            finalLibrariesPath = localLibsDir
+          }
         } else {
           // fallback simple si no existe cpSync
           const copyRecursive = (src, dest) => {
@@ -108,20 +134,44 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
               else fs.copyFileSync(srcPath, destPath)
             }
           }
-          copyRecursive(localLibsDir, destLibsDir)
+          try {
+            copyRecursive(localLibsDir, destLibsDir)
+            finalLibrariesPath = destLibsDir
+          } catch (copyErr) {
+            console.warn(
+              'Copia recursiva falló, usaremos la ruta original en resources:',
+              copyErr
+            )
+            finalLibrariesPath = localLibsDir
+          }
         }
-        console.log('Librerías locales copiadas a:', destLibsDir)
+        console.log(
+          'Librerías locales copiadas a (o usadas desde):',
+          finalLibrariesPath
+        )
       } else {
-        // fallback: instalar Servo vía arduino-cli si no hay librerías locales
-        try {
-          execSync(`"${arduinoCliPath}" lib install "Servo"`, {
-            stdio: 'inherit'
-          })
-        } catch (err) {
-          console.warn(
-            'No se pudo instalar la librería Servo automáticamente:',
-            err
-          )
+        // fallback: usar las librerías empaquetadas en resources si existen, o intentar instalar Servo
+        const resourceCandidates = [
+          path.join(process.resourcesPath || __dirname, 'libraries'),
+          path.join(process.resourcesPath || __dirname, 'arduino', 'libraries')
+        ]
+        const resourceLibs = resourceCandidates.find(p => fs.existsSync(p))
+        if (resourceLibs) {
+          finalLibrariesPath = resourceLibs
+          console.log('Usando librerías desde resources:', finalLibrariesPath)
+        } else {
+          try {
+            execSync(`"${arduinoCliPath}" lib install "Servo"`, {
+              stdio: 'inherit'
+            })
+            // si la instalación local coloca la librería en el sketchbook, podríamos no conocer la ruta exacta;
+            // en muchos casos arduino-cli instalará en el usuario, pero dejamos finalLibrariesPath vacío y arduino-cli buscará globalmente.
+          } catch (err) {
+            console.warn(
+              'No se pudo instalar la librería Servo automáticamente:',
+              err
+            )
+          }
         }
       }
     } catch (err) {
@@ -137,10 +187,14 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
 
         // Compilar el archivo .ino
         // incluir las librerías del build si existen para que arduino-cli las use
-        const buildLibsDir = path.join(buildPath, 'libraries')
-        const librariesArg = fs.existsSync(buildLibsDir)
-          ? `--libraries "${buildLibsDir}"`
-          : ''
+        // preferimos la ruta final calculada arriba (finalLibrariesPath); si no existe, usamos build/libraries
+        const fallbackBuildLibs = path.join(buildPath, 'libraries')
+        const librariesArg =
+          finalLibrariesPath && fs.existsSync(finalLibrariesPath)
+            ? `--libraries "${finalLibrariesPath}"`
+            : fs.existsSync(fallbackBuildLibs)
+              ? `--libraries "${fallbackBuildLibs}"`
+              : ''
 
         execArduinoCli(
           `compile --fqbn ${fqbn} --output-dir "${buildPath}" ${librariesArg} "${tempFilePath}"`,
