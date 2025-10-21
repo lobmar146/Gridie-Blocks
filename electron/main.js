@@ -1,4 +1,4 @@
-import { exec } from 'child_process'
+import { exec, execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import process from 'process'
@@ -84,6 +84,51 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
     const { buildPath, tempFilePath, hexFilePath } = getBuildPaths()
     const fqbn = 'arduino:avr:uno' // Cambia esto según tu placa
 
+    // Copiar librerías locales (si existen) dentro de build/libraries para que arduino-cli las detecte
+    try {
+      const localLibsDir = path.join(__dirname, 'libraries') // colocar aqui tu carpeta con Servo/
+      const destLibsDir = path.join(buildPath, 'libraries')
+
+      if (fs.existsSync(localLibsDir)) {
+        // limpiar destino si existe
+        if (fs.existsSync(destLibsDir)) {
+          fs.rmSync(destLibsDir, { recursive: true, force: true })
+        }
+        // copiar recursivamente (Node >=16 soporta fs.cpSync)
+        if (fs.cpSync) {
+          fs.cpSync(localLibsDir, destLibsDir, { recursive: true })
+        } else {
+          // fallback simple si no existe cpSync
+          const copyRecursive = (src, dest) => {
+            if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true })
+            for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+              const srcPath = path.join(src, entry.name)
+              const destPath = path.join(dest, entry.name)
+              if (entry.isDirectory()) copyRecursive(srcPath, destPath)
+              else fs.copyFileSync(srcPath, destPath)
+            }
+          }
+          copyRecursive(localLibsDir, destLibsDir)
+        }
+        console.log('Librerías locales copiadas a:', destLibsDir)
+      } else {
+        // fallback: instalar Servo vía arduino-cli si no hay librerías locales
+        try {
+          execSync(`"${arduinoCliPath}" lib install "Servo"`, {
+            stdio: 'inherit'
+          })
+        } catch (err) {
+          console.warn(
+            'No se pudo instalar la librería Servo automáticamente:',
+            err
+          )
+        }
+      }
+    } catch (err) {
+      console.error('Error al preparar librerías locales:', err)
+      // continuar; la compilación fallará si falta la librería
+    }
+
     // Lógica principal
     ;(async () => {
       try {
@@ -91,8 +136,14 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
         fs.writeFileSync(tempFilePath, codigo)
 
         // Compilar el archivo .ino
+        // incluir las librerías del build si existen para que arduino-cli las use
+        const buildLibsDir = path.join(buildPath, 'libraries')
+        const librariesArg = fs.existsSync(buildLibsDir)
+          ? `--libraries "${buildLibsDir}"`
+          : ''
+
         execArduinoCli(
-          `compile --fqbn ${fqbn} --output-dir "${buildPath}" "${tempFilePath}"`,
+          `compile --fqbn ${fqbn} --output-dir "${buildPath}" ${librariesArg} "${tempFilePath}"`,
           (compileError, compileStdout, compileStderr) => {
             if (compileError) {
               reject(`Error al compilar: ${compileError.message}`)
