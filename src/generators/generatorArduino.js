@@ -146,7 +146,8 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     !configuredPins[pin] &&
     variableName != 'Servo' &&
     variableName != 'sensor_fuego' &&
-    variableName != 'sensor_humedad_tierra'
+    variableName != 'sensor_humedad_tierra' &&
+    variableName != 'sensor_obstaculos'
   ) {
     codeMap.pinMode += `pinMode(${pin}, OUTPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
@@ -154,6 +155,9 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     codeMap.pinMode += `//${comment}\nservo.attach(${pin});\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'sensor_fuego') {
+    codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
+    configuredPins[pin] = true // Marcar pin como configurado
+  } else if (!configuredPins[pin] && variableName == 'sensor_obstaculos') {
     codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'sensor_humedad_tierra') {
@@ -825,9 +829,8 @@ generatorArduino['sensor_obstaculos'] = function (block) {
 
   addVariableIfNotDefined(variableName, pin, 'Definimos el sensor de fuego')
   addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
-
   return [
-    `(digitalRead(${variableName}) == 1)`,
+    `(digitalRead(${variableName}) == 0)`,
     generatorArduino.ORDER_EQUALITY
   ]
 }
