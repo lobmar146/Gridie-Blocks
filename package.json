@@ -8,8 +8,11 @@
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
-    "build": "vite build",
-    "dist": "vite build && electron-builder",
+    "build:web": "vite build",
+    "build": "npm run build:web",
+    "build:electron": "electron-builder",
+    "dist": "npm run build:web && npm run build:electron",
+    "release": "npm run build:web && npm run build:electron --publish=always",
     "electron:build": "electron-builder",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
