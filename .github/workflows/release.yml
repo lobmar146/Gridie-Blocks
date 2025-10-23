@@ -41,7 +41,5 @@ jobs:
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           files: |
-            dist/*.exe
-            dist/*.zip
-            dist/*.dmg
-            dist-electron/**/*
+            dist-electron/**/*.exe
+            dist-electron/**/*.zip

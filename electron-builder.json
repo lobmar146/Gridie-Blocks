@@ -5,7 +5,13 @@
     "buildResources": "assets",
     "output": "dist-electron"
   },
-  "files": ["dist/**", "electron/**"],
+  "files": [
+    "dist/**",
+    "electron/**",
+    "!electron/arduino/**",
+    "!electron/arduino-data/**"
+  ],
+  "asarUnpack": ["electron/arduino/**"],
   "extraResources": [
     {
       "from": "electron/arduino-cli.exe",
@@ -29,12 +35,16 @@
   },
   "compression": "store",
   "win": {
-    "target": ["zip", "nsis"],
+    "target": ["nsis"],
     "icon": "public/favicon.ico"
   },
   "nsis": {
     "oneClick": false,
-    "perMachine": false
+    "perMachine": false,
+    "allowElevation": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "artifactName": "${productName} Setup ${version}.exe"
   },
   "linux": {
     "target": ["AppImage", "deb"],
