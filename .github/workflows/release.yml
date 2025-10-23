@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest] # agrega linux-latest si quieres
+        os: [windows-latest] # agrega linux-latest si quieres
         node: [18]
     steps:
       - name: Checkout
