@@ -32,14 +32,16 @@ jobs:
       - name: Build Electron (electron-builder)
         run: npx electron-builder --publish never
         # call electron-builder directly via npx and explicitly disable publish
+        env:
+          GH_TOKEN: ''
 
       - name: List build outputs (debug)
         if: always()
         shell: pwsh
         run: |
           Write-Host "Contents of dist-electron:"
-          if (Test-Path -Path ./dist-electron) {
-            Get-ChildItem -Path ./dist-electron -Recurse -Force | ForEach-Object { Write-Host $_.FullName }
+          if (Test-Path "./dist-electron") {
+            Get-ChildItem "./dist-electron" -Recurse -Force | ForEach-Object { Write-Host $_.FullName }
           } else {
             Write-Host "no dist-electron"
           }
@@ -48,11 +50,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: electron-build
+          name: GridieBlocks-Installer
           path: |
-            dist-electron/**/*.exe
-            dist-electron/**/*.zip
-            dist-electron/**
+            dist-electron/GridieBlocks.Setup.1.0.0.exe
 
       - name: Create GitHub Release and upload artifacts
         uses: ncipollo/release-action@v1
@@ -60,7 +60,6 @@ jobs:
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           artifacts: |
-            dist-electron/**/*.exe
-            dist-electron/**/*.zip
+            dist-electron/GridieBlocks.Setup.1.0.0.exe
           token: ${{ secrets.GITHUB_TOKEN }}
           replacesArtifacts: true
