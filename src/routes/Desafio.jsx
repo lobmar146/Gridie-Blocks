@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
 import { Link } from 'react-router-dom'
@@ -6,6 +6,8 @@ import {
   ChevronRightIcon,
   HomeIcon,
   InfoCircledIcon,
+  MinusIcon,
+  PlusIcon,
   UpdateIcon,
   UploadIcon
 } from '@radix-ui/react-icons'
@@ -29,7 +31,164 @@ import {
 } from '@/components/ui/select'
 import BlocklyComponent from '../components/BocklyComponent'
 
-const App = ({ titulo, consigna, toolBox }) => {
+const App = ({ titulo, consigna, toolBox, conexion }) => {
+  // ==== Zoom / Pan / Center ====
+
+  const [translate, setTranslate] = useState({ x: 0, y: 0 })
+  const [isPanning, setIsPanning] = useState(false)
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 })
+  const [translateStart, setTranslateStart] = useState({ x: 0, y: 0 })
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isPositioned, setIsPositioned] = useState(false) // capa lista y centrada
+  const INIT_ZOOM = 2 // 200%
+  const [zoom, setZoom] = useState(INIT_ZOOM)
+
+  const ZOOM_STEP = 0.25
+  const MIN_ZOOM = 0.5
+  const MAX_ZOOM = 5
+
+  const containerRef = useRef(null)
+  const imgRef = useRef(null)
+  const transformLayerRef = useRef(null)
+
+  // Tamaño natural de la imagen para límites
+  const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 })
+
+  const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
+
+  // Centrar si el contenido cabe en el viewport
+  const centerContent = (nextZoom = zoom) => {
+    const container = containerRef.current
+    if (!container || !naturalSize.width || !naturalSize.height) return
+
+    const viewportW = container.clientWidth
+    const viewportH = container.clientHeight
+    const contentW = naturalSize.width * nextZoom
+    const contentH = naturalSize.height * nextZoom
+
+    const x = Math.round((viewportW - contentW) / 2)
+    const y = Math.round((viewportH - contentH) / 2)
+
+    clampAndSetTranslate({ x, y }, nextZoom)
+  }
+
+  // Clampeo + centrado por eje
+  const clampAndSetTranslate = (nextTranslate, nextZoom) => {
+    const container = containerRef.current
+    if (!container || !naturalSize.width || !naturalSize.height) {
+      setTranslate(nextTranslate)
+      return
+    }
+
+    const viewportW = container.clientWidth
+    const viewportH = container.clientHeight
+    const contentW = naturalSize.width * nextZoom
+    const contentH = naturalSize.height * nextZoom
+
+    const computeBounds = (viewport, content) => {
+      if (content <= viewport) {
+        const center = Math.round((viewport - content) / 2)
+        return { min: center, max: center } // fijo al centro si entra
+      }
+      return { min: viewport - content, max: 0 } // si no entra, rango desplazable
+    }
+
+    const xBounds = computeBounds(viewportW, contentW)
+    const yBounds = computeBounds(viewportH, contentH)
+
+    const clamped = {
+      x: Math.max(xBounds.min, Math.min(xBounds.max, nextTranslate.x)),
+      y: Math.max(yBounds.min, Math.min(yBounds.max, nextTranslate.y))
+    }
+    setTranslate(clamped)
+  }
+
+  // Imagen cargada ⇒ guardamos tamaño natural y centramos de inmediato
+  const handleImageLoad = () => {
+    if (!imgRef.current) return
+    const { naturalWidth, naturalHeight } = imgRef.current
+    setNaturalSize({ width: naturalWidth, height: naturalHeight })
+  }
+
+  // Botones zoom
+  const zoomIn = () => {
+    const next = Math.min(MAX_ZOOM, zoom + ZOOM_STEP)
+    setZoom(next)
+    clampAndSetTranslate(translate, next)
+  }
+  const zoomOut = () => {
+    const next = Math.max(MIN_ZOOM, zoom - ZOOM_STEP)
+    setZoom(next)
+    clampAndSetTranslate(translate, next)
+  }
+  const resetView = () => {
+    setZoom(INIT_ZOOM)
+    centerContent(INIT_ZOOM)
+  }
+
+  // Drag / pan con mouse
+  const handleMouseDown = e => {
+    setIsPanning(true)
+    setPanStart({ x: e.clientX, y: e.clientY })
+    setTranslateStart({ ...translate })
+  }
+  const handleMouseMove = e => {
+    if (!isPanning) return
+    const dx = e.clientX - panStart.x
+    const dy = e.clientY - panStart.y
+    clampAndSetTranslate(
+      { x: translateStart.x + dx, y: translateStart.y + dy },
+      zoom
+    )
+  }
+  const handleMouseUp = () => setIsPanning(false)
+
+  // Zoom con rueda (centrado al cursor)
+  const handleWheel = e => {
+    e.preventDefault()
+    if (!containerRef.current) return
+
+    const rect = containerRef.current.getBoundingClientRect()
+    const cursor = { x: e.clientX - rect.left, y: e.clientY - rect.top }
+
+    const prevZoom = zoom
+    const factor = 1 + ZOOM_STEP
+    const proposed = e.deltaY > 0 ? prevZoom / factor : prevZoom * factor
+    const nextZoom = clamp(proposed, MIN_ZOOM, MAX_ZOOM)
+    if (nextZoom === prevZoom) return
+
+    const scale = nextZoom / prevZoom
+    const nextTranslate = {
+      x: cursor.x - (cursor.x - translate.x) * scale,
+      y: cursor.y - (cursor.y - translate.y) * scale
+    }
+
+    clampAndSetTranslate(nextTranslate, nextZoom)
+    setZoom(nextZoom)
+  }
+
+  // (Opcional) Re-centrar al redimensionar el viewport
+  useEffect(() => {
+    const onResize = () => centerContent(zoom)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [zoom, naturalSize.width, naturalSize.height])
+
+  // Centra cuando el diálogo está abierto y ya conocemos el tamaño natural de la imagen
+  useLayoutEffect(() => {
+    if (!isDialogOpen) return
+    if (!containerRef.current) return
+    if (!naturalSize.width || !naturalSize.height) return
+
+    setIsPositioned(false)
+
+    requestAnimationFrame(() => {
+      centerContent(INIT_ZOOM) // 👈 ahora centramos a 200%
+      setZoom(INIT_ZOOM) // 👈 fijamos 200% en el estado
+      requestAnimationFrame(() => setIsPositioned(true))
+    })
+  }, [isDialogOpen, naturalSize.width, naturalSize.height])
+
   const [placas, setPlacas] = useState([])
   const [placaSeleccionada, setPlacaSeleccionada] = useState('')
   const [generatedCode, setGeneratedCode] = useState('')
@@ -199,7 +358,7 @@ const App = ({ titulo, consigna, toolBox }) => {
         ref={consignaRef}
         className="relative mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020]"
       >
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
               variant="ghost"
@@ -211,20 +370,83 @@ const App = ({ titulo, consigna, toolBox }) => {
               </span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed left-1/2 top-1/2 z-50 grid max-h-[92vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-4 shadow-lg sm:rounded-lg md:p-6">
             <DialogHeader>
-              <DialogTitle>Share link</DialogTitle>
+              <DialogTitle>🔌 ¡Conectá el proyecto de esta manera!</DialogTitle>
               <DialogDescription>
-                Anyone who has this link will be able to view this.
+                Vista del circuito y conexiones necesarias para que el proyecto
+                funcione.
               </DialogDescription>
             </DialogHeader>
-            <div className="flex items-center gap-2">
-              <div className="grid flex-1 gap-2"></div>
+
+            {/* Viewport del canvas: oculta desbordes y escucha la rueda */}
+            <div
+              ref={containerRef}
+              className="relative h-[74vh] overflow-hidden rounded-md border bg-muted/30"
+              style={{ touchAction: 'none' }}
+              onWheel={handleWheel}
+            >
+              {/* Capa transformada: translate + scale (anclada en top-left) */}
+              <div
+                ref={transformLayerRef}
+                className="cursor-grab active:cursor-grabbing"
+                style={{
+                  transform: `translate(${translate.x}px, ${translate.y}px) scale(${zoom})`,
+                  transformOrigin: 'top left',
+                  transition:
+                    isPanning || !isPositioned
+                      ? 'none'
+                      : 'transform 100ms ease',
+                  width: naturalSize.width || 'auto',
+                  height: naturalSize.height || 'auto',
+                  visibility: isPositioned ? 'visible' : 'hidden' // 👈 evita el flash en 0,0
+                }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+              >
+                <img
+                  ref={imgRef}
+                  src={conexion}
+                  alt="Imagen del circuito"
+                  className="pointer-events-none block max-w-none select-none"
+                  draggable={false}
+                  onLoad={handleImageLoad}
+                />
+              </div>
+
+              {/* Controles fijos (overlay) */}
+              <div className="pointer-events-auto absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-background/80 px-2 py-1 shadow backdrop-blur">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={zoomOut}
+                  aria-label="Alejar"
+                >
+                  <MinusIcon className="h-4 w-4" />
+                </Button>
+                <span className="w-14 text-center text-xs tabular-nums">
+                  {Math.round(zoom * 100)}%
+                </span>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={zoomIn}
+                  aria-label="Acercar"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={resetView}>
+                  Reset
+                </Button>
+              </div>
             </div>
+
             <DialogFooter className="sm:justify-start">
               <DialogClose asChild>
                 <Button type="button" variant="secondary">
-                  Close
+                  Cerrar
                 </Button>
               </DialogClose>
             </DialogFooter>

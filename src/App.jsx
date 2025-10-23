@@ -33,6 +33,7 @@ Como primer programa para nuestra placa, vamos a **encender un LED**.
 🚀 *Este es el primer paso para aprender a progamar con robots. ¡Vamos con todo!*
 `}
                 toolBox="1"
+                conexion="./img/conexiones/clase1/Eje1Cl1.svg"
               />
             }
           />
@@ -57,6 +58,7 @@ Ahora queremos que el **LED parpadee una vez**.
 ✨ *Animate a resolverlo usando lo que aprendiste. ¡Estás cada vez más de crear tus propias primitivas 😎*
 `}
                 toolBox="2"
+                conexion="./img/conexiones/clase1/Eje1Cl1.svg"
               />
             }
           />
@@ -86,6 +88,7 @@ Te proponemos un desafío final: Hacé que **parpadee A**, luego **parpadee B**,
 💡 *Pensá cómo podrías reutilizar procedimientos o repetir patrones. ¡Este ejercicio pone a prueba tu creatividad!*
 `}
                 toolBox="3"
+                conexion="./img/conexiones/clase1/Eje2Cl1.svg"
               />
             }
           />
@@ -109,6 +112,7 @@ Te proponemos un desafío final: Hacé que **parpadee A**, luego **parpadee B**,
 
 💡 *¡Recordá que todo debe estar organizado usando **procedimientos**! Eso te va a permitir que tu código sea más legible y plantea tu estrategía de solución.*`}
                 toolBox="4"
+                conexion="./img/conexiones/clase1/Eje1Cl1.svg"
               />
             }
           />
@@ -160,6 +164,7 @@ La señal está compuesta por:
 🚀 ¿Te animás a codificar un mensaje de auxilio visual?
 `}
                 toolBox="5"
+                conexion="./img/conexiones/clase1/Eje1Cl1.svg"
               />
             }
           />
@@ -181,6 +186,7 @@ La señal está compuesta por:
 💡 *Recordá usar **procedimientos** para cada color, y repetitivas para no repetir bloques manualmente. ¡Animate a ordenar tu código como un profesional!*
 `}
                 toolBox="6"
+                conexion="./img/conexiones/clase1/Eje2Cl1.svg"
               />
             }
           />
@@ -200,6 +206,7 @@ La señal está compuesta por:
 
 🔎 *Recordá revisar las **primitivas disponibles** para controlar el servomotor.*`}
                 toolBox="7"
+                conexion="./img/conexiones/clase2/Eje2Cl2.svg"
               />
             }
           />
@@ -223,6 +230,7 @@ Ahora vamos a hacer una barrera, ¡como la de los trenes! 🚧🚅 Para esto, ne
 
       `}
                 toolBox="8"
+                conexion="./img/conexiones/clase2/Pro3Cl2.svg"
               />
             }
           />

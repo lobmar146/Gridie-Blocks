@@ -295,7 +295,7 @@ generatorArduino['esperar_un_segundo'] = function (block) {
 
 // Bloque 'EncenderRojoA'
 generatorArduino['EncenderRojoA'] = function (block) {
-  const pin = 5
+  const pin = 7
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Roja conectada al Pin 5'
   const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
@@ -304,7 +304,7 @@ generatorArduino['EncenderRojoA'] = function (block) {
 
 // Bloque 'ApagarRojoA'
 generatorArduino['ApagarRojoA'] = function (block) {
-  const pin = 5
+  const pin = 7
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Roja conectada al Pin 5'
   const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
@@ -331,7 +331,7 @@ generatorArduino['ApagarAmarilloC'] = function (block) {
 
 // Bloque 'EncenderVerdeE'
 generatorArduino['EncenderVerdeE'] = function (block) {
-  const pin = 7
+  const pin = 5
   addPinModeIfNotDefined(pin)
   const comment = 'Encendiendo Luz Verde conectada al Pin 7'
   const code = generateDigitalWrite(pin, 'HIGH', comment) + '\n'
@@ -340,7 +340,7 @@ generatorArduino['EncenderVerdeE'] = function (block) {
 
 // Bloque 'ApagarVerdeE'
 generatorArduino['ApagarVerdeE'] = function (block) {
-  const pin = 7
+  const pin = 5
   addPinModeIfNotDefined(pin)
   const comment = 'Apagando Luz Verde conectada al Pin 7'
   const code = generateDigitalWrite(pin, 'LOW', comment) + '\n'
