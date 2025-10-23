@@ -16,8 +16,12 @@
       "to": "arduino"
     },
     {
-      "from": "electron/libraries",
-      "to": "libraries"
+      "from": "electron/arduino-data",
+      "to": "arduino-data"
+    },
+    {
+      "from": "electron/arduino-data/arduino15",
+      "to": "arduino15"
     }
   ],
   "extraMetadata": {

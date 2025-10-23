@@ -1,0 +1,10 @@
+build_cache:
+    compilation_count_since_last_purge: 6
+cache:
+    builder-api:
+        v3/boards/byvid/pid/0x2341/0x0043:
+            data: '[{"name":"Arduino Uno","fqbn":"arduino:avr:uno"}]'
+            ts: 2025-10-22T11:00:18.5608637-03:00
+installation:
+    id: 104541a2-166d-4157-bfb3-ff72be7f1db8
+    secret: 7e9f7dca-264e-4259-b27f-88eafd9f2085

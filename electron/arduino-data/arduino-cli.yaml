@@ -1,0 +1,6 @@
+board_manager:
+    additional_urls: []
+directories:
+    data: .\electron\arduino-data
+    downloads: .\electron\arduino-data\staging
+    user: .\electron\arduino-data

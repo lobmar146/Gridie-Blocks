@@ -5,6 +5,7 @@ import process from 'process'
 import { fileURLToPath } from 'url'
 import { app, BrowserWindow, ipcMain } from 'electron'
 
+// Crear ventana principal (dev vs producción)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -33,6 +34,8 @@ const createWindow = () => {
 app.whenReady().then(createWindow)
 
 // Ruta a arduino-cli
+// - En dev usamos electron/arduino-cli.exe (.__dirname).
+// - En producción usamos resources/arduino-cli.exe (process.resourcesPath).
 let arduinoCliPath
 if (process.defaultApp || process.env.NODE_ENV === 'development') {
   arduinoCliPath = path.join(__dirname, 'arduino-cli.exe')
@@ -40,9 +43,16 @@ if (process.defaultApp || process.env.NODE_ENV === 'development') {
   arduinoCliPath = path.join(process.resourcesPath, 'arduino-cli.exe')
 }
 
-// Helper para ejecutar arduino-cli con el entorno adecuado
+// Ejecutar arduino-cli incluyendo automáticamente el --config-file cuando exista.
+// Todas las invocaciones a arduino-cli deben pasar por aquí.
 function execArduinoCli(command, callback) {
-  exec(`"${arduinoCliPath}" ${command}`, { env: process.env }, callback)
+  const cfg = getArduinoConfigFile()
+  const cfgArg = cfg && fs.existsSync(cfg) ? `--config-file "${cfg}"` : ''
+  exec(
+    `"${arduinoCliPath}" ${cfgArg} ${command}`,
+    { env: process.env },
+    callback
+  )
 }
 
 // Listar placas conectadas
@@ -84,21 +94,30 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
     const { buildPath, tempFilePath, hexFilePath } = getBuildPaths()
     const fqbn = 'arduino:avr:uno' // Cambia esto según tu placa
 
-    // Copiar librerías locales (si existen) dentro de build/libraries para que arduino-cli las detecte
+    // Preparar ruta de librerías usadas por arduino-cli:
+    // - Prioridad: librerías dentro de electron/arduino-data (packaged).
+    // - Fallback en desarrollo: __dirname/libraries.
+    // - Evitar rutas dentro de app.asar (arduino-cli no puede leer de .asar).
     let finalLibrariesPath = '' // <-- nuevo: ruta final que pasaremos a arduino-cli
     try {
-      // Buscar librerías locales en varios lugares:
-      // 1) durante desarrollo: __dirname/libraries
-      // 2) en la app empaquetada: process.resourcesPath/libraries
-      // 3) si usas extraResources con carpeta 'arduino', también revisar process.resourcesPath/arduino/libraries
-      // Priorizar las librerías fuera del asar (process.resourcesPath/libraries)
+      const isDev = process.defaultApp || process.env.NODE_ENV === 'development'
+
+      // En desarrollo usar electron/arduino-data/libraries (local).
+      // En producción usar resources/arduino-data/libraries.
       const candidates = [
-        path.join(process.resourcesPath || __dirname, 'libraries'),
-        path.join(process.resourcesPath || __dirname, 'arduino', 'libraries'),
-        path.join(__dirname, 'libraries')
+        isDev
+          ? path.join(__dirname, 'arduino-data', 'libraries')
+          : path.join(
+              process.resourcesPath || __dirname,
+              'arduino-data',
+              'libraries'
+            )
       ]
 
-      // Filtrar rutas existentes y evitar las que estén dentro de app.asar
+      // DEBUG: mostrar rutas candidatas
+      console.log('DEBUG: isDev=', isDev, 'candidates=', candidates)
+
+      // Seleccionar rutas existentes y preferir las no empaquetadas en app.asar.
       const existing = candidates.filter(p => fs.existsSync(p))
       const unpacked = existing.filter(
         p => !p.split(path.sep).some(part => part.includes('app.asar'))
@@ -106,12 +125,11 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
       const localLibsDir = unpacked.length ? unpacked[0] : existing[0] || null
       const destLibsDir = path.join(buildPath, 'libraries')
 
+      // Copiar a build/libraries si es posible; si falla, usar la ruta original en resources.
       if (localLibsDir) {
-        // limpiar destino si existe
         if (fs.existsSync(destLibsDir)) {
           fs.rmSync(destLibsDir, { recursive: true, force: true })
         }
-        // copiar recursivamente (Node >=16 soporta fs.cpSync)
         if (fs.cpSync) {
           try {
             fs.cpSync(localLibsDir, destLibsDir, { recursive: true })
@@ -152,16 +170,25 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
       } else {
         // fallback: usar las librerías empaquetadas en resources si existen, o intentar instalar Servo
         const resourceCandidates = [
-          path.join(process.resourcesPath || __dirname, 'libraries'),
-          path.join(process.resourcesPath || __dirname, 'arduino', 'libraries')
+          isDev
+            ? path.join(__dirname, 'arduino-data', 'libraries')
+            : path.join(
+                process.resourcesPath || __dirname,
+                'arduino-data',
+                'libraries'
+              )
         ]
+        console.log('DEBUG: resourceCandidates=', resourceCandidates)
         const resourceLibs = resourceCandidates.find(p => fs.existsSync(p))
         if (resourceLibs) {
           finalLibrariesPath = resourceLibs
           console.log('Usando librerías desde resources:', finalLibrariesPath)
         } else {
           try {
-            execSync(`"${arduinoCliPath}" lib install "Servo"`, {
+            const cfg = getArduinoConfigFile()
+            const cfgArg =
+              cfg && fs.existsSync(cfg) ? `--config-file "${cfg}"` : ''
+            execSync(`"${arduinoCliPath}" ${cfgArg} lib install "Servo"`, {
               stdio: 'inherit'
             })
             // si la instalación local coloca la librería en el sketchbook, podríamos no conocer la ruta exacta;
@@ -196,40 +223,195 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
               ? `--libraries "${fallbackBuildLibs}"`
               : ''
 
-        execArduinoCli(
-          `compile --fqbn ${fqbn} --output-dir "${buildPath}" ${librariesArg} "${tempFilePath}"`,
-          (compileError, compileStdout, compileStderr) => {
-            if (compileError) {
-              reject(`Error al compilar: ${compileError.message}`)
-              return
-            }
-            if (compileStderr) {
-              reject(`Error al compilar: ${compileStderr}`)
-              return
-            }
-
-            console.log('Compilación exitosa:', compileStdout)
-
-            // Subir el archivo compilado (.hex)
+        // Antes de compilar, asegurar que el core AVR esté instalado
+        {
+          // Reemplazar la llamada directa a 'core install arduino:avr' por:
+          const isDev =
+            process.defaultApp || process.env.NODE_ENV === 'development'
+          if (isDev) {
+            // En desarrollo sigue instalando si hace falta
             execArduinoCli(
-              `upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`,
-              (uploadError, uploadStdout, uploadStderr) => {
-                if (uploadError) {
-                  reject(`Error al subir: ${uploadError.message}`)
+              'core install arduino:avr',
+              (coreErr, coreStdout, coreStderr) => {
+                if (coreErr) {
+                  reject(
+                    `No se pudo instalar el core arduino:avr: ${coreErr.message}`
+                  )
                   return
                 }
-                if (uploadStderr) {
-                  reject(`Error al subir: ${uploadStderr}`)
+                if (coreStderr && coreStderr.trim() !== '') {
+                  console.warn('arduino-cli core install stderr:', coreStderr)
+                }
+                console.log(
+                  'Core arduino:avr disponible:',
+                  coreStdout || 'ya instalado'
+                )
+                // continuar con la compilación...
+                // Ahora compilar (mantener la lógica existente)
+                execArduinoCli(
+                  `compile --fqbn ${fqbn} --output-dir "${buildPath}" ${librariesArg} "${tempFilePath}"`,
+                  (compileError, compileStdout, compileStderr) => {
+                    if (compileError) {
+                      reject(`Error al compilar: ${compileError.message}`)
+                      return
+                    }
+                    if (compileStderr && compileStderr.trim() !== '') {
+                      reject(`Error al compilar: ${compileStderr}`)
+                      return
+                    }
+
+                    console.log('Compilación exitosa:', compileStdout)
+
+                    // Subir el binario (mantener la lógica existente)
+                    execArduinoCli(
+                      `upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`,
+                      (uploadError, uploadStdout, uploadStderr) => {
+                        if (uploadError) {
+                          reject(`Error al subir: ${uploadError.message}`)
+                          return
+                        }
+                        if (uploadStderr && uploadStderr.trim() !== '') {
+                          // No tratar stderr como fatal si solo contiene warnings; ajustar si es necesario
+                          console.warn(
+                            'arduino-cli upload stderr:',
+                            uploadStderr
+                          )
+                        }
+                        resolve(uploadStdout)
+                      }
+                    )
+                  }
+                )
+              }
+            )
+          } else {
+            // Producción: esperar que el core esté preempaquetado (evitar descargas/timeouts)
+            const packagedArduino15 = path.join(
+              process.resourcesPath || __dirname,
+              'arduino15'
+            )
+            const corePresent = fs.existsSync(packagedArduino15)
+            if (!corePresent) {
+              reject(
+                'En producción el core arduino:avr debe preempaquetarse. ' +
+                  'Empaqueta la carpeta .arduino15 (que contiene los cores) en resources/arduino15 ' +
+                  'o incluye el core en extraResources. Ver README / electron-builder.json.'
+              )
+              return
+            }
+            console.log(
+              'Producción: usando core preempaquetado en',
+              packagedArduino15
+            )
+            // continuar con la compilación (sin intentar instalar core)
+            execArduinoCli(
+              `compile --fqbn ${fqbn} --output-dir "${buildPath}" ${librariesArg} "${tempFilePath}"`,
+              (compileError, compileStdout, compileStderr) => {
+                if (compileError) {
+                  reject(`Error al compilar: ${compileError.message}`)
                   return
                 }
-                resolve(uploadStdout)
+                if (compileStderr && compileStderr.trim() !== '') {
+                  reject(`Error al compilar: ${compileStderr}`)
+                  return
+                }
+
+                console.log('Compilación exitosa:', compileStdout)
+
+                // Subir el binario (mantener la lógica existente)
+                execArduinoCli(
+                  `upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`,
+                  (uploadError, uploadStdout, uploadStderr) => {
+                    if (uploadError) {
+                      reject(`Error al subir: ${uploadError.message}`)
+                      return
+                    }
+                    if (uploadStderr && uploadStderr.trim() !== '') {
+                      // No tratar stderr como fatal si solo contiene warnings; ajustar si es necesario
+                      console.warn('arduino-cli upload stderr:', uploadStderr)
+                    }
+                    resolve(uploadStdout)
+                  }
+                )
               }
             )
           }
-        )
+        }
       } catch (error) {
         reject(error)
       }
     })()
   })
 })
+
+// Reemplaza la función getArduinoConfigFile por esta implementación
+function getArduinoConfigFile() {
+  const isDev = process.defaultApp || process.env.NODE_ENV === 'development'
+
+  const packagedArduino15 = path.join(
+    process.resourcesPath || __dirname,
+    'arduino15'
+  )
+  const devArduino15 = path.join(__dirname, 'arduino-data', 'arduino15')
+
+  const packagedYaml = path.join(
+    process.resourcesPath || __dirname,
+    'arduino-data',
+    'arduino-cli.yaml'
+  )
+  const devYaml = path.join(__dirname, 'arduino-data', 'arduino-cli.yaml')
+
+  const tempCfgPath = path.join(
+    app.getPath('userData'),
+    'arduino-cli-generated.yaml'
+  )
+
+  try {
+    // Desarrollo: si existe una carpeta arduino15 local, crear config temporal que la apunte
+    if (isDev) {
+      if (fs.existsSync(devArduino15)) {
+        const normalized = devArduino15.replace(/\\/g, '/')
+        const yamlContent = `directories:\n  data: "${normalized}"\n`
+        let writeNeeded = true
+        if (fs.existsSync(tempCfgPath)) {
+          try {
+            const existing = fs.readFileSync(tempCfgPath, 'utf8')
+            writeNeeded = existing !== yamlContent
+          } catch (e) {
+            writeNeeded = true
+          }
+        }
+        if (writeNeeded) fs.writeFileSync(tempCfgPath, yamlContent, 'utf8')
+        return tempCfgPath
+      }
+      // fallback dev: usar arduino-cli.yaml dentro de arduino-data si existe
+      if (fs.existsSync(devYaml)) return devYaml
+      // fallback final: usar empaquetado si existe
+      if (fs.existsSync(packagedYaml)) return packagedYaml
+      return ''
+    }
+
+    // Producción: comportamiento existente (usar arduino15 empaquetado o YAML empaquetado)
+    if (fs.existsSync(packagedArduino15)) {
+      const normalized = packagedArduino15.replace(/\\/g, '/')
+      const yamlContent = `directories:\n  data: "${normalized}"\n`
+      let writeNeeded = true
+      if (fs.existsSync(tempCfgPath)) {
+        try {
+          const existing = fs.readFileSync(tempCfgPath, 'utf8')
+          writeNeeded = existing !== yamlContent
+        } catch (e) {
+          writeNeeded = true
+        }
+      }
+      if (writeNeeded) fs.writeFileSync(tempCfgPath, yamlContent, 'utf8')
+      return tempCfgPath
+    }
+
+    if (fs.existsSync(packagedYaml)) return packagedYaml
+    return ''
+  } catch (err) {
+    console.error('getArduinoConfigFile error:', err)
+    return fs.existsSync(packagedYaml) ? packagedYaml : ''
+  }
+}
