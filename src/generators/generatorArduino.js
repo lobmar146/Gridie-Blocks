@@ -997,7 +997,7 @@ void actualizarParlanteIntervalo(int buzzerPin, int freq, unsigned long interval
 }
 
 generatorArduino['parlante_apagar'] = function (block) {
-  const buzzerPin = 2
+  const buzzerPin = 12
   // (Opcional) aseguramos pinMode por prolijidad; no hace falta para noTone, pero mantiene tu patrón:
   addPinModeIfNotDefined(
     buzzerPin,

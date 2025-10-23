@@ -70,6 +70,10 @@ export const toolboxDesafioClase4 = {
       contents: [
         {
           kind: 'block',
+          type: 'sensor_obstaculos'
+        },
+        {
+          kind: 'block',
           type: 'sensor_ultrasonico_rango'
         },
         {
