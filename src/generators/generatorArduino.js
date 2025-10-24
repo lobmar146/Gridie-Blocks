@@ -822,7 +822,7 @@ generatorArduino['custom_if_else_condition'] = function (block) {
 }
 
 generatorArduino['sensor_obstaculos'] = function (block) {
-  const pin = 2
+  const pin = 4
   const variableName = 'sensor_obstaculos'
 
   console.log('Generando sensor_obstaculos...')

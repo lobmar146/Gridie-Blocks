@@ -40,7 +40,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   const [translateStart, setTranslateStart] = useState({ x: 0, y: 0 })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isPositioned, setIsPositioned] = useState(false) // capa lista y centrada
-  const INIT_ZOOM = 2 // 200%
+  const INIT_ZOOM = 1.6 // 200%
   const [zoom, setZoom] = useState(INIT_ZOOM)
 
   const ZOOM_STEP = 0.25
@@ -382,7 +382,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
             {/* Viewport del canvas: oculta desbordes y escucha la rueda */}
             <div
               ref={containerRef}
-              className="relative h-[74vh] overflow-hidden rounded-md border bg-muted/30"
+              className="relative h-[74vh] overflow-hidden rounded-md border bg-muted"
               style={{ touchAction: 'none' }}
               onWheel={handleWheel}
             >

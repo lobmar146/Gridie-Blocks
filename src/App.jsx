@@ -255,6 +255,7 @@ A partir de ahora, siempre que trabajemos con sensores vamos a programar dentro 
 De esa manera, el programa repetirá continuamente la acción y podrá “estar atento” todo el tiempo a lo que pasa alrededor.  
 `}
                 toolBox="9"
+                conexion="./img/conexiones/clase3/Ej1Cl3.svg"
               />
             }
           />
@@ -283,6 +284,7 @@ Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesi
 
 `}
                 toolBox="10"
+                conexion="./img/conexiones/clase3/Ej1Cl3.svg"
               />
             }
           />
@@ -308,6 +310,7 @@ Leer continuamente el estado del **sensor ultrasónico** y controlar el **parlan
 
 `}
                 toolBox="11"
+                conexion="./img/conexiones/clase3/Ej2Cl3.svg"
               />
             }
           />
@@ -341,6 +344,7 @@ El objetivo es combinar el sensor para medir la distancia de un obstáculo, junt
 
 `}
                 toolBox="12"
+                conexion="./img/conexiones/clase3/Pro3Cl3.svg"
               />
             }
           />
