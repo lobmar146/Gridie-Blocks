@@ -44,7 +44,7 @@
     "allowElevation": true,
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
-    "artifactName": "${productName}.Setup.${version}.exe"
+    "artifactName": "${productName}.Setup.exe"
   },
   "linux": {
     "target": ["AppImage", "deb"],

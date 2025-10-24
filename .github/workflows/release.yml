@@ -60,6 +60,6 @@ jobs:
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           artifacts: |
-            dist-electron/GridieBlocks.Setup.1.0.0.exe
+            dist-electron/GridieBlocks.Setup.exe
           token: ${{ secrets.GITHUB_TOKEN }}
           replacesArtifacts: true
