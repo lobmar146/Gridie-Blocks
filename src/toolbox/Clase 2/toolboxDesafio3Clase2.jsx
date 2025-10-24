@@ -7,6 +7,10 @@ export const toolboxDesafio3Clase2 = {
       contents: [
         {
           kind: 'block',
+          type: 'esperar_x_milisegundos' // Bloque 'esperar_x_milisegundos'
+        },
+        {
+          kind: 'block',
           type: 'EncenderRojoA' // Semáforo: Encender Rojo Semáforo 1
         },
         {
