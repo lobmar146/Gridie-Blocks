@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { Spinner } from '@/components/ui/spinner'
 import BlocklyComponent from '../components/BocklyComponent'
 
 const App = ({ titulo, consigna, toolBox, conexion }) => {
@@ -343,11 +344,15 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
             <Button
               variant="default"
               size="sm"
-              className={`bg-green-600 text-white hover:bg-green-700 ${isUploading ? 'opacity-70' : ''}`}
+              className={`min-w-[125.3px] justify-start bg-green-600 text-white hover:bg-green-700 ${isUploading ? 'opacity-70' : ''}`}
               onClick={subirCodigo}
               disabled={isUploading}
             >
-              <UploadIcon className="mr-1.5 h-3.5 w-3.5" />
+              {isUploading ? (
+                <Spinner className="mr-1.5" />
+              ) : (
+                <UploadIcon className="mr-1.5 h-3.5 w-3.5" />
+              )}
               {isUploading ? 'Subiendo...' : 'Subir Código'}
             </Button>
           </div>
