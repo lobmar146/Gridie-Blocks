@@ -1023,7 +1023,7 @@ generatorArduino['sensor_humedad_tierra_baja'] = function (block) {
   addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
 
   return [
-    `(analogRead(${variableName}) >=0 and analogRead(${variableName})<=50)`,
+    `(analogRead(${variableName}) >=700 and analogRead(${variableName})<=1024)`,
     generatorArduino.ORDER_EQUALITY
   ]
 }
@@ -1042,7 +1042,7 @@ generatorArduino['sensor_humedad_tierra_media'] = function (block) {
   addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
 
   return [
-    `(analogRead(${variableName}) >=51 and analogRead(${variableName})<=200)`,
+    `(analogRead(${variableName}) >=300 and analogRead(${variableName})<=699)`,
     generatorArduino.ORDER_EQUALITY
   ]
 }
@@ -1061,21 +1061,7 @@ generatorArduino['sensor_humedad_tierra_alta'] = function (block) {
   addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
 
   return [
-    `(analogRead(${variableName}) >=200)`,
-    generatorArduino.ORDER_EQUALITY
-  ]
-}
-generatorArduino['sensor_humedad_tierra_baja'] = function (block) {
-  const pin = 'A0'
-  const variableName = 'sensor_gas'
-
-  console.log('Generando sensor_gas...')
-
-  addVariableIfNotDefined(variableName, pin, 'Definimos el sensor de gas')
-  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
-
-  return [
-    `(analogRead(${variableName}) >=0 and analogRead(${variableName})<=50)`,
+    `(analogRead(${variableName}) <=300)`,
     generatorArduino.ORDER_EQUALITY
   ]
 }
