@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { LogoTextoUNLPAM } from '@/components/logo-texto-unlpam'
 import { LogoUNLPAM } from '@/components/logo-unlpam'
+import { LogoUPA } from '@/components/logo-upa'
 
 const Home = () => {
   return (
@@ -12,11 +13,7 @@ const Home = () => {
           <LogoTextoUNLPAM className="hidden w-[219.04px] invert sm:inline-block" />
         </div>
         <div>
-          <img
-            src="./UPA.svg"
-            alt="Logo Universidad Pública"
-            className="w-[125px]"
-          />
+          <LogoUPA className="w-[125px]" />
         </div>
       </div>
       <h1 className="my-5 p-5 text-center text-3xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
