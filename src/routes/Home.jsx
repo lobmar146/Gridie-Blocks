@@ -1,10 +1,25 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { LogoTextoUNLPAM } from '@/components/logo-texto-unlpam'
+import { LogoUNLPAM } from '@/components/logo-unlpam'
 
 const Home = () => {
   return (
     <section className="m-5 max-w-4xl rounded-lg border bg-[#202020] p-5 lg:mx-auto">
-      <h1 className="mb-4 p-5 text-center text-3xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
+      <div className="flex items-baseline justify-center gap-5">
+        <div className="flex gap-2">
+          <LogoUNLPAM className="w-[100.95px]" />
+          <LogoTextoUNLPAM className="hidden w-[219.04px] invert sm:inline-block" />
+        </div>
+        <div>
+          <img
+            src="./UPA.svg"
+            alt="Logo Universidad Pública"
+            className="w-[125px]"
+          />
+        </div>
+      </div>
+      <h1 className="my-5 p-5 text-center text-3xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
         Bienvenido a{' '}
         <span className="logo">
           <span className="texto-verde">GrID</span>
@@ -13,8 +28,7 @@ const Home = () => {
         Blocks Alfa!
       </h1>
       <h3 className="mb-5 text-center text-xl font-bold text-primary">
-        Este proyecto es para probar las características de Blockly, rompamos
-        juntos:
+        Este proyecto es para probar las características de Blockly
       </h3>
       {/* Clase 1 */}
       <section>
