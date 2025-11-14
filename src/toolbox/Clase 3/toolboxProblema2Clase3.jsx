@@ -15,6 +15,10 @@ export const toolboxProblema2Clase3 = {
         },
         {
           kind: 'block',
+          type: 'esperar_x_milisegundos'
+        },
+        {
+          kind: 'block',
           type: 'EncenderRojoA' // Semáforo: Encender Rojo Semáforo 1
         },
         {

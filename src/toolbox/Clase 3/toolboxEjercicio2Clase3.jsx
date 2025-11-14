@@ -12,6 +12,10 @@ export const toolboxEjercicio2Clase3 = {
         {
           kind: 'block',
           type: 'parlante_apagar'
+        },
+        {
+          kind: 'block',
+          type: 'esperar_x_milisegundos'
         }
       ]
     },
