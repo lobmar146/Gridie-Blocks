@@ -22,6 +22,7 @@ import { toolboxEjercicio2Clase3 } from '@/toolbox/Clase 3/toolboxEjercicio2Clas
 import { toolboxProlema1Clase3 } from '@/toolbox/Clase 3/toolboxProblema1Clase3'
 import { toolboxProblema2Clase3 } from '@/toolbox/Clase 3/toolboxProblema2Clase3'
 import { toolboxDesafioClase4 } from '@/toolbox/Clase 4/toolboxDesafioClase4'
+import { toolboxDesafioHumedad } from '@/toolbox/Clase 4/toolboxDesafioHumedad'
 import { toolboxDesafio4Clase2 } from '../toolbox/Clase 2/toolboxDesafio4Clase2'
 import { toolboxEjercicio1Clase3 } from '../toolbox/Clase 3/toolboxEjercicio1Clase3'
 
@@ -64,7 +65,8 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
     10: toolboxProlema1Clase3,
     11: toolboxEjercicio2Clase3,
     12: toolboxProblema2Clase3,
-    13: toolboxDesafioClase4
+    13: toolboxDesafioClase4,
+    14: toolboxDesafioHumedad
     // Agrega aquí otros toolboxes si los tienes
   }
   const darkTheme = Blockly.Theme.defineTheme('darkTheme', {

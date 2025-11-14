@@ -380,6 +380,34 @@ Antes de empezar, **leé con atención la Concept Card** que te tocó y pensá e
               />
             }
           />
+          <Route
+            path="/DesafioHumedad"
+            element={
+              <Desafio
+                titulo="Desafío: Sensor de Humedad en la Tierraa. "
+                consigna={`### 🌱💧 **Desafío: Sensor de Humedad**
+
+¡Vamos a construir nuestro propio **detector de riego inteligente**! Para eso, usaremos el **Sensor de Humedad en la Tierra** 🌱💧
+
+Tu proyecto deberá funcionar de la siguiente manera:
+
+1.🔴 **Humedad en la tierra baja.**  
+   Cuando la humedad en la tierra sea baja, encendé la luz **roja** del semáforo.
+
+2.🟡 **Humedad en la tierra media**  
+   Cuando la humedad en la tierra sea media, encendé la luz **amarilla** del semáforo.
+
+3.🟢 **Humedad en la tierra alta**  
+   Cuando la humedad en la tierra sea alta, encendé la luz **verde** del semáforo.
+
+➕**Extra:**  
+Si querés sumar dificultad, hacé que suene la **alarma cada 1000 ms** cuando la humedad sea baja 🔊
+
+`}
+                toolBox="14"
+              />
+            }
+          />
         </Routes>
       </div>
     </ThemeProvider>

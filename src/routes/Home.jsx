@@ -214,6 +214,19 @@ const Home = () => {
 
         <div className="grid grid-cols-3 gap-4 py-5">
           <Link
+            to="/DesafioHumedad"
+            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+          >
+            <img
+              src="img/clase3/sensorObstaculos.svg"
+              alt="Led subir y bajar"
+              className="mb-4 h-32 w-full rounded-full object-contain"
+            />
+            <p className="font-semibold">
+              Desafío: Sensor Humedad en la Tierra
+            </p>
+          </Link>
+          <Link
             to="/DesafioClase4"
             className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
