@@ -7,6 +7,10 @@ export const toolboxDesafioHumedad = {
       contents: [
         {
           kind: 'block',
+          type: 'EncenderRojoA' // Semáforo: Encender Amarillo Semáforo 1
+        },
+        {
+          kind: 'block',
           type: 'ApagarRojoA' // Semáforo: Apagar Rojo Semáforo 1
         },
         {

@@ -17,16 +17,14 @@ const Home = () => {
         </div>
       </div>
       <h1 className="my-5 p-5 text-center text-3xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
-        Bienvenido a{' '}
+        ¡Bienvenido a{' '}
         <span className="logo">
           <span className="texto-verde">GrID</span>
           <span className="texto-rojo">IE</span>
         </span>{' '}
-        Blocks Alfa!
+        Blocks!
       </h1>
-      <h3 className="mb-5 text-center text-xl font-bold text-primary">
-        Este proyecto es para probar las características de Blockly
-      </h3>
+      <h3 className="mb-5 text-center text-xl font-bold text-primary"></h3>
       {/* Clase 1 */}
       <section>
         <h2 className="border-y p-5 text-2xl font-extrabold dark:text-white">
