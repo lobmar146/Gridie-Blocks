@@ -21,7 +21,7 @@ export const toolboxDesafio2Clase2 = {
     },
     {
       kind: 'category',
-      name: 'Bucles',
+      name: 'Repetitivas',
       contents: [
         {
           kind: 'block',

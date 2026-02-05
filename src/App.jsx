@@ -292,8 +292,8 @@ Seguiremos programando dentro del bloque **Ejecutar por siempre**, porque necesi
             path="/Ejercicio2Clase3"
             element={
               <Desafio
-                titulo="Ejercicio 2: Sensor Ultrasónico"
-                consigna={`### 🦇 Sensor Ultrasónico  
+                titulo="Ejercicio 2: Sensando Distancias"
+                consigna={`### 🦇 Ejercicio 2: Sensando Distancias 
 
 ¡Nuevo sensor y nuevo actuador!  
 El **Sensor Ultrasónico 🦇** nos va a permitir detectar obstáculos a distintas distancias.  
