@@ -83,7 +83,7 @@ const Home = () => {
               alt="Led subir y bajar"
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
-            <p className="font-semibold">Ejercicio 1: Parpadear 5 veces</p>
+            <p className="font-semibold">Ejercicio 1: Parpadear 30 veces</p>
           </Link>
           {/* <Link
             to="/Ejercicio2Clase2"
