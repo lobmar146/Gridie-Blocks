@@ -97,9 +97,9 @@ Te proponemos un desafío final: Hacé que **parpadee A**, luego **parpadee B**,
             element={
               <Desafio
                 titulo="Ejercicio 1: Parpadear 30 veces"
-                consigna={`### ✴️ Ejercicio 1: Parpadear 5 veces
+                consigna={`### ✴️ Ejercicio 1: Parpadear 30 veces
 
-¿Cómo hacemos para que el **LED parpadee 5 veces**?
+¿Cómo hacemos para que el **LED parpadee 30 veces**?
 
 🧠 **Objetivo:** Repetir una secuencia de encendido y apagado varias veces.
 
