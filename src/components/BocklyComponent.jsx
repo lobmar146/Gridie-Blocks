@@ -271,7 +271,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
       .writeText(code)
       .then(() => {
         toast.success(
-          'Código copiado al portapapeles. Recorda pegarlo en el Arduino IDE y subirlo a la placa.',
+          'Código copiado. Recorda pegarlo en el Arduino IDE y subirlo a la placa.',
           {
             style: {
               borderRadius: '10px',

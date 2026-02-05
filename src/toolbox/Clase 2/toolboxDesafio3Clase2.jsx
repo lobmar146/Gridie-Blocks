@@ -43,7 +43,7 @@ export const toolboxDesafio3Clase2 = {
     },
     {
       kind: 'category',
-      name: 'Bucles',
+      name: 'Repetitivas',
       contents: [
         {
           kind: 'block',
