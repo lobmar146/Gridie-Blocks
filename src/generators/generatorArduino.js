@@ -147,7 +147,8 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     variableName != 'Servo' &&
     variableName != 'sensor_fuego' &&
     variableName != 'sensor_humedad_tierra' &&
-    variableName != 'sensor_obstaculos'
+    variableName != 'sensor_obstaculos' &&
+    variableName != 'sensor_PIR'
   ) {
     codeMap.pinMode += `pinMode(${pin}, OUTPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
@@ -158,6 +159,9 @@ function addPinModeIfNotDefined(pin, variableName, comment) {
     codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'sensor_obstaculos') {
+    codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
+    configuredPins[pin] = true // Marcar pin como configurado
+  } else if (!configuredPins[pin] && variableName == 'sensor_PIR') {
     codeMap.pinMode += `pinMode(${variableName}, INPUT);\n\n`
     configuredPins[pin] = true // Marcar pin como configurado
   } else if (!configuredPins[pin] && variableName == 'sensor_humedad_tierra') {
@@ -1096,6 +1100,20 @@ generatorArduino['sensor_gasalto'] = function (block) {
 
   return [
     `(analogRead(${variableName}) >=200)`,
+    generatorArduino.ORDER_EQUALITY
+  ]
+}
+
+generatorArduino['sensor_PIR'] = function (block) {
+  const pin = 4
+  const variableName = 'sensor_PIR'
+
+  console.log('Generando sensor_PIR...')
+
+  addVariableIfNotDefined(variableName, pin, 'Definimos el sensor PIR')
+  addPinModeIfNotDefined(pin, variableName, 'Configuramos el pin del sensor')
+  return [
+    `(digitalRead(${variableName}) == 1)`,
     generatorArduino.ORDER_EQUALITY
   ]
 }

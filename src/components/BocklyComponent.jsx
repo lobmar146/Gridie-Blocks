@@ -18,8 +18,10 @@ import '../App.css'
 import toast from 'react-hot-toast'
 import { toolboxDesafio3Clase2 } from '@/toolbox/Clase 2/toolboxDesafio3Clase2'
 import { toolboxDesafio5Clase2 } from '@/toolbox/Clase 2/toolboxDesafio5Clase2'
+import { toolboxEjercicio1Clase3PIR } from '@/toolbox/Clase 3/toolboxEjercicio1Clase3PIR'
 import { toolboxEjercicio2Clase3 } from '@/toolbox/Clase 3/toolboxEjercicio2Clase3'
 import { toolboxProlema1Clase3 } from '@/toolbox/Clase 3/toolboxProblema1Clase3'
+import { toolboxProlema1Clase3PIR } from '@/toolbox/Clase 3/toolboxProblema1Clase3PIR'
 import { toolboxProblema2Clase3 } from '@/toolbox/Clase 3/toolboxProblema2Clase3'
 import { toolboxDesafioClase4 } from '@/toolbox/Clase 4/toolboxDesafioClase4'
 import { toolboxDesafioHumedad } from '@/toolbox/Clase 4/toolboxDesafioHumedad'
@@ -61,8 +63,8 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
     6: toolboxDesafio3Clase2,
     7: toolboxDesafio4Clase2,
     8: toolboxDesafio5Clase2,
-    9: toolboxEjercicio1Clase3,
-    10: toolboxProlema1Clase3,
+    9: toolboxEjercicio1Clase3PIR,
+    10: toolboxProlema1Clase3PIR,
     11: toolboxEjercicio2Clase3,
     12: toolboxProblema2Clase3,
     13: toolboxDesafioClase4,

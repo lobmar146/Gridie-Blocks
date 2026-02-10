@@ -238,17 +238,17 @@ Ahora vamos a hacer una barrera, ¡como la de los trenes! 🚧🚅 Para esto, ne
             path="/Ejercicio1Clase3"
             element={
               <Desafio
-                titulo="Ejercicio 1: Detección de obstaculos"
-                consigna={`### 📡 Detectar obstáculo con Sensor IR y encender LED  
+                titulo="Ejercicio 1: Detección de movimientos"
+                consigna={`### 📡 Detectar movimiento con el Sensor PIR y encender LED  
 
-Seguimos avanzando con **sensores** 😎. Esta vez vamos a usar el **sensor de obstáculos IR**.  
+Seguimos avanzando con **sensores** 😎. Esta vez vamos a usar el **sensor de movimiento PIR**.  
 
-La idea es simple: cuando el sensor detecte un obstáculo delante, vamos a **encender el LED conectado en el pin 13**.  
+La idea es simple: cuando el sensor detecte un movimiento, vamos a **encender el LED conectado en el pin 13**.  
 
 Para lograrlo, necesitaremos usar un nuevo tipo de bloque que nos permita **hacer preguntas** al sensor y tomar decisiones según su respuesta.  
 
 🧠 **Objetivo:**  
-Leer el estado de un **sensor de obstáculos IR** y **encender un LED** cuando se detecte algo delante, usando la categoría **Alternativa condicional** y los bloques de **Sensores**.  
+Leer el estado de un **sensor de obstáculos PIR** y **encender un LED** cuando se detecte movimiento, usando la categoría **Alternativa condicional** y los bloques de **Sensores**.  
 
 🔁 **Importante:**  
 A partir de ahora, siempre que trabajemos con sensores vamos a programar dentro del bloque **Ejecutar por siempre**.  
@@ -264,11 +264,11 @@ De esa manera, el programa repetirá continuamente la acción y podrá “estar 
             path="/Problema1Clase3"
             element={
               <Desafio
-                titulo="Problema 1: Dejando de detectar el obstaculo..."
-                consigna={`### 📡 Dejando de detectar el obstaculo...  
+                titulo="Problema 1: Dejando de detectar movimiento..."
+                consigna={`### 📡 Dejando de detectar movimiento...  
 
-Ya sabemos cómo **encender un LED cuando el sensor IR detecta un obstáculo**.  
-Ahora vamos a dar un paso más: cuando el sensor **deje de detectar el obstáculo**, el LED deberá **apagarse automáticamente**.  
+Ya sabemos cómo **encender un LED cuando el sensor PIR detecta movimiento**.  
+Ahora vamos a dar un paso más: cuando el sensor **deje de detectar movimiento**, el LED deberá **apagarse automáticamente**.  
 
 De esta manera, el LED funcionará como una **luz de aviso**:  
 - Si hay algo delante 👉 se enciende.  

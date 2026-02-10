@@ -915,6 +915,26 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
       colour: SENSORES,
       tooltip: 'Devuelve verdadero si se detecta una llama',
       helpUrl: ''
+    },
+    {
+      type: 'sensor_PIR',
+      message0:
+        '¿Está detectando un movimiento el sensor PIR conectado al pin 4? %1  ',
+      args0: [
+        {
+          type: 'field_image',
+          src: './img/clase3/sensorPir.svg',
+          width: 60,
+          height: 50,
+          alt: '*',
+          flipRtl: false
+        }
+      ],
+      output: 'Boolean',
+      colour: SENSORES,
+      tooltip:
+        'Devuelve verdadero si el sensor IR de obstáculos detecta algo en el pin 2.',
+      helpUrl: ''
     }
   ]
 )
