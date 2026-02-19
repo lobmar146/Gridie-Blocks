@@ -405,6 +405,7 @@ Si querés sumar dificultad, hacé que suene la **alarma cada 1000 ms** cuando l
 
 `}
                 toolBox="14"
+                conexion="./img/conexiones/clase4/sensor_humedad_tierra.svg"
               />
             }
           />
