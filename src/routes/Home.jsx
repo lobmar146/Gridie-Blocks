@@ -207,7 +207,7 @@ const Home = () => {
       {/* Clase 3 */}
       <section>
         <h2 className="border-y p-5 text-2xl font-extrabold dark:text-white">
-          Clase 4: Concept Cards
+          Clase 4: Pequeños Proyectos
         </h2>
 
         <div className="grid grid-cols-3 gap-4 py-5">
@@ -221,7 +221,7 @@ const Home = () => {
               className="mb-4 h-32 w-full rounded-full object-contain"
             />
             <p className="font-semibold">
-              Desafío: Sensor Humedad en la Tierra
+              Desafío: Sistema de riego inteligente.
             </p>
           </Link>
           {/* <Link

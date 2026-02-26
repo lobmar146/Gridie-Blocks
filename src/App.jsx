@@ -384,10 +384,10 @@ Antes de empezar, **leé con atención la Concept Card** que te tocó y pensá e
             path="/DesafioHumedad"
             element={
               <Desafio
-                titulo="Desafío: Sensor de Humedad en la Tierraa. "
-                consigna={`### 🌱💧 **Desafío: Sensor de Humedad**
+                titulo="Desafío: Sistema de riego inteligente."
+                consigna={`### 🌱💧 **Desafío: Sistema de riego inteligente.**
 
-¡Vamos a construir nuestro propio **detector de riego inteligente**! Para eso, usaremos el **Sensor de Humedad en la Tierra** 🌱💧
+¡Vamos a construir nuestro propio **sistema de riego inteligente**! Para eso, usaremos el **Sensor de Humedad en la Tierra** 🌱💧
 
 Tu proyecto deberá funcionar de la siguiente manera:
 
