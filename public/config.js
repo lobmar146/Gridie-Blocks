@@ -2,10 +2,10 @@
 // publicado sin volver a compilar la web.
 //
 // compiladorUrl: dirección del servidor de compilación (servidor-compilacion/).
-//   Dejalo vacío si el mismo servidor sirve la web (por ejemplo, en Render o en tu PC
-//   con "npm run servidor-compilacion" después de "npm run build:web").
-//   Si la web está en otro lado (por ejemplo, Vercel), poné la dirección completa:
-//   compiladorUrl: 'https://mi-compilador.onrender.com/api/compilar'
+//   Vacío = el mismo sitio que sirve la web (Render, o tu PC con iniciar-windows.bat).
+//   Vercel no puede compilar Arduino, así que ahí se usa el servidor de Render.
+var RENDER = 'https://gridie-blocks.onrender.com/api/compilar'
+
 window.GRIDIE_CONFIG = {
-  compiladorUrl: ''
+  compiladorUrl: /\.vercel\.app$/.test(window.location.hostname) ? RENDER : ''
 }

@@ -156,7 +156,8 @@ Por defecto cualquier sitio puede embeber GrIDIE. Para que solo pueda tu Moodle,
 Si la página de GrIDIE se publica en otro sitio (por ejemplo, Vercel) y este servidor solo
 compila, hay tres formas de decirle a la página dónde está el compilador:
 
-1. Editar `config.js` en el sitio publicado:
+1. Editar `public/config.js` (ya viene configurado para que en `*.vercel.app` use
+   `https://gridie-blocks.onrender.com/api/compilar`):
    `compiladorUrl: 'https://SERVIDOR/api/compilar'` (no hace falta recompilar la web).
 2. Para probar rápido, abrir la página con `?compilador=https://SERVIDOR/api/compilar`
    antes del `#` (queda guardado en ese navegador; `?compilador=borrar` lo olvida).
