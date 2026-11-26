@@ -138,11 +138,14 @@ En Moodle, en una **Página** o **Etiqueta**, pasá el editor a modo HTML (botó
 ```html
 <iframe src="https://SERVIDOR/#/Ejercicio1"
         style="width:100%; height:85vh; border:0"
-        allow="fullscreen; autoplay"></iframe>
+        allow="fullscreen; autoplay; serial"></iframe>
 ```
 
 El simulador se abre en una ventana aparte; si el navegador la bloquea, aparece al costado
 de los bloques, dentro del mismo iframe.
+
+El `serial` del `allow` deja que el botón **Subir a la placa** funcione dentro del iframe
+(si Moodle lo quita al guardar, el alumno puede abrir el desafío en una pestaña aparte).
 
 Por defecto cualquier sitio puede embeber GrIDIE. Para que solo pueda tu Moodle, definí
 `PERMITIR_IFRAME_EN` con su dirección (por ejemplo
@@ -150,6 +153,15 @@ Por defecto cualquier sitio puede embeber GrIDIE. Para que solo pueda tu Moodle,
 *Environment* en Render).
 
 ---
+
+## Subir a una placa real desde la web
+
+En la versión web, el botón verde **Subir a la placa** compila el programa en este servidor
+y lo graba en un Arduino Uno conectado por USB, usando Web Serial. Funciona en **Chrome o
+Edge de computadora** (Windows, Mac, Linux, Chromebook); en Firefox, Safari o celulares
+muestra un aviso para usar la app de escritorio. La primera vez el navegador pregunta qué
+puerto usar; después recuerda la placa. En clones con chip CH340, Windows puede necesitar
+el driver del CH340.
 
 ## Si la web está en otro lado
 
