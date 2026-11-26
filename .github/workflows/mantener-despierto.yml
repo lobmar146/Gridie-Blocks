@@ -2,7 +2,6 @@
 # Pide /salud cada 10 minutos. Para activarlo:
 #   GitHub > Settings > Secrets and variables > Actions > Variables > New repository variable
 #   Nombre: GRIDIE_URL   Valor: https://gridie-blocks.onrender.com  (tu dirección de Render)
-# Ojo: GitHub solo corre los workflows programados que están en la rama principal (main).
 name: Mantener despierto Render
 
 on:

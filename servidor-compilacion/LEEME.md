@@ -34,11 +34,11 @@ Arduino.
    ```
    (Si no tenés `winget`, bajá el `.msi` de
    <https://github.com/cloudflare/cloudflared/releases/latest>.)
-3. Traé la rama con el servidor:
+3. Traé la última versión:
    ```
    cd "C:\Users\lobma\Desktop\Desktop\Martín\2025\Gridie-Blocks"
    git fetch origin
-   git checkout modalidad-distancia
+   git checkout main
    git pull
    ```
 
@@ -78,12 +78,12 @@ Render construye la imagen con el `Dockerfile` de la raíz del repo (instala `ar
 
 1. Entrá a <https://render.com> con tu cuenta de GitHub.
 2. **New > Blueprint**, elegí el repositorio `Gridie-Blocks`. Render lee `render.yaml`
-   (rama `modalidad-distancia`, plan *Free*) y crea el servicio `gridie-blocks`.
-   (Alternativa manual: **New > Web Service**, el repo, rama `modalidad-distancia`,
+   (rama `main`, plan *Free*) y crea el servicio `gridie-blocks`.
+   (Alternativa manual: **New > Web Service**, el repo, rama `main`,
    *Language: Docker*, *Instance type: Free*, *Health check path: `/salud`*.)
 3. La primera construcción tarda unos 5 a 10 minutos. Al terminar te da una dirección como
    `https://gridie-blocks.onrender.com`: esa es la de los alumnos.
-4. Cada `git push` a `modalidad-distancia` vuelve a publicar solo.
+4. Cada `git push` a `main` vuelve a publicar solo.
 
 Límites del plan gratis:
 
@@ -95,9 +95,8 @@ Límites del plan gratis:
     URL `https://TU-SERVICIO.onrender.com/salud`, cada 5 minutos. Anda al instante.
   - **GitHub Actions**: el workflow `.github/workflows/mantener-despierto.yml` hace lo mismo
     cada 10 minutos. Creá la variable del repositorio `GRIDIE_URL` (Settings > Secrets and
-    variables > Actions > Variables) con tu dirección de Render. GitHub solo corre los
-    workflows programados que están en `main`, así que empieza a andar cuando ese archivo
-    llegue a `main`, y a veces se atrasa algunos minutos.
+    variables > Actions > Variables) con tu dirección de Render. A veces GitHub lo atrasa
+    algunos minutos.
 - 512 MB de memoria y poca CPU: compila de a uno (`CONCURRENCIA=1`). Cada programa nuevo
   tarda unos segundos; los repetidos salen de la caché al instante.
 - La caché se borra cuando el servicio se reinicia o se duerme. No pasa nada, solo vuelve a

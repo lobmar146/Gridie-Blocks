@@ -1,6 +1,6 @@
 # Modalidad a distancia: simulador ORBE
 
-Rama `modalidad-distancia`. Agrega un simulador 3D dentro de GrIDIE Blocks para probar los
+Agrega un simulador 3D dentro de GrIDIE Blocks para probar los
 programas sin placa, usando [ORBE](https://github.com/orbefab/orbe) (MIT o Apache-2.0).
 
 ## Cómo probarlo
