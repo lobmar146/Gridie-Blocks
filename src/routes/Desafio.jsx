@@ -4,9 +4,14 @@ import ReactMarkdown from 'react-markdown'
 import { Link } from 'react-router-dom'
 import {
   ChevronRightIcon,
+  CodeIcon,
+  EnterIcon,
+  ExternalLinkIcon,
   HomeIcon,
   InfoCircledIcon,
+  Link2Icon,
   MinusIcon,
+  PlayIcon,
   PlusIcon,
   UpdateIcon,
   UploadIcon
@@ -329,11 +334,12 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   }
 
   const pestanas = [
-    { id: 'programar', nombre: '1. Programá 🧩' },
-    { id: 'conectar', nombre: '2. Conectá 🔌' },
+    { id: 'programar', nombre: '1. Programá', Icono: CodeIcon },
+    { id: 'conectar', nombre: '2. Conectá', Icono: Link2Icon },
     {
       id: 'probar',
-      nombre: '3. Probá ▶️',
+      nombre: '3. Probá',
+      Icono: PlayIcon,
       bloqueada: !conexionLista,
       ayuda: 'Primero conectá bien todos los cables'
     }
@@ -585,7 +591,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
               aria-current={paso === pestana.id ? 'step' : undefined}
               title={pestana.bloqueada ? pestana.ayuda : undefined}
               onClick={() => setPaso(pestana.id)}
-              className={`rounded-md px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
+              className={`flex items-center rounded-md px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
                 paso === pestana.id
                   ? 'bg-arduino font-semibold text-white'
                   : pestana.bloqueada
@@ -593,6 +599,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
                     : 'text-gray-200 hover:bg-[#3a3a3a]'
               }`}
             >
+              <pestana.Icono className="mr-1.5 h-3.5 w-3.5" />
               {pestana.nombre}
             </button>
           ))}
@@ -618,7 +625,8 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
                 className="bg-arduino text-base text-white shadow-lg hover:bg-arduino-oscuro"
                 onClick={() => setPaso('conectar')}
               >
-                ¡Estoy listo para conectar! 🔌
+                <Link2Icon className="mr-2 h-4 w-4" />
+                ¡Estoy listo para conectar!
               </Button>
             </div>
           )}
@@ -634,14 +642,16 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
                     variant="secondary"
                     onClick={() => ventanaAparte.focus()}
                   >
-                    Ir a la ventana 🪟
+                    <ExternalLinkIcon className="mr-1.5 h-3.5 w-3.5" />
+                    Ir a la ventana
                   </Button>
                   <Button
                     size="sm"
                     className="bg-arduino text-white hover:bg-arduino-oscuro"
                     onClick={traerDeVuelta}
                   >
-                    Traer de vuelta acá ↩️
+                    <EnterIcon className="mr-1.5 h-3.5 w-3.5" />
+                    Traer de vuelta acá
                   </Button>
                 </div>
               </div>

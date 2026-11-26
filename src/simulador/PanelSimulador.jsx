@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { CheckCircledIcon, Cross2Icon, ResetIcon } from '@radix-ui/react-icons'
+import {
+  ArrowLeftIcon,
+  CheckCircledIcon,
+  Cross2Icon,
+  ExternalLinkIcon,
+  ImageIcon,
+  PlayIcon,
+  ReloadIcon,
+  ResetIcon
+} from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import {
@@ -244,7 +253,8 @@ const Encabezado = ({ paso, encabezado, children }) => (
           onClick={encabezado.onVerEsquema}
           title="Ver el esquema de conexión del desafío"
         >
-          Esquema 🗺️
+          <ImageIcon className="mr-1 h-3.5 w-3.5" />
+          Esquema
         </Button>
       )}
       {encabezado.onDesacoplar && (
@@ -255,7 +265,8 @@ const Encabezado = ({ paso, encabezado, children }) => (
           onClick={encabezado.onDesacoplar}
           title="Abrir el simulador en una ventana aparte"
         >
-          Ventana aparte 🪟
+          <ExternalLinkIcon className="mr-1 h-3.5 w-3.5" />
+          Ventana aparte
         </Button>
       )}
       {encabezado.onCerrar && (
@@ -501,7 +512,8 @@ const EtapaConectar = ({
             className="bg-arduino text-white hover:bg-arduino-oscuro"
             onClick={onAprobar}
           >
-            Probar mi programa ▶️
+            <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
+            Probar mi programa
           </Button>
         </div>
       )}
@@ -723,7 +735,8 @@ const EtapaProbar = ({
           onClick={onVolverAConectar}
           title="Volver a la etapa de conexión"
         >
-          🔌 Conexiones
+          <ArrowLeftIcon className="mr-1 h-3.5 w-3.5" />
+          Conexiones
         </Button>
         <Button
           size="sm"
@@ -732,7 +745,12 @@ const EtapaProbar = ({
           disabled={estado === 'cargando'}
           title="Compila tu programa y lo vuelve a cargar en el simulador"
         >
-          {desactualizado ? 'Probar los cambios ▶️' : 'Reiniciar 🔄'}
+          {desactualizado ? (
+            <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
+          ) : (
+            <ReloadIcon className="mr-1.5 h-3.5 w-3.5" />
+          )}
+          {desactualizado ? 'Probar los cambios' : 'Reiniciar'}
         </Button>
       </Encabezado>
 
