@@ -212,7 +212,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   const [isUploading, setIsUploading] = useState(false)
   const tieneSimulador = TOOLBOXES_CON_SIMULADOR.includes(Number(toolBox))
   // Los pasos del desafío: 1. Programá, 2. Conectá, 3. Probá (los dos últimos, con el
-  // simulador al lado de los bloques o en una ventana aparte).
+  // simulador ocupando el lugar de los bloques o en una ventana aparte).
   const [paso, setPaso] = useState('programar')
   const [conexionLista, setConexionLista] = useState(() =>
     conexionCompletaGuardada(toolBox)
@@ -310,7 +310,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
     setVueltaDeLaVentana(n => n + 1)
   }
 
-  // Cuando el alumno cierra la ventana aparte, el simulador vuelve al costado de los bloques.
+  // Cuando el alumno cierra la ventana aparte, el simulador vuelve a la pestaña.
   useEffect(() => {
     if (!ventanaAparte) return undefined
     const timer = window.setInterval(() => {
@@ -606,14 +606,19 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
         </nav>
       )}
       <div
-        className="flex"
+        className="relative flex"
         style={{
           height: tieneSimulador
             ? `calc(${blocklyHeight} - 44px)`
             : blocklyHeight
         }}
       >
-        <div className="relative min-w-0 flex-1">
+        {/* En Conectá y Probá los bloques quedan montados pero invisibles (sin cambiar de
+            tamaño), así Blockly no pierde nada ni se corre al volver. */}
+        <div
+          className={`relative min-w-0 flex-1 ${paso === 'programar' || !tieneSimulador ? '' : 'invisible'}`}
+          aria-hidden={tieneSimulador && paso !== 'programar'}
+        >
           <BlocklyComponent
             toolBoxDesafio={toolBox}
             altura="100%"
@@ -632,7 +637,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
           )}
         </div>
         {tieneSimulador && paso !== 'programar' && (
-          <div className="ml-2 mr-2 w-[50%] min-w-[380px]">
+          <div className="absolute inset-y-0 left-2 right-2">
             {ventanaAparte ? (
               <div className="flex h-full flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-gray-700 bg-[#1e1e1e] p-6 text-center text-sm text-gray-300">
                 <p>El simulador está abierto en una ventana aparte.</p>
