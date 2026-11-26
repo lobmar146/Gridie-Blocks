@@ -109,6 +109,7 @@ const PanelSimulador = ({
   esquema,
   enVentana = false,
   embebido = false,
+  compacto = false,
   etapa: etapaControlada,
   etapaInicial,
   onEtapa,
@@ -154,6 +155,7 @@ const PanelSimulador = ({
     titulo: enVentana ? titulo : null,
     esquema,
     embebido,
+    compacto,
     onVerEsquema: () => setVerEsquema(true),
     onDesacoplar,
     onCerrar
@@ -168,7 +170,7 @@ const PanelSimulador = ({
           toolBox={toolBox}
           cables={cables}
           conexiones={conexiones}
-          enVentana={enVentana || embebido}
+          enVentana={(enVentana || embebido) && !compacto}
           encabezado={encabezado}
           onCambiar={cambiarConexiones}
           onAprobar={aprobar}
@@ -219,7 +221,7 @@ const Encabezado = ({ paso, encabezado, children }) => (
           {encabezado.titulo}
         </span>
       )}
-      {encabezado.embebido ? (
+      {encabezado.compacto ? null : encabezado.embebido ? (
         <span className="font-semibold text-white">
           {paso === 1 ? 'Conectá el circuito' : 'Probá tu programa'}
         </span>
@@ -252,9 +254,10 @@ const Encabezado = ({ paso, encabezado, children }) => (
           className="h-8 text-gray-300"
           onClick={encabezado.onVerEsquema}
           title="Ver el esquema de conexión del desafío"
+          aria-label="Ver el esquema de conexión del desafío"
         >
-          <ImageIcon className="mr-1 h-3.5 w-3.5" />
-          Esquema
+          <ImageIcon className="h-3.5 w-3.5 sm:mr-1" />
+          <span className={encabezado.compacto ? 'sr-only' : ''}>Esquema</span>
         </Button>
       )}
       {encabezado.onDesacoplar && (
@@ -435,7 +438,7 @@ const EtapaConectar = ({
 
   const guia = (
     <div
-      className={`flex flex-col gap-3 overflow-y-auto px-4 py-3 text-sm text-gray-200 ${enVentana ? 'w-[440px] shrink-0 border-r border-gray-700' : 'max-h-[55%] border-b border-gray-700'}`}
+      className={`flex flex-col gap-3 overflow-y-auto px-4 py-3 text-sm text-gray-200 ${enVentana ? 'w-[440px] shrink-0 border-r border-gray-700' : encabezado.compacto ? 'min-h-0 flex-1 border-b border-gray-700' : 'max-h-[55%] border-b border-gray-700'}`}
     >
       <div className="flex items-center justify-between text-xs text-gray-400">
         <span>
@@ -556,7 +559,11 @@ const EtapaConectar = ({
         className={`flex min-h-0 flex-1 ${enVentana ? 'flex-row' : 'flex-col'}`}
       >
         {guia}
-        <div className="relative min-h-0 min-w-0 flex-1">
+        {/* En el celular la guía (con el tablero para conectar) se lleva casi todo el
+            lugar; la vista 3D queda como una franja abajo. */}
+        <div
+          className={`relative min-h-0 min-w-0 ${encabezado.compacto ? 'h-[30%] flex-none' : 'flex-1'}`}
+        >
           <div ref={contenedorRef} className="absolute inset-0" />
           {carga && !errorVista && (
             <CargaSimulador progreso={carga.progreso} mensaje={carga.mensaje} />
@@ -740,16 +747,18 @@ const EtapaProbar = ({
   return (
     <>
       <Encabezado paso={2} encabezado={encabezado}>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="h-8 text-gray-300"
-          onClick={onVolverAConectar}
-          title="Volver a la etapa de conexión"
-        >
-          <ArrowLeftIcon className="mr-1 h-3.5 w-3.5" />
-          Conexiones
-        </Button>
+        {!encabezado.compacto && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 text-gray-300"
+            onClick={onVolverAConectar}
+            title="Volver a la etapa de conexión"
+          >
+            <ArrowLeftIcon className="mr-1 h-3.5 w-3.5" />
+            Conexiones
+          </Button>
+        )}
         <Button
           size="sm"
           className={`h-8 text-white ${desactualizado ? 'animate-pulse bg-amber-700 hover:bg-amber-800' : 'bg-arduino hover:bg-arduino-oscuro'}`}

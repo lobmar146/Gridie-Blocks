@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
 import { Link } from 'react-router-dom'
 import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
   ChevronRightIcon,
   CodeIcon,
   EnterIcon,
@@ -37,6 +39,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
+import useEsMovil, { esPantallaMovil } from '@/lib/useEsMovil'
 import BlocklyComponent from '../components/BocklyComponent'
 import BotonSubirWeb from '../placa/BotonSubirWeb'
 import { TOOLBOXES_CON_SIMULADOR } from '../simulador/escenas'
@@ -215,7 +218,14 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   const tieneSimulador = TOOLBOXES_CON_SIMULADOR.includes(Number(toolBox))
   // Los pasos del desafío: 1. Programá, 2. Conectá, 3. Probá (los dos últimos, con el
   // simulador ocupando el lugar de los bloques o en una ventana aparte).
-  const [paso, setPaso] = useState('programar')
+  // En el celular se ve una pantalla por vez y la consigna es un paso más, el primero.
+  const esMovil = useEsMovil()
+  const [paso, setPaso] = useState(() =>
+    esPantallaMovil() ? 'consigna' : 'programar'
+  )
+  useEffect(() => {
+    if (!esMovil && paso === 'consigna') setPaso('programar')
+  }, [esMovil, paso])
   const [conexionLista, setConexionLista] = useState(() =>
     conexionCompletaGuardada(toolBox)
   )
@@ -223,8 +233,9 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   // La consigna se puede esconder con un botón. Si nadie la tocó, se ve en Programá y se
   // esconde en Conectá y Probá, para que el simulador tenga toda la pantalla.
   const [consignaElegida, setConsignaElegida] = useState(null)
-  const consignaOculta =
-    consignaElegida ?? (tieneSimulador && paso !== 'programar')
+  const consignaOculta = esMovil
+    ? paso !== 'consigna'
+    : (consignaElegida ?? (tieneSimulador && paso !== 'programar'))
   useEffect(() => setConsignaElegida(null), [paso])
   // Cambia cada vez que el simulador vuelve de la ventana aparte, para que el panel relea lo
   // que el alumno conectó allá.
@@ -307,7 +318,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   // Blockly mide su contenedor sólo cuando cambia el tamaño de la ventana.
   useEffect(() => {
     window.dispatchEvent(new Event('resize'))
-  }, [paso, ventanaAparte, consignaOculta])
+  }, [paso, ventanaAparte, consignaOculta, esMovil])
 
   const traerDeVuelta = () => {
     setVentanaAparte(ventana => {
@@ -353,6 +364,30 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
     }
   ]
 
+  // En el celular: Consigna → Programá → Conectá → Probá, con Atrás / Siguiente.
+  const pasosMovil = [
+    { id: 'consigna', nombre: 'Consigna', Icono: ReaderIcon },
+    { id: 'programar', nombre: 'Programá', Icono: CodeIcon },
+    ...(tieneSimulador
+      ? [
+          { id: 'conectar', nombre: 'Conectá', Icono: Link2Icon },
+          {
+            id: 'probar',
+            nombre: 'Probá',
+            Icono: PlayIcon,
+            bloqueada: !conexionLista,
+            ayuda: 'Primero conectá bien todos los cables'
+          }
+        ]
+      : [])
+  ]
+  const indiceMovil = Math.max(
+    0,
+    pasosMovil.findIndex(p => p.id === paso)
+  )
+  const pasoAnterior = pasosMovil[indiceMovil - 1]
+  const pasoSiguiente = pasosMovil[indiceMovil + 1]
+
   const subirCodigo = async () => {
     if (!placaSeleccionada) {
       toast.error('Por favor, selecciona una placa antes de subir el código.', {
@@ -397,28 +432,69 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
     }
   }
 
+  const textoConsigna = (
+    <ReactMarkdown
+      components={{
+        ul: ({ children }) => (
+          <ul className="list-inside list-disc">{children}</ul>
+        ),
+        ol: ({ children }) => (
+          <ol className="list-inside list-decimal">{children}</ol>
+        ),
+        li: ({ children }) => <li className="mb-1">{children}</li>,
+        h3: ({ node, children }) => {
+          // Detectamos si es el primer nodo del árbol
+          const isFirst = node?.position?.start?.line === 1
+          const className = isFirst
+            ? 'text-lg font-bold mb-2'
+            : 'text-lg font-bold mt-5 mb-2'
+          return <h3 className={className}>{children}</h3>
+        },
+        p: ({ children }) => <p className="mb-3">{children}</p>
+      }}
+    >
+      {consigna}
+    </ReactMarkdown>
+  )
+
   return (
-    <>
-      <div className="dark:bg-[#202020]">
-        <header className="flex items-center justify-between px-5 py-2">
-          <div className="flex items-center space-x-4">
+    <div
+      className={
+        esMovil
+          ? 'grid h-[100dvh] grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden'
+          : undefined
+      }
+    >
+      <div className="row-start-1 dark:bg-[#202020]">
+        <header
+          className={`flex items-center justify-between ${esMovil ? 'gap-2 px-3 py-2' : 'px-5 py-2'}`}
+        >
+          <div
+            className={`flex min-w-0 items-center ${esMovil ? 'gap-2' : 'space-x-4'}`}
+          >
             <Link to="/">
               <h1 className="rounded-md bg-white px-[5px] py-[2px] font-bold">
                 <span className="text-green-700">GrID</span>
                 <span className="texto-rojo">IE</span>
               </h1>{' '}
             </Link>
-            <div className="flex items-center text-gray-300">
-              <Link to="/">
+            <div className="flex min-w-0 items-center text-gray-300">
+              <Link to="/" aria-label="Inicio">
                 <HomeIcon className="h-4 w-4" />
               </Link>
-              <ChevronRightIcon className="mx-1 h-3 w-3" />
-              <span className="text-sm">Blocks - {titulo}</span>
+              <ChevronRightIcon className="mx-1 h-3 w-3 shrink-0" />
+              <span
+                className={esMovil ? 'truncate text-xs' : 'text-sm'}
+                title={titulo}
+              >
+                {esMovil ? titulo : `Blocks - ${titulo}`}
+              </span>
             </div>
           </div>
           {/* Right section: Board selection and upload */}
           <div className="flex items-center space-x-4">
-            {!hayPlaca && <BotonSubirWeb codigo={generatedCode} />}
+            {/* En el celular no hay Web Serial: no se puede subir a una placa. */}
+            {!hayPlaca && !esMovil && <BotonSubirWeb codigo={generatedCode} />}
             {hayPlaca && (
               <>
                 <div className="flex items-center">
@@ -465,9 +541,19 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
 
       <div
         ref={consignaRef}
-        className={`relative mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020] ${consignaOculta ? 'hidden' : ''}`}
+        className={
+          esMovil
+            ? `relative z-20 col-start-1 row-start-3 mx-2 min-h-0 overflow-y-auto rounded-xl p-4 leading-relaxed text-white dark:bg-[#202020] ${consignaOculta ? 'hidden' : ''}`
+            : `relative mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020] ${consignaOculta ? 'hidden' : ''}`
+        }
       >
-        <div className="absolute right-4 top-4 flex items-center gap-1">
+        <div
+          className={
+            esMovil
+              ? '-ml-3 mb-2 flex items-center'
+              : 'absolute right-4 top-4 flex items-center gap-1'
+          }
+        >
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
@@ -513,10 +599,11 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
                     height: naturalSize.height || 'auto',
                     visibility: isPositioned ? 'visible' : 'hidden' // 👈 evita el flash en 0,0
                   }}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
+                  onPointerDown={handleMouseDown}
+                  onPointerMove={handleMouseMove}
+                  onPointerUp={handleMouseUp}
+                  onPointerCancel={handleMouseUp}
+                  onPointerLeave={handleMouseUp}
                 >
                   <img
                     ref={imgRef}
@@ -564,43 +651,58 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          <Button
-            variant="ghost"
-            className="text-gray-300"
-            onClick={() => setConsignaElegida(true)}
-            aria-expanded={true}
-          >
-            <EyeNoneIcon className="mr-1.5 h-3.5 w-3.5" />
-            Esconder consigna
-          </Button>
+          {!esMovil && (
+            <Button
+              variant="ghost"
+              className="text-gray-300"
+              onClick={() => setConsignaElegida(true)}
+              aria-expanded={true}
+            >
+              <EyeNoneIcon className="mr-1.5 h-3.5 w-3.5" />
+              Esconder consigna
+            </Button>
+          )}
         </div>
 
-        <ReactMarkdown
-          components={{
-            ul: ({ children }) => (
-              <ul className="list-inside list-disc">{children}</ul>
-            ),
-            ol: ({ children }) => (
-              <ol className="list-inside list-decimal">{children}</ol>
-            ),
-            li: ({ children }) => <li className="mb-1">{children}</li>,
-            h3: ({ node, children }) => {
-              // Detectamos si es el primer nodo del árbol
-              const isFirst = node?.position?.start?.line === 1
-              const className = isFirst
-                ? 'text-lg font-bold mb-2'
-                : 'text-lg font-bold mt-5 mb-2'
-              return <h3 className={className}>{children}</h3>
-            },
-            p: ({ children }) => <p className="mb-3">{children}</p>
-          }}
-        >
-          {consigna}
-        </ReactMarkdown>
+        {textoConsigna}
       </div>
 
-      <div className="mx-2 mb-1 flex h-10 items-center gap-3">
-        {tieneSimulador && (
+      <div
+        className={
+          esMovil
+            ? 'row-start-2 mx-2 mb-1.5'
+            : 'mx-2 mb-1 flex h-10 items-center gap-3'
+        }
+      >
+        {esMovil && (
+          <nav
+            className="flex items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
+            aria-label="Pasos del desafío"
+          >
+            {pasosMovil.map((p, i) => (
+              <button
+                key={p.id}
+                type="button"
+                disabled={p.bloqueada}
+                aria-current={paso === p.id ? 'step' : undefined}
+                aria-label={`Paso ${i + 1}: ${p.nombre}`}
+                title={p.bloqueada ? p.ayuda : undefined}
+                onClick={() => setPaso(p.id)}
+                className={`flex min-w-0 flex-1 items-center justify-center gap-1 rounded-md px-1 py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
+                  paso === p.id
+                    ? 'bg-arduino font-semibold text-white'
+                    : p.bloqueada
+                      ? 'text-gray-500'
+                      : 'text-gray-300'
+                }`}
+              >
+                <p.Icono className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{p.nombre}</span>
+              </button>
+            ))}
+          </nav>
+        )}
+        {tieneSimulador && !esMovil && (
           <nav
             className="flex w-fit items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
             aria-label="Pasos del desafío"
@@ -627,7 +729,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
             ))}
           </nav>
         )}
-        {consignaOculta && (
+        {consignaOculta && !esMovil && (
           <Button
             size="sm"
             variant="ghost"
@@ -641,23 +743,28 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
         )}
       </div>
       <div
-        className="relative flex"
-        style={{
-          height: `calc(${blocklyHeight} - 44px)`
-        }}
+        className={
+          esMovil
+            ? 'relative col-start-1 row-start-3 flex min-h-0'
+            : 'relative flex'
+        }
+        style={
+          esMovil ? undefined : { height: `calc(${blocklyHeight} - 44px)` }
+        }
       >
         {/* En Conectá y Probá los bloques quedan montados pero invisibles (sin cambiar de
             tamaño), así Blockly no pierde nada ni se corre al volver. */}
         <div
-          className={`relative min-w-0 flex-1 ${paso === 'programar' || !tieneSimulador ? '' : 'invisible'}`}
-          aria-hidden={tieneSimulador && paso !== 'programar'}
+          className={`relative min-w-0 flex-1 ${paso === 'programar' ? '' : 'invisible'}`}
+          aria-hidden={paso !== 'programar'}
         >
           <BlocklyComponent
             toolBoxDesafio={toolBox}
             altura="100%"
             onCodeChange={handleCodeChange}
+            compacto={esMovil}
           />
-          {tieneSimulador && paso === 'programar' && (
+          {tieneSimulador && paso === 'programar' && !esMovil && (
             <div className="absolute bottom-5 left-1/2 z-10 -translate-x-1/2">
               <Button
                 className="bg-arduino text-base text-white shadow-lg hover:bg-arduino-oscuro"
@@ -669,7 +776,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
             </div>
           )}
         </div>
-        {tieneSimulador && paso !== 'programar' && (
+        {tieneSimulador && (paso === 'conectar' || paso === 'probar') && (
           <div className="absolute inset-y-0 left-2 right-2">
             {ventanaAparte ? (
               <div className="flex h-full flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-gray-700 bg-[#1e1e1e] p-6 text-center text-sm text-gray-300">
@@ -697,6 +804,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
               <PanelSimulador
                 key={vueltaDeLaVentana}
                 embebido
+                compacto={esMovil}
                 toolBox={toolBox}
                 codigo={generatedCode}
                 titulo={titulo}
@@ -704,13 +812,56 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
                 etapa={paso === 'probar' ? 'probar' : 'conectar'}
                 onEtapa={setPaso}
                 onConexion={setConexionLista}
-                onDesacoplar={desacoplar}
+                onDesacoplar={esMovil ? undefined : desacoplar}
               />
             )}
           </div>
         )}
       </div>
-    </>
+      {esMovil && (
+        <nav
+          className="row-start-4 flex items-center gap-2 border-t border-gray-800 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 dark:bg-[#202020]"
+          aria-label="Avanzar o volver de paso"
+        >
+          <Button
+            variant="secondary"
+            className="h-11 flex-1"
+            disabled={!pasoAnterior}
+            onClick={() => pasoAnterior && setPaso(pasoAnterior.id)}
+          >
+            <ArrowLeftIcon className="mr-1.5 h-4 w-4" />
+            Atrás
+          </Button>
+          {pasoSiguiente ? (
+            <Button
+              className="h-11 flex-[2] bg-arduino text-white hover:bg-arduino-oscuro"
+              disabled={pasoSiguiente.bloqueada}
+              onClick={() => setPaso(pasoSiguiente.id)}
+            >
+              {pasoSiguiente.bloqueada
+                ? 'Conectá todos los cables'
+                : `Siguiente: ${pasoSiguiente.nombre}`}
+              {!pasoSiguiente.bloqueada && (
+                <ArrowRightIcon className="ml-1.5 h-4 w-4" />
+              )}
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className="h-11 flex-[2]"
+              onClick={() => setPaso(tieneSimulador ? 'programar' : 'consigna')}
+            >
+              {tieneSimulador ? (
+                <CodeIcon className="mr-1.5 h-4 w-4" />
+              ) : (
+                <ReaderIcon className="mr-1.5 h-4 w-4" />
+              )}
+              {tieneSimulador ? 'Volver a los bloques' : 'Ver consigna'}
+            </Button>
+          )}
+        </nav>
+      )}
+    </div>
   )
 }
 
