@@ -7,6 +7,7 @@ import {
   CodeIcon,
   EnterIcon,
   ExternalLinkIcon,
+  EyeNoneIcon,
   HomeIcon,
   InfoCircledIcon,
   Link2Icon,
@@ -466,100 +467,113 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
         ref={consignaRef}
         className={`relative mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020] ${consignaOculta ? 'hidden' : ''}`}
       >
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              className={`absolute right-4 top-4 text-arduino-claro hover:bg-arduino-claro/10 hover:text-arduino-suave`}
-            >
-              <InfoCircledIcon className="mr-1.5 h-3.5 w-3.5" />
-              <span className="underline decoration-dotted underline-offset-4">
-                ¿Cómo se conecta?
-              </span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed left-1/2 top-1/2 z-50 grid max-h-[92vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-4 shadow-lg sm:rounded-lg md:p-6">
-            <DialogHeader>
-              <DialogTitle>🔌 ¡Conectá el proyecto de esta manera!</DialogTitle>
-              <DialogDescription>
-                Vista del circuito y conexiones necesarias para que el proyecto
-                funcione.
-              </DialogDescription>
-            </DialogHeader>
-
-            {/* Viewport del canvas: oculta desbordes y escucha la rueda */}
-            <div
-              ref={containerRef}
-              className="relative h-[74vh] overflow-hidden rounded-md border bg-muted"
-              style={{ touchAction: 'none' }}
-              onWheel={handleWheel}
-            >
-              {/* Capa transformada: translate + scale (anclada en top-left) */}
-              <div
-                ref={transformLayerRef}
-                className="cursor-grab active:cursor-grabbing"
-                style={{
-                  transform: `translate(${translate.x}px, ${translate.y}px) scale(${zoom})`,
-                  transformOrigin: 'top left',
-                  transition:
-                    isPanning || !isPositioned
-                      ? 'none'
-                      : 'transform 100ms ease',
-                  width: naturalSize.width || 'auto',
-                  height: naturalSize.height || 'auto',
-                  visibility: isPositioned ? 'visible' : 'hidden' // 👈 evita el flash en 0,0
-                }}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
+        <div className="absolute right-4 top-4 flex items-center gap-1">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                className={`text-arduino-claro hover:bg-arduino-claro/10 hover:text-arduino-suave`}
               >
-                <img
-                  ref={imgRef}
-                  src={conexion}
-                  alt="Imagen del circuito"
-                  className="pointer-events-none block max-w-none select-none"
-                  draggable={false}
-                  onLoad={handleImageLoad}
-                />
-              </div>
-
-              {/* Controles fijos (overlay) */}
-              <div className="pointer-events-auto absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-background/80 px-2 py-1 shadow backdrop-blur">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={zoomOut}
-                  aria-label="Alejar"
-                >
-                  <MinusIcon className="h-4 w-4" />
-                </Button>
-                <span className="w-14 text-center text-xs tabular-nums">
-                  {Math.round(zoom * 100)}%
+                <InfoCircledIcon className="mr-1.5 h-3.5 w-3.5" />
+                <span className="underline decoration-dotted underline-offset-4">
+                  ¿Cómo se conecta?
                 </span>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={zoomIn}
-                  aria-label="Acercar"
-                >
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={resetView}>
-                  Reset
-                </Button>
-              </div>
-            </div>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed left-1/2 top-1/2 z-50 grid max-h-[92vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-4 shadow-lg sm:rounded-lg md:p-6">
+              <DialogHeader>
+                <DialogTitle>
+                  🔌 ¡Conectá el proyecto de esta manera!
+                </DialogTitle>
+                <DialogDescription>
+                  Vista del circuito y conexiones necesarias para que el
+                  proyecto funcione.
+                </DialogDescription>
+              </DialogHeader>
 
-            <DialogFooter className="sm:justify-start">
-              <DialogClose asChild>
-                <Button type="button" variant="secondary">
-                  Cerrar
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              {/* Viewport del canvas: oculta desbordes y escucha la rueda */}
+              <div
+                ref={containerRef}
+                className="relative h-[74vh] overflow-hidden rounded-md border bg-muted"
+                style={{ touchAction: 'none' }}
+                onWheel={handleWheel}
+              >
+                {/* Capa transformada: translate + scale (anclada en top-left) */}
+                <div
+                  ref={transformLayerRef}
+                  className="cursor-grab active:cursor-grabbing"
+                  style={{
+                    transform: `translate(${translate.x}px, ${translate.y}px) scale(${zoom})`,
+                    transformOrigin: 'top left',
+                    transition:
+                      isPanning || !isPositioned
+                        ? 'none'
+                        : 'transform 100ms ease',
+                    width: naturalSize.width || 'auto',
+                    height: naturalSize.height || 'auto',
+                    visibility: isPositioned ? 'visible' : 'hidden' // 👈 evita el flash en 0,0
+                  }}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                >
+                  <img
+                    ref={imgRef}
+                    src={conexion}
+                    alt="Imagen del circuito"
+                    className="pointer-events-none block max-w-none select-none"
+                    draggable={false}
+                    onLoad={handleImageLoad}
+                  />
+                </div>
+
+                {/* Controles fijos (overlay) */}
+                <div className="pointer-events-auto absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-background/80 px-2 py-1 shadow backdrop-blur">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={zoomOut}
+                    aria-label="Alejar"
+                  >
+                    <MinusIcon className="h-4 w-4" />
+                  </Button>
+                  <span className="w-14 text-center text-xs tabular-nums">
+                    {Math.round(zoom * 100)}%
+                  </span>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={zoomIn}
+                    aria-label="Acercar"
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={resetView}>
+                    Reset
+                  </Button>
+                </div>
+              </div>
+
+              <DialogFooter className="sm:justify-start">
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    Cerrar
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Button
+            variant="ghost"
+            className="text-gray-300"
+            onClick={() => setConsignaElegida(true)}
+            aria-expanded={true}
+          >
+            <EyeNoneIcon className="mr-1.5 h-3.5 w-3.5" />
+            Esconder consigna
+          </Button>
+        </div>
 
         <ReactMarkdown
           components={{
@@ -613,16 +627,18 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
             ))}
           </nav>
         )}
-        <Button
-          size="sm"
-          variant="ghost"
-          className="text-gray-200"
-          onClick={() => setConsignaElegida(!consignaOculta)}
-          aria-expanded={!consignaOculta}
-        >
-          <ReaderIcon className="mr-1.5 h-3.5 w-3.5" />
-          {consignaOculta ? 'Ver consigna' : 'Esconder consigna'}
-        </Button>
+        {consignaOculta && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-gray-200"
+            onClick={() => setConsignaElegida(false)}
+            aria-expanded={false}
+          >
+            <ReaderIcon className="mr-1.5 h-3.5 w-3.5" />
+            Ver consigna
+          </Button>
+        )}
       </div>
       <div
         className="relative flex"

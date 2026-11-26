@@ -484,7 +484,7 @@ const EtapaConectar = ({
               hasta ese pin (o hacé clic):
             </div>
           </div>
-          <div className="overflow-x-auto">
+          <div className="shrink-0 overflow-x-auto">
             <TableroDeConexion
               cablesComponente={cables.filter(
                 c => c.componente === actual.componente
@@ -515,6 +515,18 @@ const EtapaConectar = ({
             <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
             Probar mi programa
           </Button>
+        </div>
+      )}
+      {!actual && (
+        <div className="shrink-0 overflow-x-auto">
+          <TableroDeConexion
+            cablesComponente={[]}
+            todosLosCables={cables}
+            actual={null}
+            conexiones={conexiones}
+            marcado={null}
+            onElegir={() => {}}
+          />
         </div>
       )}
 
