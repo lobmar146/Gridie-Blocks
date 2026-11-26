@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import BlocklyComponent from '../components/BocklyComponent'
+import BotonSubirWeb from '../placa/BotonSubirWeb'
 import { TOOLBOXES_CON_SIMULADOR } from '../simulador/escenas'
 import PanelSimulador, {
   conexionCompletaGuardada
@@ -428,6 +429,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
           )}
           {/* Right section: Board selection and upload */}
           <div className="flex items-center space-x-4">
+            {!hayPlaca && <BotonSubirWeb codigo={generatedCode} />}
             {hayPlaca && (
               <>
                 <div className="flex items-center">
