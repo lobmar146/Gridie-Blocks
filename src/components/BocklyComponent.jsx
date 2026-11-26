@@ -46,8 +46,16 @@ Blockly.Blocks['procedures_ifreturn'] = null
 // Define los bloques una vez fuera del componente
 Blockly.common.defineBlocks(blocksArduino)
 
-const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
+const BlocklyComponent = ({
+  toolBoxDesafio,
+  altura,
+  onCodeChange,
+  compacto = false
+}) => {
   const blocklyDiv = useRef(null)
+  // En el celular los bloques arrancan más chicos; se lee al crear el área de trabajo.
+  const compactoRef = useRef(compacto)
+  compactoRef.current = compacto
   const workspaceRef = useRef(null) // Referencia al workspace
   const [code, setCode] = useState('')
   const [showCode, setShowCode] = useState(false)
@@ -114,7 +122,9 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
       // Íconos (zoom, tacho) y sonidos de Blockly desde la app: por defecto los busca en
       // unpkg.com, de la última versión, y sin internet o con otra versión se ven rotos.
       media:
-        import.meta.env.MODE === 'development' ? '/blockly-media/' : './blockly-media/',
+        import.meta.env.MODE === 'development'
+          ? '/blockly-media/'
+          : './blockly-media/',
       toolbox: selectedToolbox,
       theme: darkTheme,
       locale: 'es',
@@ -122,7 +132,8 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
       zoom: {
         controls: true,
         wheel: false,
-        startScale: 1.0,
+        pinch: true,
+        startScale: compactoRef.current ? 0.75 : 1.0,
         maxScale: 3,
         minScale: 0.3,
         scaleSpeed: 1.2
@@ -298,44 +309,68 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
       })
   }
 
+  const codigoAParte = showCode && !compacto
+
   return (
-    <div className="blockly-container" style={{ height: altura }}>
+    <div
+      className={`blockly-container ${compacto ? 'blockly-compacto' : ''}`}
+      style={{ height: altura }}
+    >
       <div
         ref={blocklyDiv}
-        className={showCode ? 'blockly-workspace' : 'blockly-workspace-full'}
+        className={
+          codigoAParte ? 'blockly-workspace' : 'blockly-workspace-full'
+        }
       >
-        {/* {parseInt(toolBoxDesafio) > 6 && (
-          <div
-            className={
-              showCode
-                ? 'monitor-variable mostrando-codigo'
-                : 'monitor-variable'
-            }
-          >
-            <p>Grados del Servo</p>
-            <span>1</span>
+        {compacto ? (
+          // En el celular: dos botones chicos, solo con ícono, para dejar lugar a los bloques.
+          <div className="absolute right-2 top-2 z-10 flex gap-1.5">
+            <Button
+              size="icon"
+              onClick={() => setShowCode(!showCode)}
+              className="h-9 w-9 bg-arduino text-white hover:bg-arduino-oscuro"
+              aria-label={showCode ? 'Ocultar código' : 'Mostrar código'}
+              aria-pressed={showCode}
+            >
+              <CodeIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              onClick={copyToClipboard}
+              className="h-9 w-9 bg-arduino-profundo text-white hover:bg-arduino-oscuro"
+              aria-label="Copiar código"
+            >
+              <CopyIcon className="h-4 w-4" />
+            </Button>
           </div>
-        )} */}
-        <Button
-          onClick={() => setShowCode(!showCode)}
-          // className="blockly-toggle-button"
-          className="absolute right-8 top-2 z-10 w-[160px] bg-arduino text-white hover:bg-arduino-oscuro"
-        >
-          <CodeIcon className="mr-2 h-4 w-4" />
-          {showCode ? 'Ocultar Código' : 'Mostrar Código'}
-        </Button>
-        <Button
-          onClick={copyToClipboard}
-          // className={
-          //   showCode ? 'monitor-variable mostrando-codigo' : 'monitor-variable'
-          // }
-          className="absolute right-8 top-[52px] z-10 w-[160px] bg-arduino-profundo text-white hover:bg-arduino-oscuro"
-        >
-          <CopyIcon className="mr-2 h-4 w-4" />
-          Copiar Código
-        </Button>
+        ) : (
+          <>
+            <Button
+              onClick={() => setShowCode(!showCode)}
+              className="absolute right-8 top-2 z-10 w-[160px] bg-arduino text-white hover:bg-arduino-oscuro"
+            >
+              <CodeIcon className="mr-2 h-4 w-4" />
+              {showCode ? 'Ocultar Código' : 'Mostrar Código'}
+            </Button>
+            <Button
+              onClick={copyToClipboard}
+              className="absolute right-8 top-[52px] z-10 w-[160px] bg-arduino-profundo text-white hover:bg-arduino-oscuro"
+            >
+              <CopyIcon className="mr-2 h-4 w-4" />
+              Copiar Código
+            </Button>
+          </>
+        )}
+        {showCode && compacto && (
+          <textarea
+            value={code}
+            readOnly
+            aria-label="Código generado"
+            className="absolute inset-x-0 bottom-0 z-10 h-[45%] resize-none rounded-t-[10px] border-t border-gray-700 bg-[#1e1e1e] p-2.5 font-mono text-xs text-[#e0e0e0]"
+          />
+        )}
       </div>
-      {showCode && (
+      {codigoAParte && (
         <textarea value={code} readOnly className="blockly-code-area" />
       )}
     </div>

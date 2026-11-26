@@ -92,3 +92,13 @@ h1 {
 .blocklyFlyoutScrollbar[display='none'] {
   display: none;
 }
+
+/* Celular: la columna de categorías más angosta, para dejar lugar a los bloques. */
+.blockly-compacto .blocklyTreeRow {
+  padding-right: 6px;
+  padding-bottom: 14px;
+}
+
+.blockly-compacto .blocklyTreeLabel {
+  font-size: 13px;
+}
