@@ -4,6 +4,38 @@ import { execFile } from 'node:child_process'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import { existsSync, writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+
+// Si no se configura nada, se usa el arduino-cli que ya trae GrIDIE en electron/
+// (core AVR en electron/arduino-data/arduino15 y Servo en electron/arduino-data/libraries).
+const ELECTRON = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'electron'
+)
+const DATOS = path.join(ELECTRON, 'arduino-data')
+
+function cliPorDefecto() {
+  const exe = path.join(ELECTRON, 'arduino-cli.exe')
+  if (process.platform === 'win32' && existsSync(exe)) return exe
+  return 'arduino-cli'
+}
+
+function configPorDefecto() {
+  const arduino15 = path.join(DATOS, 'arduino15')
+  if (!existsSync(path.join(arduino15, 'packages', 'arduino', 'hardware', 'avr')))
+    return undefined
+  const archivo = path.join(os.tmpdir(), 'gridie-arduino-cli.yaml')
+  const datos = arduino15.replace(/\\/g, '/')
+  writeFileSync(archivo, `directories:\n  data: "${datos}"\n  user: "${datos}"\n`)
+  return archivo
+}
+
+function libreriasPorDefecto() {
+  const carpeta = path.join(DATOS, 'libraries')
+  return existsSync(carpeta) ? carpeta : undefined
+}
 
 const MAXIMO_CODIGO = 200_000 // bytes
 const TIEMPO_MAXIMO = 60_000 // ms
@@ -21,9 +53,13 @@ export async function compilarSketch(codigo, opciones = {}) {
   if (codigo.length > MAXIMO_CODIGO)
     throw new Error('El programa es demasiado largo.')
 
-  const cli = opciones.cli ?? process.env.ARDUINO_CLI ?? 'arduino-cli'
-  const config = opciones.config ?? process.env.ARDUINO_CLI_CONFIG
-  const librerias = opciones.librerias ?? process.env.ARDUINO_LIBRERIAS
+  const cli = opciones.cli ?? process.env.ARDUINO_CLI ?? cliPorDefecto()
+  const config =
+    opciones.config ?? process.env.ARDUINO_CLI_CONFIG ?? configPorDefecto()
+  const librerias =
+    opciones.librerias ??
+    process.env.ARDUINO_LIBRERIAS ??
+    libreriasPorDefecto()
 
   const carpeta = await fs.mkdtemp(path.join(os.tmpdir(), 'gridie-'))
   try {
@@ -42,7 +78,13 @@ export async function compilarSketch(codigo, opciones = {}) {
         args,
         { timeout: TIEMPO_MAXIMO },
         (error, stdout, stderr) => {
-          if (error)
+          if (error?.code === 'ENOENT')
+            reject(
+              new Error(
+                `No se encontró arduino-cli (${cli}). Instalalo o indicá su ruta en la variable ARDUINO_CLI.`
+              )
+            )
+          else if (error)
             reject(new Error((stderr || stdout || error.message).trim()))
           else resolve()
         }

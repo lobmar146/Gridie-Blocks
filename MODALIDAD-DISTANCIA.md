@@ -12,15 +12,16 @@ npm install
 npm run dev
 ```
 
-**En el navegador** (lo que usaría un alumno a distancia por web). Necesita un arduino-cli
-para compilar, que en desarrollo atiende el propio Vite en `/api/compilar`:
+**En el navegador** (lo que usaría un alumno a distancia por web). Para compilar, el propio
+Vite atiende `/api/compilar`; en Windows usa solo el arduino-cli que ya viene en `electron/`
+(con su core AVR y la librería Servo), así que alcanza con:
 
 ```sh
-# PowerShell, usando el arduino-cli que ya viene en electron/
-$env:ARDUINO_CLI="$PWD\electron\arduino-cli.exe"
-$env:ARDUINO_LIBRERIAS="$PWD\electron\arduino-data\libraries"
 npm run dev:web
 ```
+
+En otro sistema, o para usar otro arduino-cli, se indican `ARDUINO_CLI`, `ARDUINO_CLI_CONFIG`
+y `ARDUINO_LIBRERIAS`.
 
 En cada desafío aparece el botón **Probar en simulador**, que abre el panel en dos etapas:
 
