@@ -102,3 +102,58 @@ h1 {
 .blockly-compacto .blocklyTreeLabel {
   font-size: 13px;
 }
+
+/* Consignas: pasos numerados con un círculo y viñetas del color de Arduino. */
+.consigna ol,
+.consigna ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0;
+}
+
+.consigna ol {
+  counter-reset: paso;
+}
+
+.consigna li {
+  position: relative;
+  margin-bottom: 0.5rem;
+  padding-left: 2.1rem;
+}
+
+.consigna ol > li {
+  counter-increment: paso;
+  min-height: 1.6rem;
+}
+
+.consigna ol > li::before {
+  content: counter(paso);
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  display: flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #00796b;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.consigna ul > li {
+  padding-left: 1.4rem;
+}
+
+.consigna ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0.4rem;
+  top: 0.6rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  background: #4db6ac;
+}

@@ -338,7 +338,10 @@ const EtapaConectar = ({
   const claveConexionesHechas = JSON.stringify(
     Object.fromEntries(listos.map(c => [c.id, conexiones[c.id]]))
   )
+  // En el celular Conectá muestra solo el tablero: la vista 3D queda para Probá.
+  const sin3D = Boolean(encabezado.compacto)
   useEffect(() => {
+    if (sin3D) return undefined
     const conexionesHechas = JSON.parse(claveConexionesHechas)
     const escena = escenaDelDesafio(toolBox, conexionesHechas, {
       soloElegidas: true
@@ -416,7 +419,7 @@ const EtapaConectar = ({
       if (timer) window.clearInterval(timer)
       if (rafId) window.cancelAnimationFrame(rafId)
     }
-  }, [toolBox, claveConexionesHechas])
+  }, [toolBox, claveConexionesHechas, sin3D])
 
   const elegir = pin => {
     if (!actual) return
@@ -559,21 +562,22 @@ const EtapaConectar = ({
         className={`flex min-h-0 flex-1 ${enVentana ? 'flex-row' : 'flex-col'}`}
       >
         {guia}
-        {/* En el celular la guía (con el tablero para conectar) se lleva casi todo el
-            lugar; la vista 3D queda como una franja abajo. */}
-        <div
-          className={`relative min-h-0 min-w-0 ${encabezado.compacto ? 'h-[30%] flex-none' : 'flex-1'}`}
-        >
-          <div ref={contenedorRef} className="absolute inset-0" />
-          {carga && !errorVista && (
-            <CargaSimulador progreso={carga.progreso} mensaje={carga.mensaje} />
-          )}
-          {errorVista && (
-            <pre className="absolute inset-x-0 bottom-0 z-10 max-h-[50%] overflow-auto bg-[#1e1e1e]/90 p-3 text-xs text-red-300">
-              {errorVista}
-            </pre>
-          )}
-        </div>
+        {!sin3D && (
+          <div className="relative min-h-0 min-w-0 flex-1">
+            <div ref={contenedorRef} className="absolute inset-0" />
+            {carga && !errorVista && (
+              <CargaSimulador
+                progreso={carga.progreso}
+                mensaje={carga.mensaje}
+              />
+            )}
+            {errorVista && (
+              <pre className="absolute inset-x-0 bottom-0 z-10 max-h-[50%] overflow-auto bg-[#1e1e1e]/90 p-3 text-xs text-red-300">
+                {errorVista}
+              </pre>
+            )}
+          </div>
+        )}
       </div>
     </>
   )

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { CodeIcon, CopyIcon } from '@radix-ui/react-icons'
+import { CodeIcon, CopyIcon, Cross2Icon, PlusIcon } from '@radix-ui/react-icons'
 import * as Blockly from 'blockly/core'
 import { Button } from '@/components/ui/button'
 import 'blockly/blocks'
@@ -56,6 +56,8 @@ const BlocklyComponent = ({
   // En el celular los bloques arrancan más chicos; se lee al crear el área de trabajo.
   const compactoRef = useRef(compacto)
   compactoRef.current = compacto
+  // En el celular la caja de bloques es un cajón: se esconde y se trae con un botón.
+  const [cajonAbierto, setCajonAbierto] = useState(false)
   const workspaceRef = useRef(null) // Referencia al workspace
   const [code, setCode] = useState('')
   const [showCode, setShowCode] = useState(false)
@@ -253,7 +255,19 @@ const BlocklyComponent = ({
 
     workspaceRef.current.addChangeListener(onWorkspaceChange)
 
+    // En el celular, el cajón se cierra solo cuando el alumno suelta un bloque.
+    const cerrarCajonAlSoltar = evento => {
+      if (
+        compactoRef.current &&
+        evento.type === Blockly.Events.BLOCK_DRAG &&
+        !evento.isStart
+      )
+        setCajonAbierto(false)
+    }
+    workspaceRef.current.addChangeListener(cerrarCajonAlSoltar)
+
     return () => {
+      workspaceRef.current.removeChangeListener(cerrarCajonAlSoltar)
       workspaceRef.current.removeChangeListener(onWorkspaceChange)
       workspaceRef.current.dispose()
     }
@@ -264,6 +278,17 @@ const BlocklyComponent = ({
       Blockly.svgResize(workspaceRef.current)
     }
   }, [showCode])
+
+  // Muestra u oculta la caja de bloques (en escritorio siempre se ve).
+  useEffect(() => {
+    const ws = workspaceRef.current
+    const toolbox = ws?.getToolbox()
+    if (!toolbox) return
+    const visible = !compacto || cajonAbierto
+    if (!visible) toolbox.clearSelection()
+    toolbox.setVisible(visible)
+    Blockly.svgResize(ws)
+  }, [compacto, cajonAbierto, toolBoxDesafio])
 
   // Escucha cambios en la altura del contenedor y fuerza un redibujado
   useEffect(() => {
@@ -322,6 +347,20 @@ const BlocklyComponent = ({
           codigoAParte ? 'blockly-workspace' : 'blockly-workspace-full'
         }
       >
+        {compacto && (
+          <Button
+            onClick={() => setCajonAbierto(abierto => !abierto)}
+            className={`absolute bottom-3 left-3 z-[60] h-11 px-4 text-base text-white shadow-lg ${cajonAbierto ? 'bg-gray-600 hover:bg-gray-500' : 'bg-arduino hover:bg-arduino-oscuro'}`}
+            aria-expanded={cajonAbierto}
+          >
+            {cajonAbierto ? (
+              <Cross2Icon className="mr-1.5 h-4 w-4" />
+            ) : (
+              <PlusIcon className="mr-1.5 h-4 w-4" />
+            )}
+            {cajonAbierto ? 'Cerrar' : 'Bloques'}
+          </Button>
+        )}
         {compacto ? (
           // En el celular: dos botones chicos, solo con ícono, para dejar lugar a los bloques.
           <div className="absolute right-2 top-2 z-10 flex gap-1.5">
