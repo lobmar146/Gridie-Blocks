@@ -13,6 +13,7 @@ import {
   MinusIcon,
   PlayIcon,
   PlusIcon,
+  ReaderIcon,
   UpdateIcon,
   UploadIcon
 } from '@radix-ui/react-icons'
@@ -218,6 +219,12 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
     conexionCompletaGuardada(toolBox)
   )
   const [ventanaAparte, setVentanaAparte] = useState(null)
+  // La consigna se puede esconder con un botón. Si nadie la tocó, se ve en Programá y se
+  // esconde en Conectá y Probá, para que el simulador tenga toda la pantalla.
+  const [consignaElegida, setConsignaElegida] = useState(null)
+  const consignaOculta =
+    consignaElegida ?? (tieneSimulador && paso !== 'programar')
+  useEffect(() => setConsignaElegida(null), [paso])
   // Cambia cada vez que el simulador vuelve de la ventana aparte, para que el panel relea lo
   // que el alumno conectó allá.
   const [vueltaDeLaVentana, setVueltaDeLaVentana] = useState(0)
@@ -299,7 +306,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   // Blockly mide su contenedor sólo cuando cambia el tamaño de la ventana.
   useEffect(() => {
     window.dispatchEvent(new Event('resize'))
-  }, [paso, ventanaAparte])
+  }, [paso, ventanaAparte, consignaOculta])
 
   const traerDeVuelta = () => {
     setVentanaAparte(ventana => {
@@ -457,7 +464,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
 
       <div
         ref={consignaRef}
-        className="relative mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020]"
+        className={`relative mx-2 mb-2 mt-1 max-h-[130px] overflow-y-auto rounded-xl p-5 leading-relaxed text-white dark:bg-[#202020] ${consignaOculta ? 'hidden' : ''}`}
       >
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -578,39 +585,49 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
         </ReactMarkdown>
       </div>
 
-      {tieneSimulador && (
-        <nav
-          className="mx-2 mb-2 flex w-fit items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
-          aria-label="Pasos del desafío"
+      <div className="mx-2 mb-1 flex h-10 items-center gap-3">
+        {tieneSimulador && (
+          <nav
+            className="flex w-fit items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
+            aria-label="Pasos del desafío"
+          >
+            {pestanas.map(pestana => (
+              <button
+                key={pestana.id}
+                type="button"
+                disabled={pestana.bloqueada}
+                aria-current={paso === pestana.id ? 'step' : undefined}
+                title={pestana.bloqueada ? pestana.ayuda : undefined}
+                onClick={() => setPaso(pestana.id)}
+                className={`flex items-center rounded-md px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
+                  paso === pestana.id
+                    ? 'bg-arduino font-semibold text-white'
+                    : pestana.bloqueada
+                      ? 'cursor-not-allowed text-gray-500'
+                      : 'text-gray-200 hover:bg-[#3a3a3a]'
+                }`}
+              >
+                <pestana.Icono className="mr-1.5 h-3.5 w-3.5" />
+                {pestana.nombre}
+              </button>
+            ))}
+          </nav>
+        )}
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-gray-200"
+          onClick={() => setConsignaElegida(!consignaOculta)}
+          aria-expanded={!consignaOculta}
         >
-          {pestanas.map(pestana => (
-            <button
-              key={pestana.id}
-              type="button"
-              disabled={pestana.bloqueada}
-              aria-current={paso === pestana.id ? 'step' : undefined}
-              title={pestana.bloqueada ? pestana.ayuda : undefined}
-              onClick={() => setPaso(pestana.id)}
-              className={`flex items-center rounded-md px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
-                paso === pestana.id
-                  ? 'bg-arduino font-semibold text-white'
-                  : pestana.bloqueada
-                    ? 'cursor-not-allowed text-gray-500'
-                    : 'text-gray-200 hover:bg-[#3a3a3a]'
-              }`}
-            >
-              <pestana.Icono className="mr-1.5 h-3.5 w-3.5" />
-              {pestana.nombre}
-            </button>
-          ))}
-        </nav>
-      )}
+          <ReaderIcon className="mr-1.5 h-3.5 w-3.5" />
+          {consignaOculta ? 'Ver consigna' : 'Esconder consigna'}
+        </Button>
+      </div>
       <div
         className="relative flex"
         style={{
-          height: tieneSimulador
-            ? `calc(${blocklyHeight} - 44px)`
-            : blocklyHeight
+          height: `calc(${blocklyHeight} - 44px)`
         }}
       >
         {/* En Conectá y Probá los bloques quedan montados pero invisibles (sin cambiar de
