@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react'
 import { CodeIcon, CopyIcon, Cross2Icon, PlusIcon } from '@radix-ui/react-icons'
 import * as Blockly from 'blockly/core'
 import { Button } from '@/components/ui/button'
@@ -17,6 +23,7 @@ import { toolboxDesafio1Clase2 } from '../toolbox/Clase 2/toolboxDesafio1Clase2'
 import { toolboxDesafio2Clase2 } from '../toolbox/Clase 2/toolboxDesafio2Clase2'
 import '../App.css'
 import toast from 'react-hot-toast'
+import { borrarBloques, guardarBloques, leerBloques } from '@/lib/trabajo'
 import { toolboxDesafio3Clase2 } from '@/toolbox/Clase 2/toolboxDesafio3Clase2'
 import { toolboxDesafio5Clase2 } from '@/toolbox/Clase 2/toolboxDesafio5Clase2'
 import { toolboxEjercicio1Clase3PIR } from '@/toolbox/Clase 3/toolboxEjercicio1Clase3PIR'
@@ -51,12 +58,52 @@ Blockly.Blocks['procedures_ifreturn'] = null
 // Define los bloques una vez fuera del componente
 Blockly.common.defineBlocks(blocksArduino)
 
-const BlocklyComponent = ({
-  toolBoxDesafio,
-  altura,
-  onCodeChange,
-  compacto = false
-}) => {
+// El bloque principal de cada desafío: <9 => Ejecutar 1 vez | >=9 => Ejecutar por siempre
+const tipoRaiz = toolBoxDesafio =>
+  (Number(toolBoxDesafio) || 1) >= 9
+    ? 'ejecutar_por_siempre'
+    : 'ejecutar_una_vez'
+const TIPOS_RAIZ = ['ejecutar_una_vez', 'ejecutar_por_siempre']
+
+/**
+ * Pone en el área de trabajo los bloques guardados (o nada) y se asegura de que esté el
+ * bloque principal del desafío, que no se puede borrar. Devuelve false si los bloques
+ * guardados no se pudieron cargar.
+ */
+function prepararAreaDeTrabajo(workspace, toolBoxDesafio, bloques) {
+  let pudo = true
+  workspace.clear()
+  if (bloques) {
+    try {
+      Blockly.serialization.workspaces.load(bloques, workspace)
+    } catch (error) {
+      console.error('No se pudieron cargar los bloques guardados:', error)
+      workspace.clear()
+      pudo = false
+    }
+  }
+  const raices = workspace
+    .getTopBlocks(false)
+    .filter(b => TIPOS_RAIZ.includes(b.type))
+  raices.forEach(b => b.setDeletable(false))
+  if (!raices.some(b => b.type === tipoRaiz(toolBoxDesafio))) {
+    const initialBlock = workspace.newBlock(tipoRaiz(toolBoxDesafio))
+    initialBlock.initSvg()
+    initialBlock.render()
+    initialBlock.moveBy(10, 10)
+    initialBlock.setDeletable(false)
+  }
+  return pudo
+}
+
+/** Si el área de trabajo tiene algo más que el bloque principal vacío. */
+const tieneTrabajo = workspace =>
+  workspace.getAllBlocks(false).some(b => !TIPOS_RAIZ.includes(b.type))
+
+const BlocklyComponent = forwardRef(function BlocklyComponent(
+  { toolBoxDesafio, altura, onCodeChange, compacto = false },
+  ref
+) {
   const blocklyDiv = useRef(null)
   // En el celular los bloques arrancan más chicos; se lee al crear el área de trabajo.
   const compactoRef = useRef(compacto)
@@ -154,15 +201,12 @@ const BlocklyComponent = ({
       }
     })
 
-    // Crear bloque raíz según etapa:
-    // <9 => Ejecutar 1 vez | >=9 => Ejecutar por siempre
-    const rootType =
-      toolboxIndex >= 9 ? 'ejecutar_por_siempre' : 'ejecutar_una_vez'
-    const initialBlock = workspaceRef.current.newBlock(rootType)
-    initialBlock.initSvg()
-    initialBlock.render()
-    initialBlock.moveBy(10, 10)
-    initialBlock.setDeletable(false)
+    // Lo que el alumno dejó la última vez en este desafío (o solo el bloque principal).
+    const guardados = leerBloques(toolBoxDesafio)
+    if (!prepararAreaDeTrabajo(workspaceRef.current, toolBoxDesafio, guardados))
+      toast.error(
+        'No se pudieron recuperar los bloques que tenías guardados. Empezás con el área vacía.'
+      )
 
     //funcion para saber si es un bloque flotante.
     // Función para saber si el bloque está flotando (ni dentro de ejecutar_una_vez / ejecutar_por_siempre ni dentro de un procedimiento)
@@ -271,12 +315,54 @@ const BlocklyComponent = ({
     }
     workspaceRef.current.addChangeListener(cerrarCajonAlSoltar)
 
+    // Autoguardado: cada vez que cambian los bloques (no al hacer zoom o seleccionar), se
+    // guardan en el navegador, un ratito después para no guardar en cada pasito del arrastre.
+    const workspace = workspaceRef.current
+    let espera = null
+    const guardarAhora = () => {
+      window.clearTimeout(espera)
+      espera = null
+      guardarBloques(
+        toolBoxDesafio,
+        Blockly.serialization.workspaces.save(workspace)
+      )
+    }
+    const autoguardar = evento => {
+      if (evento.isUiEvent) return
+      window.clearTimeout(espera)
+      espera = window.setTimeout(guardarAhora, 300)
+    }
+    workspace.addChangeListener(autoguardar)
+    // Si cierra la pestaña o la app justo después de mover un bloque.
+    const alSalir = () => espera && guardarAhora()
+    window.addEventListener('pagehide', alSalir)
+
     return () => {
+      alSalir()
+      window.removeEventListener('pagehide', alSalir)
+      workspace.removeChangeListener(autoguardar)
       workspaceRef.current.removeChangeListener(cerrarCajonAlSoltar)
       workspaceRef.current.removeChangeListener(onWorkspaceChange)
       workspaceRef.current.dispose()
     }
   }, [toolBoxDesafio]) // Se actualizará cada vez que cambie el prop 'toolBoxDesafio'
+
+  // Lo que usa la pantalla del desafío para guardar y abrir archivos.
+  useImperativeHandle(
+    ref,
+    () => ({
+      obtenerBloques: () =>
+        Blockly.serialization.workspaces.save(workspaceRef.current),
+      tieneTrabajo: () => tieneTrabajo(workspaceRef.current),
+      cargarBloques: bloques =>
+        prepararAreaDeTrabajo(workspaceRef.current, toolBoxDesafio, bloques),
+      empezarDeNuevo: () => {
+        borrarBloques(toolBoxDesafio)
+        prepararAreaDeTrabajo(workspaceRef.current, toolBoxDesafio, null)
+      }
+    }),
+    [toolBoxDesafio]
+  )
 
   useEffect(() => {
     if (workspaceRef.current) {
@@ -419,6 +505,6 @@ const BlocklyComponent = ({
       )}
     </div>
   )
-}
+})
 
 export default BlocklyComponent

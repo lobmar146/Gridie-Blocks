@@ -90,11 +90,13 @@ Límites del plan gratis:
 - **Se duerme a los 15 minutos sin uso.** El primer alumno que entra después espera
   alrededor de un minuto mientras despierta. Para que no se duerma, algo tiene que pedirle
   `/salud` cada menos de 15 minutos (las 750 horas gratis alcanzan para tenerlo prendido
-  todo el mes). Dos formas:
+  todo el mes). El servidor ya se pide `/salud` a sí mismo cada 10 minutos usando la
+  dirección pública que le da Render (`RENDER_EXTERNAL_URL`), así que no hace falta nada.
+  Como respaldo hay dos formas más:
   - **UptimeRobot** (<https://uptimerobot.com>, gratis): *Add New Monitor* > *HTTP(s)*,
     URL `https://TU-SERVICIO.onrender.com/salud`, cada 5 minutos. Anda al instante.
   - **GitHub Actions**: el workflow `.github/workflows/mantener-despierto.yml` hace lo mismo
-    cada 10 minutos. Creá la variable del repositorio `GRIDIE_URL` (Settings > Secrets and
+    cada 5 minutos. Creá la variable del repositorio `GRIDIE_URL` (Settings > Secrets and
     variables > Actions > Variables) con tu dirección de Render. A veces GitHub lo atrasa
     algunos minutos.
 - 512 MB de memoria y poca CPU: compila de a uno (`CONCURRENCIA=1`). Cada programa nuevo
