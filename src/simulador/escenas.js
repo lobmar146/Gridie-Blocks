@@ -60,10 +60,13 @@ function crearConstructor(protoboard, { pin5V = '5V', pinGND = 'GND' } = {}) {
     uno: { at: [protoboard.xArduino, 0, 0] },
     bb: { at: [0, 0, 0] }
   }
-  const wires = [
-    [`uno.${pin5V}`, 'bb.W3', { color: COLOR_CABLE.rojo }],
-    [`uno.${pinGND}`, 'bb.X3', { color: COLOR_CABLE.negro }]
-  ]
+  const wires = []
+  // Un cable desde un pin del Arduino. Si el alumno todavía no eligió el pin, no se dibuja.
+  const alArduino = (pin, hacia, color) => {
+    if (pin) wires.push([`uno.${pin}`, hacia, { color }])
+  }
+  alArduino(pin5V, 'bb.W3', COLOR_CABLE.rojo)
+  alArduino(pinGND, 'bb.X3', COLOR_CABLE.negro)
   const usados = new Set(['W3', 'X3'])
   let columna = 5
 
@@ -105,11 +108,7 @@ function crearConstructor(protoboard, { pin5V = '5V', pinGND = 'GND' } = {}) {
       parts[id] = { type: tipoLed }
       layout[`r_${id}`] = { on: { a: `bb.d${c}` } } // b en d{c+4}
       layout[id] = { on: { anode: `bb.c${c + 4}` } } // cátodo en c{c+5}
-      wires.push([
-        `uno.${pin}`,
-        `bb.a${c}`,
-        { color: COLOR_CABLE[color] ?? COLOR_CABLE.amarillo }
-      ])
+      alArduino(pin, `bb.a${c}`, COLOR_CABLE[color] ?? COLOR_CABLE.amarillo)
       wires.push([
         `bb.a${c + 5}`,
         riel('X', c + 5),
@@ -129,7 +128,7 @@ function crearConstructor(protoboard, { pin5V = '5V', pinGND = 'GND' } = {}) {
       layout[id] = { on: { a: `bb.f${c + 2}` }, rotate: [0, 0, 90] } // a en la columna c+2, b en c
       layout[`r_${id}`] = { on: { a: `bb.b${c + 2}` }, rotate: [0, 0, -90] } // b al riel X
       wires.push([`bb.a${c}`, riel('W', c), { color: COLOR_CABLE.rojo }])
-      wires.push([`uno.${pin}`, `bb.j${c + 2}`, { color: COLOR_CABLE.verde }])
+      alArduino(pin, `bb.j${c + 2}`, COLOR_CABLE.verde)
     },
 
     /** Sensor que da LOW cuando detecta (el de obstáculos IR): pulsador a GND y
@@ -146,7 +145,7 @@ function crearConstructor(protoboard, { pin5V = '5V', pinGND = 'GND' } = {}) {
         riel('W', c + 6),
         { color: COLOR_CABLE.rojo }
       ])
-      wires.push([`uno.${pin}`, `bb.j${c + 2}`, { color: COLOR_CABLE.verde }])
+      alArduino(pin, `bb.j${c + 2}`, COLOR_CABLE.verde)
     },
 
     /** Potenciómetro entre GND y 5V, con el cursor en una entrada analógica. */
@@ -164,7 +163,7 @@ function crearConstructor(protoboard, { pin5V = '5V', pinGND = 'GND' } = {}) {
         riel('W', c + 4),
         { color: COLOR_CABLE.rojo }
       ])
-      wires.push([`uno.${pin}`, `bb.a${c + 2}`, { color: COLOR_CABLE.azul }])
+      alArduino(pin, `bb.a${c + 2}`, COLOR_CABLE.azul)
     },
 
     /** Parlante (buzzer pasivo) con una resistencia de 100 ohm en serie. */
@@ -174,7 +173,7 @@ function crearConstructor(protoboard, { pin5V = '5V', pinGND = 'GND' } = {}) {
       parts[id] = { type: 'buzzer-12mm' }
       layout[`r_${id}`] = { on: { a: `bb.d${c}` } } // b en d{c+4}
       layout[id] = { on: { '+': `bb.c${c + 4}` } } // - en c{c+7}
-      wires.push([`uno.${pin}`, `bb.a${c}`, { color: COLOR_CABLE.naranja }])
+      alArduino(pin, `bb.a${c}`, COLOR_CABLE.naranja)
       wires.push([
         `bb.a${c + 7}`,
         riel('X', c + 7),
@@ -186,7 +185,7 @@ function crearConstructor(protoboard, { pin5V = '5V', pinGND = 'GND' } = {}) {
     servo(id, pin) {
       parts[id] = { type: 'servo-sg90' }
       layout[id] = { at: [protoboard.xArduino, 70, 0], rotate: [0, 0, 90] }
-      wires.push([`uno.${pin}`, `${id}.SIGNAL`, { color: COLOR_CABLE.naranja }])
+      alArduino(pin, `${id}.SIGNAL`, COLOR_CABLE.naranja)
       wires.push([riel('W', 4), `${id}.VCC`, { color: COLOR_CABLE.rojo }])
       wires.push([riel('X', 4), `${id}.GND`, { color: COLOR_CABLE.negro }])
     },
@@ -434,17 +433,24 @@ export function cablesDelDesafio(toolBox) {
 
 /**
  * La escena y los controles del desafío `toolBox`, o null si no tiene simulación.
- * `conexiones` ({ idDelCable: pin }) es lo que conectó el alumno; si falta un cable se usa
- * la conexión correcta.
+ * `conexiones` ({ idDelCable: pin }) es lo que conectó el alumno. Si falta un cable se usa
+ * la conexión correcta, salvo con `soloElegidas`, que deja ese cable sin dibujar (para la
+ * etapa de conexión, así la escena no muestra la respuesta).
  */
-export function escenaDelDesafio(toolBox, conexiones = {}) {
+export function escenaDelDesafio(
+  toolBox,
+  conexiones = {},
+  { soloElegidas = false } = {}
+) {
   const desafio = DESAFIOS[Number(toolBox)]
   if (!desafio) return null
-  const pinDe = id => conexiones[id] || KIT[id]?.pin
+  const elegido = (id, correcto) =>
+    conexiones[id] || (soloElegidas ? null : correcto)
+  const pinDe = id => elegido(id, KIT[id]?.pin)
   const armar = protoboard => {
     const e = crearConstructor(protoboard, {
-      pin5V: conexiones.riel5V || '5V',
-      pinGND: conexiones.rielGND || 'GND'
+      pin5V: elegido('riel5V', '5V'),
+      pinGND: elegido('rielGND', 'GND')
     })
     for (const id of desafio.componentes) {
       const c = KIT[id]

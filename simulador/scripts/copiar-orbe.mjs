@@ -13,6 +13,8 @@ fs.rmSync(path.join(destino, 'orbe-wasm'), { recursive: true, force: true })
 fs.rmSync(path.join(destino, 'parts'), { recursive: true, force: true })
 fs.cpSync(path.join(raiz, 'vendor', 'orbe-wasm'), path.join(destino, 'orbe-wasm'), { recursive: true })
 fs.cpSync(path.join(raiz, 'vendor', 'orbe-parts'), path.join(destino, 'parts'), { recursive: true })
+// Programa vacío para mostrar el circuito en la etapa de conexión, antes de compilar nada.
+fs.copyFileSync(path.join(raiz, 'vacio.hex'), path.join(destino, 'vacio.hex'))
 if (fs.existsSync(path.join(raiz, 'piezas'))) {
   fs.cpSync(path.join(raiz, 'piezas'), path.join(destino, 'parts'), { recursive: true })
 }

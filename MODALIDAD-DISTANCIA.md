@@ -22,7 +22,13 @@ $env:ARDUINO_LIBRERIAS="$PWD\electron\arduino-data\libraries"
 npm run dev:web
 ```
 
-En cada desafío aparece el botón **Probar en simulador**.
+En cada desafío aparece el botón **Probar en simulador**, que abre el panel en dos etapas:
+
+1. **Conectar:** el alumno elige a qué pin del Arduino va cada cable (los rieles de la
+   protoboard y la señal de cada componente) y lo ve en 3D. Con «Verificar conexiones» se
+   marca cada cable bien o mal; cuando están todos bien pasa a la etapa 2. Lo que conectó se
+   recuerda en el navegador, por desafío.
+2. **Probar:** compila el programa y lo corre en ese circuito, con controles para los sensores.
 
 ## Qué hay
 
