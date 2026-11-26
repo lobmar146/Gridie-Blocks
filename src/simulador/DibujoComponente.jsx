@@ -374,9 +374,9 @@ const DibujoComponente = ({
               }
               className={`flex touch-none select-none items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-all ${
                 esActual
-                  ? `cursor-grab border-amber-400 bg-gray-900 text-white shadow-md ring-2 ring-amber-400/50 active:cursor-grabbing ${arrastrando ? 'scale-105 ring-cyan-400' : 'animate-pulse'}`
+                  ? `cursor-grab border-amber-400 bg-gray-900 text-white shadow-md ring-2 ring-amber-400/50 active:cursor-grabbing ${arrastrando ? 'scale-105 ring-arduino-claro' : 'animate-pulse'}`
                   : conectado
-                    ? 'cursor-default border-emerald-600/70 bg-emerald-950/60 text-emerald-200'
+                    ? 'cursor-default border-arduino/70 bg-arduino-profundo/60 text-arduino-suave'
                     : 'cursor-default border-gray-700 bg-gray-900/50 text-gray-500'
               }`}
             >
@@ -385,7 +385,7 @@ const DibujoComponente = ({
                 style={{ background: cable.color }}
               />
               <span>{textoTerminal(cable)}</span>
-              {conectado && <span className="text-emerald-400">✓</span>}
+              {conectado && <span className="text-arduino-claro">✓</span>}
             </button>
           )
         })}

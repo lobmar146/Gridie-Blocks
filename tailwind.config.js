@@ -10,6 +10,16 @@ export default {
         sm: 'calc(var(--radius) - 4px)'
       },
       colors: {
+        // Verde azulado de Arduino (el del bloque principal). Contraste WCAG AA:
+        // texto blanco sobre DEFAULT 5.3:1, oscuro 6.6:1, profundo 10:1;
+        // claro y suave sobre el fondo oscuro #1e1e1e 6.8:1 y 8.9:1.
+        arduino: {
+          DEFAULT: '#00796B',
+          oscuro: '#00695C',
+          profundo: '#004D40',
+          claro: '#4DB6AC',
+          suave: '#80CBC4'
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

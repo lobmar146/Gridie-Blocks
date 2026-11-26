@@ -80,7 +80,7 @@ export default function BotonSubirWeb({ codigo }) {
     <Button
       variant="default"
       size="sm"
-      className={`justify-start bg-green-600 text-white hover:bg-green-700 ${ocupado ? 'opacity-70' : ''}`}
+      className={`justify-start bg-arduino text-white hover:bg-arduino-oscuro ${ocupado ? 'opacity-70' : ''}`}
       onClick={subir}
       disabled={ocupado}
       title="Conectá el Arduino Uno por USB (Chrome o Edge)"

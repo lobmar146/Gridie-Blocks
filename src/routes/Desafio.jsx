@@ -329,11 +329,11 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   }
 
   const pestanas = [
-    { id: 'programar', nombre: '1. Programá' },
-    { id: 'conectar', nombre: '2. Conectá' },
+    { id: 'programar', nombre: '1. Programá 🧩' },
+    { id: 'conectar', nombre: '2. Conectá 🔌' },
     {
       id: 'probar',
-      nombre: '3. Probá',
+      nombre: '3. Probá ▶️',
       bloqueada: !conexionLista,
       ayuda: 'Primero conectá bien todos los cables'
     }
@@ -402,31 +402,6 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
               <span className="text-sm">Blocks - {titulo}</span>
             </div>
           </div>
-          {tieneSimulador && (
-            <nav
-              className="flex items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
-              aria-label="Pasos del desafío"
-            >
-              {pestanas.map(pestana => (
-                <button
-                  key={pestana.id}
-                  type="button"
-                  disabled={pestana.bloqueada}
-                  title={pestana.bloqueada ? pestana.ayuda : undefined}
-                  onClick={() => setPaso(pestana.id)}
-                  className={`rounded-md px-3 py-1 text-sm transition-colors ${
-                    paso === pestana.id
-                      ? 'bg-violet-600 font-semibold text-white'
-                      : pestana.bloqueada
-                        ? 'cursor-not-allowed text-gray-600'
-                        : 'text-gray-300 hover:bg-[#3a3a3a]'
-                  }`}
-                >
-                  {pestana.nombre}
-                </button>
-              ))}
-            </nav>
-          )}
           {/* Right section: Board selection and upload */}
           <div className="flex items-center space-x-4">
             {!hayPlaca && <BotonSubirWeb codigo={generatedCode} />}
@@ -457,7 +432,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
                 <Button
                   variant="default"
                   size="sm"
-                  className={`min-w-[125.3px] justify-start bg-green-600 text-white hover:bg-green-700 ${isUploading ? 'opacity-70' : ''}`}
+                  className={`min-w-[125.3px] justify-start bg-arduino text-white hover:bg-arduino-oscuro ${isUploading ? 'opacity-70' : ''}`}
                   onClick={subirCodigo}
                   disabled={isUploading}
                 >
@@ -482,7 +457,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
           <DialogTrigger asChild>
             <Button
               variant="ghost"
-              className={`absolute right-4 top-4 text-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-500`}
+              className={`absolute right-4 top-4 text-arduino-claro hover:bg-arduino-claro/10 hover:text-arduino-suave`}
             >
               <InfoCircledIcon className="mr-1.5 h-3.5 w-3.5" />
               <span className="underline decoration-dotted underline-offset-4">
@@ -597,7 +572,40 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
         </ReactMarkdown>
       </div>
 
-      <div className="flex" style={{ height: blocklyHeight }}>
+      {tieneSimulador && (
+        <nav
+          className="mx-2 mb-2 flex w-fit items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
+          aria-label="Pasos del desafío"
+        >
+          {pestanas.map(pestana => (
+            <button
+              key={pestana.id}
+              type="button"
+              disabled={pestana.bloqueada}
+              aria-current={paso === pestana.id ? 'step' : undefined}
+              title={pestana.bloqueada ? pestana.ayuda : undefined}
+              onClick={() => setPaso(pestana.id)}
+              className={`rounded-md px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
+                paso === pestana.id
+                  ? 'bg-arduino font-semibold text-white'
+                  : pestana.bloqueada
+                    ? 'cursor-not-allowed text-gray-500'
+                    : 'text-gray-200 hover:bg-[#3a3a3a]'
+              }`}
+            >
+              {pestana.nombre}
+            </button>
+          ))}
+        </nav>
+      )}
+      <div
+        className="flex"
+        style={{
+          height: tieneSimulador
+            ? `calc(${blocklyHeight} - 44px)`
+            : blocklyHeight
+        }}
+      >
         <div className="relative min-w-0 flex-1">
           <BlocklyComponent
             toolBoxDesafio={toolBox}
@@ -607,12 +615,10 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
           {tieneSimulador && paso === 'programar' && (
             <div className="absolute bottom-5 left-1/2 z-10 -translate-x-1/2">
               <Button
-                size="sm"
-                className="bg-violet-600 text-white hover:bg-violet-700"
+                className="bg-arduino text-base text-white shadow-lg hover:bg-arduino-oscuro"
                 onClick={() => setPaso('conectar')}
               >
-                Siguiente: Conectá
-                <ChevronRightIcon className="ml-1 h-3.5 w-3.5" />
+                ¡Estoy listo para conectar! 🔌
               </Button>
             </div>
           )}
@@ -628,14 +634,14 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
                     variant="secondary"
                     onClick={() => ventanaAparte.focus()}
                   >
-                    Ir a la ventana
+                    Ir a la ventana 🪟
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-violet-600 text-white hover:bg-violet-700"
+                    className="bg-arduino text-white hover:bg-arduino-oscuro"
                     onClick={traerDeVuelta}
                   >
-                    Traer de vuelta acá
+                    Traer de vuelta acá ↩️
                   </Button>
                 </div>
               </div>
