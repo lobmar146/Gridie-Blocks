@@ -98,7 +98,7 @@ const conectadosBien = (cables, conexiones) =>
  * 2. Probar: compila el programa, lo corre en el circuito y muestra los controles de los
  *    sensores.
  * `enVentana` es para la ventana emergente: el panel ocupa todo el ancho.
- * `embebido` es para la vista partida de la pantalla del desafío, donde las pestañas
+ * `embebido` es para la pantalla del desafío, donde las pestañas
  * Programá / Conectá / Probá están afuera: la etapa la manejan `etapa` y `onEtapa`, y
  * `onDesacoplar` pasa el simulador a una ventana aparte.
  */
