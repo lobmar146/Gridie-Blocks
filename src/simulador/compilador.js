@@ -2,10 +2,35 @@
 //
 // - En la app de escritorio (Electron) usa el arduino-cli que ya viene empaquetado.
 // - En el navegador (modalidad a distancia por web) lo manda al servidor de compilación
-//   (servidor-compilacion/). Su dirección se configura con VITE_COMPILADOR_URL; por defecto
-//   es /api/compilar, que en desarrollo (npm run dev:web) atiende el propio Vite.
+//   (servidor-compilacion/). Su dirección se elige así (gana la primera que exista):
+//     1. ?compilador=https://... en la dirección de la página (queda guardada en el navegador;
+//        ?compilador=borrar la olvida). Sirve para probar contra otro servidor sin recompilar.
+//     2. window.GRIDIE_CONFIG.compiladorUrl, que se define en public/config.js (se puede
+//        editar en el sitio ya publicado, sin volver a compilar la web).
+//     3. VITE_COMPILADOR_URL al compilar la web.
+//     4. api/compilar en el mismo sitio (lo que pasa cuando el servidor de compilación también
+//        sirve la web, o en desarrollo con npm run dev:web, donde lo atiende el propio Vite).
 
-const URL_COMPILADOR = import.meta.env.VITE_COMPILADOR_URL || '/api/compilar'
+const CLAVE_GUARDADA = 'gridie-compilador-url'
+
+function urlDelCompilador() {
+  try {
+    const pedida = new URLSearchParams(window.location.search).get('compilador')
+    if (pedida === 'borrar') localStorage.removeItem(CLAVE_GUARDADA)
+    else if (pedida) localStorage.setItem(CLAVE_GUARDADA, pedida)
+    const guardada = localStorage.getItem(CLAVE_GUARDADA)
+    if (guardada) return guardada
+  } catch {
+    // Sin localStorage (iframe con cookies bloqueadas, etc.): seguir con lo demás.
+  }
+  return (
+    window.GRIDIE_CONFIG?.compiladorUrl ||
+    import.meta.env.VITE_COMPILADOR_URL ||
+    (import.meta.env.DEV ? '/api/compilar' : 'api/compilar')
+  )
+}
+
+const esperar = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 export class ErrorDeCompilacion extends Error {}
 
@@ -33,16 +58,21 @@ export async function compilar(codigo) {
   }
 
   let respuesta
-  try {
-    respuesta = await fetch(URL_COMPILADOR, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ codigo })
-    })
-  } catch {
-    throw new ErrorDeCompilacion(
-      'No se pudo conectar con el servidor de compilación. Revisá tu conexión a internet.'
-    )
+  // Si el servidor está ocupado (503) se reintenta un par de veces antes de avisar.
+  for (let intento = 0; ; intento++) {
+    try {
+      respuesta = await fetch(urlDelCompilador(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo })
+      })
+    } catch {
+      throw new ErrorDeCompilacion(
+        'No se pudo conectar con el servidor de compilación. Revisá tu conexión a internet.'
+      )
+    }
+    if (respuesta.status !== 503 || intento >= 2) break
+    await esperar(3000 * (intento + 1))
   }
   const cuerpo = await respuesta.json().catch(() => ({}))
   if (!respuesta.ok || !cuerpo.hex) {

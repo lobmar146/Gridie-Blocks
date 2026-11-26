@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-electron
+.git
+simulador/node_modules
+simulador/target
+electron/arduino
+electron/arduino-cli.exe
+electron/arduino-data/arduino15
+electron/arduino-data/packages
+electron/arduino-data/staging
+electron/arduino-data/*.json
+electron/arduino-data/*.sig
+electron/arduino-data/*.yaml

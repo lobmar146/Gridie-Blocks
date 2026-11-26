@@ -1,0 +1,18 @@
+# Blueprint de Render: crea el servicio web gratis con el Dockerfile de este repo.
+# En Render: New > Blueprint > elegir este repositorio y la rama modalidad-distancia.
+services:
+  - type: web
+    name: gridie-blocks
+    runtime: docker
+    plan: free
+    branch: modalidad-distancia
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /salud
+    envVars:
+      # Sitios que pueden mostrar GrIDIE en un iframe (tu Moodle). "*" = cualquiera.
+      - key: PERMITIR_IFRAME_EN
+        value: "*"
+      - key: CONCURRENCIA
+        value: "1"
+      - key: COLA_MAXIMA
+        value: "30"

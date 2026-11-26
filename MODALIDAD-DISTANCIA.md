@@ -44,8 +44,9 @@ En cada desafío aparece el botón **Probar en simulador**, que abre el panel en
 - `src/simulador/codigoSimulador.js`: solo para el simulador, `lecturaUltrasonica()` lee la
   distancia del control en A1 en vez de medir el eco. El código que ve el alumno no cambia.
 - `src/simulador/parlante.js`: hace sonar el parlante en la compu mientras el pin oscila.
-- `servidor-compilacion/`: servidor de compilación para publicar la versión web
-  (`npm run servidor-compilacion`, con `ARDUINO_CLI` apuntando a un arduino-cli con el core AVR).
-  La web lo encuentra en `VITE_COMPILADOR_URL`.
+- `servidor-compilacion/`: servidor de compilación que además sirve la versión web
+  (caché por hash, cola, iframe para Moodle). Cómo correrlo en una PC con Windows +
+  Cloudflare Tunnel o en Render gratis: ver `servidor-compilacion/LEEME.md`
+  (`Dockerfile` y `render.yaml` en la raíz).
 - `electron/main.js`: nuevo IPC `arduino:compile` para el simulador, y la interfaz se sirve
   por `app://` en producción (el simulador necesita fetch y Web Workers, que con file:// no andan).
