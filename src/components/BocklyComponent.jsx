@@ -111,6 +111,10 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
 
     workspaceRef.current = Blockly.inject(blocklyDiv.current, {
       renderer: 'zelos',
+      // Íconos (zoom, tacho) y sonidos de Blockly desde la app: por defecto los busca en
+      // unpkg.com, de la última versión, y sin internet o con otra versión se ven rotos.
+      media:
+        import.meta.env.MODE === 'development' ? '/blockly-media/' : './blockly-media/',
       toolbox: selectedToolbox,
       theme: darkTheme,
       locale: 'es',
