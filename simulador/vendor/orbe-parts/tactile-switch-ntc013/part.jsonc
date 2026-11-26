@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "part": "tactile-switch-ntc013",
+  "version": "0.2.1",
+  "title": "Tactile switch, NTC013, 4.2 x 3.2",
+  "summary": "N&H Technology NTC013 SMT tact switch, 4.2 x 3.2 x 2.5 mm, with a 160 gf press.",
+  "tags": ["switch", "button", "tactile", "smt"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "N&H Technology NTC013 series, drawing 20170417": "https://www.nh-technology.de/T-Mec/PDF/Series_TC/NTC013.pdf" },
+  "real": {
+    "maker": "N&H Technology",
+    "number": "NTC013-AT1J-A160T",
+    "datasheet": "N&H Technology NTC013 series, drawing 20170417"
+  },
+  "pins": { "a": [1, 2], "b": [3, 4] },
+  "params": {
+    "bounce": { "unit": "s", "default": null, "sets": "/bounce/window" },
+    "max_bounces": { "unit": "1", "default": 2, "sets": "/bounce/max_bounces" }
+  },
+  "model": {
+    "kind": "switch",
+    "on_resistance": {
+      "value": 0.5,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "N&H Technology NTC013 series, drawing 20170417",
+          "at": "Contact Resistance, 500 mOhm maximum",
+          "basis": "max"
+        }
+      }
+    },
+    "off_resistance": {
+      "value": 100000000.0,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "N&H Technology NTC013 series, drawing 20170417",
+          "at": "Insulation Resistance, 100 MOhm minimum at DC 500 V",
+          "basis": "min"
+        }
+      }
+    },
+    "initial": "open",
+    "events": [],
+    "bounce": null
+  },
+  "controls": { "press": { "input": "contact", "joint": "plunger" } },
+  "joints": {
+    "plunger": {
+      "node": "button",
+      "slide": [0, 0, -1],
+      "range": {
+        "value": 0.2,
+        "unit": "mm",
+        "source": {
+          "datasheet": {
+            "doc": "N&H Technology NTC013 series, drawing 20170417",
+            "at": "Stroke 0.2 ± 0.1 mm",
+            "basis": "nominal"
+          }
+        }
+      }
+    }
+  },
+  "not_simulated": [{
+    "what": "contact rating",
+    "why": "The drawing rates the contact at DC 16 V and 50 mA maximum. A switch has no ratings object, so that limit is not checked. The 160 ± 50 gf row is 100,000 cycles and the 260 ± 70 gf row is 50,000 cycles."
+  }]
+}

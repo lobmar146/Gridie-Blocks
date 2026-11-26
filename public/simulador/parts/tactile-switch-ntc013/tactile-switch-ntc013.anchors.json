@@ -1,0 +1,10 @@
+{
+  "part": "tactile-switch-ntc013",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "leg-1", "also": [], "at": [-2.075, 1.4, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 2, "node": "leg-2", "also": [], "at": [2.075, 1.4, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 3, "node": "leg-3", "also": [], "at": [-2.075, -1.4, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 4, "node": "leg-4", "also": [], "at": [2.075, -1.4, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"}
+  ]
+}

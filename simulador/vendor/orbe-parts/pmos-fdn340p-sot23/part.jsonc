@@ -1,0 +1,118 @@
+{
+  "format": 5,
+  "part": "pmos-fdn340p-sot23",
+  "version": "0.2.1",
+  "title": "FDN340P P-channel MOSFET, SOT-23",
+  "license": "MIT OR Apache-2.0",
+  "summary": "onsemi FDN340P P-channel MOSFET in SOT-23. Lead 1 is the gate, lead 2 the source and lead 3 the drain. The dot marks lead 1.",
+  "tags": ["transistor", "mosfet", "pmos", "sot-23"],
+  "docs": {
+    "onsemi FDN340P/D, Rev. 9, May 2025": "https://www.onsemi.com/download/data-sheet/pdf/fdn340p-d.pdf",
+  },
+  "real": { "maker": "onsemi", "number": "FDN340P", "datasheet": "onsemi FDN340P/D, Rev. 9, May 2025" },
+  "pins": { "G": [1], "S": [2], "D": [3] },
+  "model": {
+    "kind": "pmos",
+    "transconductance_parameter": {
+      "value": 4.579,
+      "unit": "A/V^2",
+      "source": {
+        "datasheet": {
+          "doc": "onsemi FDN340P/D, Rev. 9, May 2025",
+          "at": "On Characteristics, RDS(on) typical 60 mΩ at VGS = -4.5 V, ID = -2 A. |vds| is 0.12 V there. With VTO = 0.8 V, KP = 2 / (0.12 * (3.7 - 0.06)) rounds to 4.579 A/V^2 and gives 0.060 ohm at that point. At VGS = -2.5 V and ID = -1.7 A the model gives about 0.138 ohm, where the table's typical is 82 mΩ. In saturation at 2 A the model's gm is about 4.28 S, where gFS typical is 9 S",
+          "basis": "typical",
+        },
+      },
+    },
+    "threshold_voltage": {
+      "value": 0.8,
+      "unit": "V",
+      "source": {
+        "datasheet": {
+          "doc": "onsemi FDN340P/D, Rev. 9, May 2025",
+          "at": "On Characteristics, VGS(th) typical -0.8 V at VDS = VGS, ID = -250 µA. The kind stores the magnitude. The table's range is -0.4 V to -1.5 V",
+          "basis": "typical",
+        },
+      },
+    },
+    "channel_length_modulation": {
+      "value": 0.0,
+      "unit": "1/V",
+      "source": {
+        "datasheet": {
+          "doc": "onsemi FDN340P/D, Rev. 9, May 2025",
+          "at": "Not fitted. The on-resistance point is at |vds| = 0.12 V, in the linear region, so the output-curve slope was not read",
+          "basis": "typical",
+        },
+      },
+    },
+    "gate_source_capacitance": {
+      "value": 7.23e-10,
+      "unit": "F",
+      "source": {
+        "datasheet": {
+          "doc": "onsemi FDN340P/D, Rev. 9, May 2025",
+          "at": "Capacitance, Ciss typical minus Crss typical, 779 pF minus 56 pF, VDS = -10 V, VGS = 0 V, f = 1 MHz",
+          "basis": "typical",
+        },
+      },
+    },
+    "gate_drain_capacitance": {
+      "value": 5.6e-11,
+      "unit": "F",
+      "source": {
+        "datasheet": {
+          "doc": "onsemi FDN340P/D, Rev. 9, May 2025",
+          "at": "Capacitance, Crss typical, VDS = -10 V, VGS = 0 V, f = 1 MHz",
+          "basis": "typical",
+        },
+      },
+    },
+    "drain_source_capacitance": {
+      "value": 6.5e-11,
+      "unit": "F",
+      "source": {
+        "datasheet": {
+          "doc": "onsemi FDN340P/D, Rev. 9, May 2025",
+          "at": "Capacitance, Coss typical minus Crss typical, 121 pF minus 56 pF, VDS = -10 V, VGS = 0 V, f = 1 MHz",
+          "basis": "typical",
+        },
+      },
+    },
+    "ratings": {
+      "current": {
+        "value": 2.0,
+        "unit": "A",
+        "basis": { "sustained": { "average": "rms", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": {
+          "datasheet": {
+            "doc": "onsemi FDN340P/D, Rev. 9, May 2025",
+            "at": "Absolute Maximum Ratings, continuous drain current ID, -2 A",
+            "basis": "absolute_max",
+          },
+        },
+      },
+      "power": {
+        "value": 0.5,
+        "unit": "W",
+        "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": {
+          "datasheet": {
+            "doc": "onsemi FDN340P/D, Rev. 9, May 2025",
+            "at": "Absolute Maximum Ratings, PD note 1a, 0.5 W",
+            "basis": "absolute_max",
+          },
+        },
+      },
+    },
+    "pins": { "drain": "D", "gate": "G", "source": "S" },
+  },
+  "not_simulated": [
+    { "what": "body diode", "why": "The engine's pmos has none, so the part does not conduct from drain to source when the drain rises above the source. The datasheet's VSD is -0.7 V typical. Add a diode from drain to source if a circuit needs that path." },
+    { "what": "drain and source resistance", "why": "The square law folds them in. At VGS = -2.5 V and ID = -1.7 A the model gives about 0.138 ohm, against the table's 82 mΩ typical." },
+    { "what": "subthreshold conduction", "why": "Below 0.8 V of |Vgs| the drain passes only the engine's 1e-12 S leakage." },
+    { "what": "voltage-dependent capacitances", "why": "The capacitances are the typical values at VDS = -10 V, held constant, so gate charge is approximate." },
+    { "what": "breakdown", "why": "VDS beyond 20 V and VGS beyond 8 V are not checked." },
+    { "what": "temperature", "why": "The fit is at 25 C and the engine has no temperature." },
+  ],
+}

@@ -1,0 +1,9 @@
+{
+  "format": 1, "part": "crystal-hc49us", "version": "0.2.0", "listed": false, "title": "Crystal, HC-49/US", "license": "MIT OR Apache-2.0",
+  "summary": "HC-49/US low-profile crystal, any frequency, not polarized. Two leads.",
+  "tags": ["crystal", "timing", "passive", "through-hole"],
+  "docs": { "ECS HC-49USX": "https://www.ecsxtal.com/store/pdf/hc-49usx.pdf" },
+  "real": { "generic": true, "maker": null, "number": null, "datasheet": "ECS HC-49USX" },
+  "pins": { "1": [1], "2": [2] },
+  "not_simulated": [{ "what": "crystal", "pins": ["1", "2"], "why": "The engine's chips take their clock as a value." }],
+}

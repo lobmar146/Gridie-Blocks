@@ -2,12 +2,40 @@ import { exec, execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import process from 'process'
-import { fileURLToPath } from 'url'
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { fileURLToPath, pathToFileURL } from 'url'
+import { app, BrowserWindow, ipcMain, net, protocol } from 'electron'
 
 // Crear ventana principal (dev vs producción)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+// En producción la interfaz se sirve con el protocolo app:// en vez de file://.
+// El simulador (ORBE) necesita fetch() y Web Workers de módulo, que con file:// no andan.
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'app',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true
+    }
+  }
+])
+
+function registrarProtocoloApp() {
+  const raiz = path.join(__dirname, '../dist')
+  protocol.handle('app', request => {
+    const { pathname } = new URL(request.url)
+    const archivo = path.normalize(
+      path.join(raiz, decodeURIComponent(pathname))
+    )
+    if (!archivo.startsWith(raiz)) {
+      return new Response('Prohibido', { status: 403 })
+    }
+    return net.fetch(pathToFileURL(archivo).toString())
+  })
+}
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -27,11 +55,14 @@ const createWindow = () => {
   if (process.env.NODE_ENV === 'development') {
     win.loadURL('http://localhost:5173')
   } else {
-    win.loadFile(path.join(__dirname, '../dist/index.html'))
+    win.loadURL('app://gridie/index.html')
   }
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  registrarProtocoloApp()
+  createWindow()
+})
 
 // Ruta a arduino-cli
 // - En dev usamos electron/arduino-cli.exe (.__dirname).
@@ -88,23 +119,85 @@ function getBuildPaths() {
   return { buildPath, tempFilePath, hexFilePath }
 }
 
-// Subir código a la placa
-ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
-  return new Promise((resolve, reject) => {
-    const { buildPath, tempFilePath, hexFilePath } = getBuildPaths()
-    const fqbn = 'arduino:avr:uno' // Cambia esto según tu placa
+// Prepara la carpeta de librerías (Servo, etc.) que se le pasa a arduino-cli.
+// Devuelve el argumento --libraries listo para usar (o '' si no hay).
+function prepararLibrerias(buildPath) {
+  let finalLibrariesPath = '' // ruta final que pasaremos a arduino-cli
+  // Preparar ruta de librerías usadas por arduino-cli:
+  // - Prioridad: librerías dentro de electron/arduino-data (packaged).
+  // - Fallback en desarrollo: __dirname/libraries.
+  // - Evitar rutas dentro de app.asar (arduino-cli no puede leer de .asar).
+  try {
+    const isDev = process.defaultApp || process.env.NODE_ENV === 'development'
 
-    // Preparar ruta de librerías usadas por arduino-cli:
-    // - Prioridad: librerías dentro de electron/arduino-data (packaged).
-    // - Fallback en desarrollo: __dirname/libraries.
-    // - Evitar rutas dentro de app.asar (arduino-cli no puede leer de .asar).
-    let finalLibrariesPath = '' // <-- nuevo: ruta final que pasaremos a arduino-cli
-    try {
-      const isDev = process.defaultApp || process.env.NODE_ENV === 'development'
+    // En desarrollo usar electron/arduino-data/libraries (local).
+    // En producción usar resources/arduino-data/libraries.
+    const candidates = [
+      isDev
+        ? path.join(__dirname, 'arduino-data', 'libraries')
+        : path.join(
+            process.resourcesPath || __dirname,
+            'arduino-data',
+            'libraries'
+          )
+    ]
 
-      // En desarrollo usar electron/arduino-data/libraries (local).
-      // En producción usar resources/arduino-data/libraries.
-      const candidates = [
+    // DEBUG: mostrar rutas candidatas
+    console.log('DEBUG: isDev=', isDev, 'candidates=', candidates)
+
+    // Seleccionar rutas existentes y preferir las no empaquetadas en app.asar.
+    const existing = candidates.filter(p => fs.existsSync(p))
+    const unpacked = existing.filter(
+      p => !p.split(path.sep).some(part => part.includes('app.asar'))
+    )
+    const localLibsDir = unpacked.length ? unpacked[0] : existing[0] || null
+    const destLibsDir = path.join(buildPath, 'libraries')
+
+    // Copiar a build/libraries si es posible; si falla, usar la ruta original en resources.
+    if (localLibsDir) {
+      if (fs.existsSync(destLibsDir)) {
+        fs.rmSync(destLibsDir, { recursive: true, force: true })
+      }
+      if (fs.cpSync) {
+        try {
+          fs.cpSync(localLibsDir, destLibsDir, { recursive: true })
+          finalLibrariesPath = destLibsDir
+        } catch (copyErr) {
+          console.warn(
+            'fs.cpSync falló, usaremos la ruta original en resources:',
+            copyErr
+          )
+          finalLibrariesPath = localLibsDir
+        }
+      } else {
+        // fallback simple si no existe cpSync
+        const copyRecursive = (src, dest) => {
+          if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true })
+          for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+            const srcPath = path.join(src, entry.name)
+            const destPath = path.join(dest, entry.name)
+            if (entry.isDirectory()) copyRecursive(srcPath, destPath)
+            else fs.copyFileSync(srcPath, destPath)
+          }
+        }
+        try {
+          copyRecursive(localLibsDir, destLibsDir)
+          finalLibrariesPath = destLibsDir
+        } catch (copyErr) {
+          console.warn(
+            'Copia recursiva falló, usaremos la ruta original en resources:',
+            copyErr
+          )
+          finalLibrariesPath = localLibsDir
+        }
+      }
+      console.log(
+        'Librerías locales copiadas a (o usadas desde):',
+        finalLibrariesPath
+      )
+    } else {
+      // fallback: usar las librerías empaquetadas en resources si existen, o intentar instalar Servo
+      const resourceCandidates = [
         isDev
           ? path.join(__dirname, 'arduino-data', 'libraries')
           : path.join(
@@ -113,235 +206,134 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
               'libraries'
             )
       ]
-
-      // DEBUG: mostrar rutas candidatas
-      console.log('DEBUG: isDev=', isDev, 'candidates=', candidates)
-
-      // Seleccionar rutas existentes y preferir las no empaquetadas en app.asar.
-      const existing = candidates.filter(p => fs.existsSync(p))
-      const unpacked = existing.filter(
-        p => !p.split(path.sep).some(part => part.includes('app.asar'))
-      )
-      const localLibsDir = unpacked.length ? unpacked[0] : existing[0] || null
-      const destLibsDir = path.join(buildPath, 'libraries')
-
-      // Copiar a build/libraries si es posible; si falla, usar la ruta original en resources.
-      if (localLibsDir) {
-        if (fs.existsSync(destLibsDir)) {
-          fs.rmSync(destLibsDir, { recursive: true, force: true })
-        }
-        if (fs.cpSync) {
-          try {
-            fs.cpSync(localLibsDir, destLibsDir, { recursive: true })
-            finalLibrariesPath = destLibsDir
-          } catch (copyErr) {
-            console.warn(
-              'fs.cpSync falló, usaremos la ruta original en resources:',
-              copyErr
-            )
-            finalLibrariesPath = localLibsDir
-          }
-        } else {
-          // fallback simple si no existe cpSync
-          const copyRecursive = (src, dest) => {
-            if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true })
-            for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-              const srcPath = path.join(src, entry.name)
-              const destPath = path.join(dest, entry.name)
-              if (entry.isDirectory()) copyRecursive(srcPath, destPath)
-              else fs.copyFileSync(srcPath, destPath)
-            }
-          }
-          try {
-            copyRecursive(localLibsDir, destLibsDir)
-            finalLibrariesPath = destLibsDir
-          } catch (copyErr) {
-            console.warn(
-              'Copia recursiva falló, usaremos la ruta original en resources:',
-              copyErr
-            )
-            finalLibrariesPath = localLibsDir
-          }
-        }
-        console.log(
-          'Librerías locales copiadas a (o usadas desde):',
-          finalLibrariesPath
-        )
+      console.log('DEBUG: resourceCandidates=', resourceCandidates)
+      const resourceLibs = resourceCandidates.find(p => fs.existsSync(p))
+      if (resourceLibs) {
+        finalLibrariesPath = resourceLibs
+        console.log('Usando librerías desde resources:', finalLibrariesPath)
       } else {
-        // fallback: usar las librerías empaquetadas en resources si existen, o intentar instalar Servo
-        const resourceCandidates = [
-          isDev
-            ? path.join(__dirname, 'arduino-data', 'libraries')
-            : path.join(
-                process.resourcesPath || __dirname,
-                'arduino-data',
-                'libraries'
-              )
-        ]
-        console.log('DEBUG: resourceCandidates=', resourceCandidates)
-        const resourceLibs = resourceCandidates.find(p => fs.existsSync(p))
-        if (resourceLibs) {
-          finalLibrariesPath = resourceLibs
-          console.log('Usando librerías desde resources:', finalLibrariesPath)
-        } else {
-          try {
-            const cfg = getArduinoConfigFile()
-            const cfgArg =
-              cfg && fs.existsSync(cfg) ? `--config-file "${cfg}"` : ''
-            execSync(`"${arduinoCliPath}" ${cfgArg} lib install "Servo"`, {
-              stdio: 'inherit'
-            })
-            // si la instalación local coloca la librería en el sketchbook, podríamos no conocer la ruta exacta;
-            // en muchos casos arduino-cli instalará en el usuario, pero dejamos finalLibrariesPath vacío y arduino-cli buscará globalmente.
-          } catch (err) {
-            console.warn(
-              'No se pudo instalar la librería Servo automáticamente:',
-              err
-            )
-          }
+        try {
+          const cfg = getArduinoConfigFile()
+          const cfgArg =
+            cfg && fs.existsSync(cfg) ? `--config-file "${cfg}"` : ''
+          execSync(`"${arduinoCliPath}" ${cfgArg} lib install "Servo"`, {
+            stdio: 'inherit'
+          })
+          // si la instalación local coloca la librería en el sketchbook, podríamos no conocer la ruta exacta;
+          // en muchos casos arduino-cli instalará en el usuario, pero dejamos finalLibrariesPath vacío y arduino-cli buscará globalmente.
+        } catch (err) {
+          console.warn(
+            'No se pudo instalar la librería Servo automáticamente:',
+            err
+          )
         }
       }
-    } catch (err) {
-      console.error('Error al preparar librerías locales:', err)
-      // continuar; la compilación fallará si falta la librería
     }
+  } catch (err) {
+    console.error('Error al preparar librerías locales:', err)
+    // continuar; la compilación fallará si falta la librería
+  }
 
-    // Lógica principal
-    ;(async () => {
-      try {
-        // Escribir el código en un archivo temporal
-        fs.writeFileSync(tempFilePath, codigo)
+  const fallbackBuildLibs = path.join(buildPath, 'libraries')
+  return finalLibrariesPath && fs.existsSync(finalLibrariesPath)
+    ? `--libraries "${finalLibrariesPath}"`
+    : fs.existsSync(fallbackBuildLibs)
+      ? `--libraries "${fallbackBuildLibs}"`
+      : ''
+}
 
-        // Compilar el archivo .ino
-        // incluir las librerías del build si existen para que arduino-cli las use
-        // preferimos la ruta final calculada arriba (finalLibrariesPath); si no existe, usamos build/libraries
-        const fallbackBuildLibs = path.join(buildPath, 'libraries')
-        const librariesArg =
-          finalLibrariesPath && fs.existsSync(finalLibrariesPath)
-            ? `--libraries "${finalLibrariesPath}"`
-            : fs.existsSync(fallbackBuildLibs)
-              ? `--libraries "${fallbackBuildLibs}"`
-              : ''
-
-        // Antes de compilar, asegurar que el core AVR esté instalado
-        {
-          // Reemplazar la llamada directa a 'core install arduino:avr' por:
-          const isDev =
-            process.defaultApp || process.env.NODE_ENV === 'development'
-          if (isDev) {
-            // En desarrollo sigue instalando si hace falta
-            execArduinoCli(
-              'core install arduino:avr',
-              (coreErr, coreStdout, coreStderr) => {
-                if (coreErr) {
-                  reject(
-                    `No se pudo instalar el core arduino:avr: ${coreErr.message}`
-                  )
-                  return
-                }
-                if (coreStderr && coreStderr.trim() !== '') {
-                  console.warn('arduino-cli core install stderr:', coreStderr)
-                }
-                console.log(
-                  'Core arduino:avr disponible:',
-                  coreStdout || 'ya instalado'
-                )
-                // continuar con la compilación...
-                // Ahora compilar (mantener la lógica existente)
-                execArduinoCli(
-                  `compile --fqbn ${fqbn} --output-dir "${buildPath}" ${librariesArg} "${tempFilePath}"`,
-                  (compileError, compileStdout, compileStderr) => {
-                    if (compileError) {
-                      reject(`Error al compilar: ${compileError.message}`)
-                      return
-                    }
-                    if (compileStderr && compileStderr.trim() !== '') {
-                      reject(`Error al compilar: ${compileStderr}`)
-                      return
-                    }
-
-                    console.log('Compilación exitosa:', compileStdout)
-
-                    // Subir el binario (mantener la lógica existente)
-                    execArduinoCli(
-                      `upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`,
-                      (uploadError, uploadStdout, uploadStderr) => {
-                        if (uploadError) {
-                          reject(`Error al subir: ${uploadError.message}`)
-                          return
-                        }
-                        if (uploadStderr && uploadStderr.trim() !== '') {
-                          // No tratar stderr como fatal si solo contiene warnings; ajustar si es necesario
-                          console.warn(
-                            'arduino-cli upload stderr:',
-                            uploadStderr
-                          )
-                        }
-                        resolve(uploadStdout)
-                      }
-                    )
-                  }
-                )
-              }
-            )
-          } else {
-            // Producción: esperar que el core esté preempaquetado (evitar descargas/timeouts)
-            const packagedArduino15 = path.join(
-              process.resourcesPath || __dirname,
-              'arduino15'
-            )
-            const corePresent = fs.existsSync(packagedArduino15)
-            if (!corePresent) {
-              reject(
-                'En producción el core arduino:avr debe preempaquetarse. ' +
-                  'Empaqueta la carpeta .arduino15 (que contiene los cores) en resources/arduino15 ' +
-                  'o incluye el core en extraResources. Ver README / electron-builder.json.'
-              )
-              return
-            }
-            console.log(
-              'Producción: usando core preempaquetado en',
-              packagedArduino15
-            )
-            // continuar con la compilación (sin intentar instalar core)
-            execArduinoCli(
-              `compile --fqbn ${fqbn} --output-dir "${buildPath}" ${librariesArg} "${tempFilePath}"`,
-              (compileError, compileStdout, compileStderr) => {
-                if (compileError) {
-                  reject(`Error al compilar: ${compileError.message}`)
-                  return
-                }
-                if (compileStderr && compileStderr.trim() !== '') {
-                  reject(`Error al compilar: ${compileStderr}`)
-                  return
-                }
-
-                console.log('Compilación exitosa:', compileStdout)
-
-                // Subir el binario (mantener la lógica existente)
-                execArduinoCli(
-                  `upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`,
-                  (uploadError, uploadStdout, uploadStderr) => {
-                    if (uploadError) {
-                      reject(`Error al subir: ${uploadError.message}`)
-                      return
-                    }
-                    if (uploadStderr && uploadStderr.trim() !== '') {
-                      // No tratar stderr como fatal si solo contiene warnings; ajustar si es necesario
-                      console.warn('arduino-cli upload stderr:', uploadStderr)
-                    }
-                    resolve(uploadStdout)
-                  }
-                )
-              }
-            )
-          }
-        }
-      } catch (error) {
-        reject(error)
+// Promesa sobre execArduinoCli. stderr con texto se toma como error si `stderrEsError`.
+function ejecutarArduinoCli(comando, { stderrEsError = false } = {}) {
+  return new Promise((resolve, reject) => {
+    execArduinoCli(comando, (error, stdout, stderr) => {
+      if (error) {
+        reject(new Error((stderr && stderr.trim()) || error.message))
+        return
       }
-    })()
+      if (stderrEsError && stderr && stderr.trim() !== '') {
+        reject(new Error(stderr))
+        return
+      }
+      if (stderr && stderr.trim() !== '')
+        console.warn('arduino-cli stderr:', stderr)
+      resolve(stdout)
+    })
   })
+}
+
+// Asegura que el core arduino:avr esté disponible.
+// - En desarrollo lo instala si hace falta.
+// - En producción tiene que venir preempaquetado (evita descargas/timeouts).
+async function asegurarCoreAvr() {
+  const isDev = process.defaultApp || process.env.NODE_ENV === 'development'
+  if (isDev) {
+    try {
+      const salida = await ejecutarArduinoCli('core install arduino:avr')
+      console.log('Core arduino:avr disponible:', salida || 'ya instalado')
+    } catch (coreErr) {
+      throw new Error(
+        `No se pudo instalar el core arduino:avr: ${coreErr.message}`
+      )
+    }
+    return
+  }
+  const packagedArduino15 = path.join(
+    process.resourcesPath || __dirname,
+    'arduino15'
+  )
+  if (!fs.existsSync(packagedArduino15)) {
+    throw new Error(
+      'En producción el core arduino:avr debe preempaquetarse. ' +
+        'Empaqueta la carpeta .arduino15 (que contiene los cores) en resources/arduino15 ' +
+        'o incluye el core en extraResources. Ver README / electron-builder.json.'
+    )
+  }
+  console.log('Producción: usando core preempaquetado en', packagedArduino15)
+}
+
+// Compila el código y devuelve la ruta del .hex. Las compilaciones van de a una,
+// porque comparten la carpeta build.
+let colaDeCompilacion = Promise.resolve()
+function compilarCodigo(codigo) {
+  const tarea = colaDeCompilacion.then(async () => {
+    const { buildPath, tempFilePath, hexFilePath } = getBuildPaths()
+    const fqbn = 'arduino:avr:uno' // Cambia esto según tu placa
+    const librariesArg = prepararLibrerias(buildPath)
+    fs.writeFileSync(tempFilePath, codigo)
+    await asegurarCoreAvr()
+    try {
+      const salida = await ejecutarArduinoCli(
+        `compile --fqbn ${fqbn} --output-dir "${buildPath}" ${librariesArg} "${tempFilePath}"`,
+        { stderrEsError: true }
+      )
+      console.log('Compilación exitosa:', salida)
+    } catch (compileError) {
+      throw new Error(`Error al compilar: ${compileError.message}`)
+    }
+    return hexFilePath
+  })
+  colaDeCompilacion = tarea.catch(() => {})
+  return tarea
+}
+
+// Subir código a la placa
+ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
+  const fqbn = 'arduino:avr:uno'
+  const hexFilePath = await compilarCodigo(codigo)
+  try {
+    // No tratar stderr como fatal si solo contiene warnings
+    return await ejecutarArduinoCli(
+      `upload -p ${placa} -b ${fqbn} -i "${hexFilePath}"`
+    )
+  } catch (uploadError) {
+    throw new Error(`Error al subir: ${uploadError.message}`)
+  }
+})
+
+// Compilar para el simulador: devuelve el texto del .hex
+ipcMain.handle('arduino:compile', async (event, { codigo }) => {
+  const hexFilePath = await compilarCodigo(codigo)
+  return fs.readFileSync(hexFilePath, 'utf8')
 })
 
 // Reemplaza la función getArduinoConfigFile por esta implementación

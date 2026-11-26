@@ -1,0 +1,50 @@
+{
+  "format": 5, "part": "capacitor-electrolytic-smd", "version": "0.2.2", "title": "Capacitor, SMD aluminum electrolytic, case D", "license": "MIT OR Apache-2.0",
+  "summary": "Panasonic EEE-1EA470WP, a 47 µF 25 V SMD aluminum electrolytic capacitor, case D. The dark mark on the can is the negative end.",
+  "tags": ["capacitor", "electrolytic", "polarized", "smd"],
+  "docs": {
+    "Panasonic EEE-1EA470WP": null,
+    "Panasonic aluminum electrolytic application guidelines": "https://industrial.panasonic.com/cdbs/www-data/pdf/RDE0000/RDE0000COL99.pdf",
+    "Nichicon, General Descriptions of Aluminum Electrolytic Capacitors": "https://www.nichicon.co.jp/english/products/pdf/aluminum.pdf",
+  },
+  "real": { "generic": true, "maker": "Panasonic", "number": "EEE-1EA470WP", "datasheet": "Panasonic EEE-1EA470WP" },
+  "pins": { "pos": [1], "neg": [2] },
+  "params": {
+    "capacitance": { "unit": "F", "required": true, "example": 4.7e-5, "min_exclusive": 0, "sets": "/capacitance" },
+    "initial": { "unit": "V", "default": null, "sets": "/initial" },
+  },
+  "model": {
+    "kind": "capacitor",
+    "pins": { "a": "pos", "b": "neg" },
+    "series_resistance": {
+      "tan_delta": {
+        "value": 0.2,
+        "unit": "1",
+        "source": {
+          "datasheet": {
+            "doc": "Panasonic EEE-1EA470WP",
+            "at": "Dissipation factor (tan δ) 0.20 at 120 Hz, +20 °C. The series resistance is tan δ / (2 π f C) at the capacitance set, 5.64 ohm at 47 µF.",
+            "basis": "max"
+          }
+        }
+      },
+      "frequency": { "value": 120, "unit": "Hz", "source": { "datasheet": { "doc": "Panasonic EEE-1EA470WP", "at": "The frequency tan δ is stated at", "basis": "nominal" } } }
+    },
+    "ratings": {
+      "reverse_voltage": {
+        "value": 1,
+        "unit": "V",
+        "source": {
+          "datasheet": {
+            "doc": "Nichicon, General Descriptions of Aluminum Electrolytic Capacitors",
+            "at": "Section 2-3-2 Reverse Voltage: a cathode foil withstands about 1 V from the natural oxide on its surface. Panasonic's aluminum electrolytic guidelines say not to apply a reverse voltage and state no numeric allowance, so this 1 V is that cathode-foil withstand.",
+            "basis": "absolute_max"
+          }
+        }
+      }
+    }
+  },
+  "not_simulated": [
+    { "what": "ESR versus frequency", "why": "The series resistance is tan δ at 120 Hz, held at every frequency." },
+  ],
+}

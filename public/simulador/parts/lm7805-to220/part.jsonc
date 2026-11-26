@@ -1,0 +1,147 @@
+{
+  "format": 5,
+  "part": "lm7805-to220",
+  "version": "0.2.1",
+  "title": "LM7805 5 V regulator, TO-220",
+  "summary": "Fixed 5 V linear regulator in TO-220 for loads up to 1.5 A. The metal tab is ground.",
+  "tags": ["regulator", "linear", "power", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "TI SNOSBT0L, LM340, LM340A, LM7805, LM7812, LM7815, February 2000, revised September 2016": "https://www.ti.com/lit/ds/symlink/lm340.pdf"
+  },
+  "real": {
+    "maker": "Texas Instruments",
+    "number": "LM7805CT/NOPB",
+    "datasheet": "TI SNOSBT0L, LM340, LM340A, LM7805, LM7812, LM7815, February 2000, revised September 2016"
+  },
+  "pins": { "IN": [1], "GND": [2, 4], "OUT": [3] },
+  "model": {
+    "kind": "linear_regulator",
+    "output_voltage": {
+      "value": 5.0,
+      "unit": "V",
+      "source": {
+        "datasheet": {
+          "doc": "TI SNOSBT0L, LM340, LM340A, LM7805, LM7812, LM7815, February 2000, revised September 2016",
+          "at": "Section 6.6, LM340 / LM7805, VO typical at TJ = 25 C, 5 mA ≤ IO ≤ 1 A. The limits on that row are 4.8 V and 5.2 V. The section is at VI = 10 V unless a row says otherwise.",
+          "basis": "typical"
+        }
+      }
+    },
+    "line_regulation": {
+      "value": 0.00016666666666666666,
+      "unit": "1",
+      "source": {
+        "closed_form": {
+          "note": "3 mV typical line regulation at IO = 500 mA, TJ = 25 C, 7 V ≤ VIN ≤ 25 V, divided by 18 V. The maximum on that row is 50 mV. Section 6.6 of TI SNOSBT0L."
+        }
+      }
+    },
+    "output_resistance": {
+      "value": 0.006688963210702341,
+      "unit": "ohm",
+      "source": {
+        "closed_form": {
+          "note": "10 mV typical load regulation at TJ = 25 C, 5 mA ≤ IO ≤ 1.5 A, divided by 1.495 A. The maximum on that row is 50 mV. Section 6.6 of TI SNOSBT0L. The 8 mΩ output-resistance row is at 1 kHz, and this field is the DC slope."
+        }
+      }
+    },
+    "dropout_voltage": {
+      "value": 1.999,
+      "unit": "V",
+      "source": {
+        "closed_form": {
+          "note": "2 V typical dropout at IO = 1 A and TJ = 25 C, minus 0.001 ohm times 1 A, so the drop is 2 V at that current. Section 6.6 of TI SNOSBT0L states that one current. Figure 11 defines the drop as the input-to-output gap when the output has fallen 100 mV, and at 25 C the 1 A curve sits near 2 V."
+        }
+      }
+    },
+    "dropout_resistance": {
+      "value": 0.001,
+      "unit": "ohm",
+      "source": {
+        "closed_form": {
+          "note": "0.001 ohm, so the drop stays 2 V at 1 A and the resistance stays positive. The sheet states dropout at that one current. Figure 11 shows a smaller drop at a lighter current, and that slope was not read."
+        }
+      }
+    },
+    "current_limit": {
+      "value": 2.4,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "TI SNOSBT0L, LM340, LM340A, LM7805, LM7812, LM7815, February 2000, revised September 2016",
+          "at": "Section 6.6, peak output current typical, 2.4 A, at TJ = 25 C. The short-circuit current on the row above is 2.1 A typical. Figure 10 shows the peak falling as the input-to-output gap grows.",
+          "basis": "typical"
+        }
+      }
+    },
+    "quiescent_current": {
+      "value": 0.0046,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "TI SNOSBT0L, LM340, LM340A, LM7805, LM7812, LM7815, February 2000, revised September 2016",
+          "at": "Figure 9, about 4.6 mA at TJ = 25 C, VIN = 10 V, VOUT = 5 V, IOUT = 5 mA. The section 6.6 quiescent-current row gives no typical, only a maximum of 8 mA at IO ≤ 1 A and TJ = 25 C.",
+          "basis": "typical"
+        }
+      }
+    },
+    "ground_current_ratio": {
+      "value": 0,
+      "unit": "1",
+      "source": {
+        "closed_form": {
+          "note": "The section 6.6 quiescent-current row has no 25 C load term, so the model holds the ground current at 4.6 mA while the input is up. The 0.5 mA typical change from 5 mA to 1 A is over 0 C to 125 C, not a 25 C slope."
+        }
+      }
+    },
+    "ratings": {
+      "current": {
+        "value": 1.5,
+        "unit": "A",
+        "basis": "peak",
+        "source": {
+          "datasheet": {
+            "doc": "TI SNOSBT0L, LM340, LM340A, LM7805, LM7812, LM7815, February 2000, revised September 2016",
+            "at": "Features, output current up to 1.5 A. The 25 C load-regulation row runs from 5 mA to 1.5 A. The part still regulates past this, up to the 2.4 A peak, and the rating warns.",
+            "basis": "max"
+          }
+        }
+      },
+      "power": {
+        "value": 1.8518518518518519,
+        "unit": "W",
+        "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": {
+          "closed_form": {
+            "note": "(125 C - 25 C) / 54 C/W. 125 C is the LM7805 operating junction maximum, and the absolute-maximum note gives the TO-220 (NDE) junction-to-ambient thermal resistance as 54 C/W. Shutdown is above 150 C. The thermal table's 23.9 C/W is a board figure. This rating is the bare part, so a breadboard warns before the 1.5 A current rating does."
+          }
+        }
+      },
+      "input_voltage": { "value": 35, "unit": "V", "source": { "datasheet": { "doc": "TI SNOSBT0L, LM340, LM340A, LM7805, LM7812, LM7815, February 2000, revised September 2016", "at": "Section 6.1 Absolute Maximum Ratings, DC input voltage, 35 V", "basis": "absolute_max" } } },
+    },
+    "pins": { "in": "IN", "out": "OUT", "gnd": "GND" }
+  },
+  "not_simulated": [
+    {
+      "what": "dropout shape",
+      "why": "The sheet states one dropout: 2 V typical at 1 A and 25 C. The model holds that drop. Figure 11 shows a smaller drop at a lighter current, and at a light load a real part can still be in regulation where this model has already dropped out."
+    },
+    {
+      "what": "ground current shape",
+      "why": "Ground current stays at about 4.6 mA, the Figure 9 read at 25 C. The table's maximum is 8 mA. The 0.5 mA typical change from 5 mA to 1 A is over temperature, and the model has no load term."
+    },
+    {
+      "what": "foldback current limit",
+      "why": "The limit is flat at the 2.4 A peak typical. A short sits about 1 percent above that. The short-circuit typical is 2.1 A, and Figure 10 shows the peak falling as the input-to-output gap grows."
+    },
+    {
+      "what": "thermal shutdown and the input diode",
+      "why": "The sheet shuts the regulator down above 150 C. The model has no shutdown, and the power rating warns instead. Reverse current from the output to the input is blocked."
+    },
+    {
+      "what": "ripple rejection, noise, and the 1 kHz output impedance",
+      "why": "Ripple rejection is 80 dB typical and output noise is 40 µV typical. Neither is modelled. The 8 mΩ row is the output impedance at 1 kHz. output_resistance is the DC load-regulation slope, about 6.7 mΩ."
+    }
+  ]
+}

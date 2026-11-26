@@ -1,0 +1,28 @@
+// The Nano's USB diode. Arduino's Nano 3.0 schematic names an MBR0520 between VUSB and +5V, and
+// the CH340 clones keep that layout. A clone may fit another SOD-123 Schottky.
+{
+  "format": 5, "part": "diode-sod123", "version": "0.2.1", "title": "Schottky diode, MBR0520, SOD-123", "license": "MIT OR Apache-2.0",
+  "summary": "Schottky diode in SOD-123, the MBR0520. The band marks the cathode, lead 1.",
+  "tags": ["diode", "schottky", "smd"],
+  "docs": { "onsemi MBR0520LT1/D, Rev. 7, October 2024": "https://www.onsemi.com/download/data-sheet/pdf/mbr0520lt1-d.pdf" },
+  "real": { "maker": "onsemi", "number": "MBR0520LT1G", "datasheet": "onsemi MBR0520LT1/D, Rev. 7, October 2024" },
+  "pins": { "cathode": [1], "anode": [2] },
+  "model": {
+    "kind": "diode",
+    "saturation_current": { "value": 2.1308e-06, "unit": "A", "source": { "datasheet": { "doc": "onsemi MBR0520LT1/D, Rev. 7, October 2024", "at": "page 3, Figure 1, Typical Forward Voltage, TJ = 25 C; fit through (0.213 V, 10 mA), (0.279 V, 0.1 A), (0.356 V, 0.5 A) at kT/q for 298.15 K", "basis": "typical" } } },
+    "emission_coefficient": { "value": 0.97642, "unit": "1", "source": { "datasheet": { "doc": "onsemi MBR0520LT1/D, Rev. 7, October 2024", "at": "page 3, Figure 1, Typical Forward Voltage, TJ = 25 C; fit through (0.213 V, 10 mA), (0.279 V, 0.1 A), (0.356 V, 0.5 A) at kT/q for 298.15 K", "basis": "typical" } } },
+    "series_resistance": { "value": 0.091562, "unit": "ohm", "source": { "datasheet": { "doc": "onsemi MBR0520LT1/D, Rev. 7, October 2024", "at": "page 3, Figure 1, Typical Forward Voltage, TJ = 25 C; fit through (0.213 V, 10 mA), (0.279 V, 0.1 A), (0.356 V, 0.5 A) at kT/q for 298.15 K", "basis": "typical" } } },
+    "ratings": {
+      "current": { "value": 0.5, "unit": "A", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.055, "unit": "s", "source": { "closed_form": { "note": "One 8.3 ms half sine of the 5.5 A IFSM, from cold, reaches the 0.5 A IF(AV) on a mean with this time constant, by the filter's exact step." } } }, "peak": { "value": 5.5, "unit": "A", "source": { "datasheet": { "doc": "onsemi MBR0520LT1/D, Rev. 7, October 2024", "at": "page 2, MAXIMUM RATINGS, Non-Repetitive Peak Surge Current IFSM, halfwave, single phase, 60 Hz", "basis": "absolute_max" } } } } }, "source": { "datasheet": { "doc": "onsemi MBR0520LT1/D, Rev. 7, October 2024", "at": "page 2, MAXIMUM RATINGS, Average Rectified Forward Current IF(AV), rated VR, TL = 90 C", "basis": "absolute_max" } } },
+      "power": null,
+    },
+  },
+  "not_simulated": [
+    { "what": "spread between parts", "why": "The fit is the typical curve. The sheet's maximum is 0.300 V at 0.1 A against the curve's 0.279 V, and a clone may fit another Schottky, so a real board's drop can sit some tens of millivolts higher." },
+    { "what": "reverse breakdown", "why": "The engine's diode has no breakdown voltage. The MBR0520 is rated to 20 V reverse." },
+    { "what": "reverse leakage", "why": "The engine's reverse current levels off at the fit's 2.1 uA. The sheet's typical at 25 C is about 5 to 10 uA from 2 V to 10 V (page 3, Figure 4), and its maximum 75 uA at 10 V." },
+    { "what": "junction capacitance", "why": "The engine's diode has no charge storage. The sheet gives about 180 pF at 0 V (page 3, Figure 3)." },
+    { "what": "temperature", "why": "The fit is at 25 C and the engine has no temperature. A warm diode drops less." },
+    { "what": "power rating", "why": "The datasheet rates the average current, not a power, so only the current warns." },
+  ],
+}

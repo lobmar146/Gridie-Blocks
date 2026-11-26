@@ -1,0 +1,19 @@
+{
+  "format": 5, "part": "usb-mini-b", "version": "0.2.1", "title": "USB mini-B socket", "license": "MIT OR Apache-2.0",
+  "summary": "Right-angle USB mini-B receptacle. Five contacts: lead 1 is VBUS and lead 5 is GND.",
+  "tags": ["usb", "connector", "socket", "surface-mount"],
+  "docs": { "USB 2.0 specification": null },
+  "real": { "generic": true, "maker": null, "number": null, "datasheet": "USB 2.0 specification" },
+  "pins": { "VBUS": [1], "DM": [2], "DP": [3], "ID": [4], "GND": [5] },
+  "model": {
+    "host": {
+      "kind": "voltage_source",
+      "voltage": { "value": 5.0, "unit": "V", "source": { "datasheet": { "doc": "USB 2.0 specification", "at": "VBUS nominal 5.0 V, the center of the high-power range 4.75 V to 5.25 V", "basis": "nominal" } } },
+      // The current is the host's, out of VBUS. The board is a high-power function, which may draw
+      // 500 mA once configured. A port's over-current protection removes power somewhere above that.
+      "ratings": { "current": { "value": 0.5, "unit": "A", "basis": "peak", "source": { "datasheet": { "doc": "USB 2.0 specification", "at": "Table 7-7, page 178: ICCHPF, High-power Function (in), 500 mA max. Section 7.2.1 calls a unit load an absolute maximum, not an average over time.", "basis": "max" } } } },
+      "pins": { "p": "VBUS", "n": "GND" },
+    },
+  },
+  "not_simulated": [{ "what": "USB data", "pins": ["DM", "DP", "ID"], "why": "The host's 5 V stands in for a plugged cable. USB data is not modeled." }],
+}

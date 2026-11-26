@@ -1,0 +1,20 @@
+// The resistance is the engine's F1, from packages/engine/tests/circuits/atmega-board-button/netlist.json,
+// part `usb_fuse`.
+{
+  "format": 1, "part": "ptc-fuse-1812", "version": "0.2.0", "title": "Resettable fuse, 500 mA, 1812", "license": "MIT OR Apache-2.0",
+  "summary": "Bourns MF-MSMF050-2 resettable PTC fuse in 1812, 500 mA hold. Not polarized.",
+  "tags": ["fuse", "ptc", "protection", "smd"],
+  "docs": { "Bourns MF-MSMF Series": "https://www.bourns.com/docs/Product-Datasheets/mf-msmf.pdf" },
+  "real": { "maker": "Bourns", "number": "MF-MSMF050-2", "datasheet": "Bourns MF-MSMF Series" },
+  "pins": { "1": [1], "2": [2] },
+  "model": {
+    "kind": "resistor",
+    "resistance": { "value": 0.15, "unit": "ohm", "source": { "datasheet": { "doc": "Bourns MF-MSMF Series", "at": "MF-MSMF050 row, RMin at 23 C. The schematic part is MF-MSMF050-2. The -2 suffix is tape and reel packaged per EIA-481, which is why that row is this part.", "basis": "min" } } },
+    "ratings": { "power": null },
+    "pins": { "a": "1", "b": "2" },
+  },
+  // The MF-MSMF050 row, page 1, holds 0.50 A and trips by 1.00 A at 23 C, within 0.15 s at 8.0 A.
+  // The USB source in series rates its current at the same 0.5 A, so a board run past it warns
+  // there, on both boards, and the fuse carries no current rating of its own.
+  "not_simulated": [{ "what": "trip", "why": "The resistance never rises with current, so the fuse never trips. Its hold current is 0.5 A, the USB source's current rating, so a load that would trip it warns `rating.current` on that source." }],
+}

@@ -8,7 +8,10 @@
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "dev:web": "vite",
     "build:web": "vite build",
+    "build:simulador": "cd simulador && npm install && npm run build",
+    "servidor-compilacion": "node servidor-compilacion/servidor.mjs",
     "build": "npm run build:web",
     "build:electron": "electron-builder",
     "dist": "npm run build:web && npm run build:electron",

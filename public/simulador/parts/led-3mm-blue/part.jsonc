@@ -1,0 +1,41 @@
+// Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B.
+{
+  "format": 5,
+  "part": "led-3mm-blue",
+  "version": "0.1.1",
+  "title": "3 mm LED, blue",
+  "summary": "Round 3 mm (T-1) through-hole LED, blue and water clear, two leads on 2.54 mm. The longer lead is the anode, and the flat on the rim marks the cathode.",
+  "tags": ["led", "light", "indicator", "through-hole", "blue"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B": null,
+  },
+  "real": { "maker": "Kingbright", "number": "L-934VBC-D", "datasheet": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B" },
+  "buy": [
+    { "seller": "TME", "url": "https://www.tme.eu/en/details/l-934vbc-d/tht-leds-round/kingbright-electronic/", "checked": "2026-11-22" },
+  ],
+  "pins": { "anode": [1], "cathode": [2] },
+  "model": {
+    "kind": "led",
+    "saturation_current": { "value": 1.596e-14, "unit": "A", "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "Fig. Forward Current vs. Forward Voltage, TA = 25 C; fit through (2.66 V, 2 mA), (3.00 V, 10 mA), (3.29 V, 20 mA) at kT/q for 298.15 K", "basis": "typical" } } },
+    "emission_coefficient": { "value": 3.985, "unit": "1", "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "Fig. Forward Current vs. Forward Voltage, TA = 25 C; fit through (2.66 V, 2 mA), (3.00 V, 10 mA), (3.29 V, 20 mA) at kT/q for 298.15 K", "basis": "typical" } } },
+    "series_resistance": { "value": 21.90, "unit": "ohm", "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "Fig. Forward Current vs. Forward Voltage, TA = 25 C; fit through (2.66 V, 2 mA), (3.00 V, 10 mA), (3.29 V, 20 mA) at kT/q for 298.15 K", "basis": "typical" } } },
+    "ratings": {
+      "current": { "value": 0.03, "unit": "A", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.001, "unit": "s", "source": { "closed_form": { "note": "The sheet's peak forward current, 100 mA at 1/10 duty and 0.1 ms pulses, settles at 100 mA x (1 - e^-0.1) / (1 - e^-1) on a 1 ms mean, under the 30 mA DC rating." } } }, "peak": { "value": 0.1, "unit": "A", "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "Absolute Maximum Ratings at Ta = 25 C, peak forward current, 1/10 duty and 0.1 ms pulse width", "basis": "absolute_max" } } } } }, "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "Absolute Maximum Ratings at TA = 25 C, DC forward current", "basis": "absolute_max" } } },
+      "power": { "value": 0.12, "unit": "W", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating for power, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "Absolute Maximum Ratings at TA = 25 C, power dissipation", "basis": "absolute_max" } } },
+    },
+  },
+  "readings": {
+    "lit": { "of": "i", "above": { "value": 0.002, "unit": "A", "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "The lowest point of the forward-voltage fit, 2 mA. Fig. Luminous Intensity vs. Forward Current is a straight line from 0 mA.", "basis": "typical" } } } },
+    "dim": { "of": "i", "above": { "value": 0.0005, "unit": "A", "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "Electrical / Optical Characteristics, Reverse Current (VR = 5V), 50 uA max; the floor is ten times that leakage", "basis": "max" } } } },
+    "brightness": { "of": "i", "full": { "value": 0.02, "unit": "A", "source": { "datasheet": { "doc": "Kingbright L-934VBC-D, Spec No DSAP9934, Rev V.1B", "at": "Selection Guide. Iv is rated at IF = 20 mA", "basis": "nominal" } } } },
+  },
+  "view": {
+    "glow": [{ "node": "body", "by": "brightness" }],
+  },
+  "not_simulated": [
+    { "what": "light", "why": "The engine reports current, not luminous intensity. The drawing scales current by 20 mA, so the glow is 1 at 20 mA and blooms above that. The candela at that current is not modeled. The forward curve is fitted from 2 mA to 20 mA through the three points named on its fit. Below 2 mA and above 20 mA the current is that curve extended. A threshold at 1 mA would sit outside the fit. Luminous intensity versus forward current is drawn as a straight line from 0 mA, so the extended current still glows in proportion." },
+    { "what": "temperature", "why": "The fits are at 25 C and the engine has no temperature." },
+    { "what": "reverse breakdown", "why": "The engine's LED has no breakdown voltage. The datasheet rates 5 V reverse." },
+  ],
+}

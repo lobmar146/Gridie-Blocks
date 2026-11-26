@@ -1,0 +1,92 @@
+// Adafruit NeoPixel Stick, product 1426. Seated frame: z = 0 is the header
+// plastic's underside, so the board's underside is at z = 2.54 and its top at z = 4.14.
+// The Eagle board is 50.80 x 10.16 mm. LED centres are 6.35 mm apart at Eagle y = 3.810,
+// which is y = -1.27 once the board is centred. CN2 is the input connector, a 1x4 at
+// Eagle (1.397, 5.08). From the LED edge outward its pads are GND, 5V, DIN and GND.
+// This header keeps the first three, across the board width, and leaves the outer GND off.
+{
+  "format": 6,
+  "part": "neopixel-stick-8",
+  "version": "0.1.2",
+  "title": "NeoPixel stick, 8 RGB LED",
+  "summary": "Eight addressable RGB LEDs in a row on a 50.8 x 10.2 mm board, chained on one data line, with a 3-pin header (GND, 5V, DIN) for a breadboard.",
+  "tags": ["led", "rgb", "neopixel", "ws2812", "strip", "addressable"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Adafruit NeoPixel Stick, product 1426": "https://www.adafruit.com/product/1426",
+    "Adafruit NeoPixel 8 Stick v2 board": "https://github.com/adafruit/NeoPixel-Sticks/blob/master/Adafruit%20NeoPixel%208%20Stick%20v2.brd",
+  },
+  "real": {
+    "generic": false,
+    "maker": "Adafruit",
+    "number": "1426",
+    "datasheet": "Adafruit NeoPixel Stick, product 1426",
+  },
+  "buy": [
+    { "seller": "Adafruit", "url": "https://www.adafruit.com/product/1426", "checked": "2026-11-22" },
+  ],
+  "uses": { "pin-header-1x3": "0.1.0", "sk68xxmini-hs": "0.2.2" },
+  "parts": {
+    "j": { "type": "pin-header-1x3" },
+    "px1": { "type": "sk68xxmini-hs" },
+    "px2": { "type": "sk68xxmini-hs" },
+    "px3": { "type": "sk68xxmini-hs" },
+    "px4": { "type": "sk68xxmini-hs" },
+    "px5": { "type": "sk68xxmini-hs" },
+    "px6": { "type": "sk68xxmini-hs" },
+    "px7": { "type": "sk68xxmini-hs" },
+    "px8": { "type": "sk68xxmini-hs" },
+  },
+  "wires": [
+    ["j.1", "px1.GND", { "kind": "trace" }],
+    ["j.1", "px2.GND", { "kind": "trace" }],
+    ["j.1", "px3.GND", { "kind": "trace" }],
+    ["j.1", "px4.GND", { "kind": "trace" }],
+    ["j.1", "px5.GND", { "kind": "trace" }],
+    ["j.1", "px6.GND", { "kind": "trace" }],
+    ["j.1", "px7.GND", { "kind": "trace" }],
+    ["j.1", "px8.GND", { "kind": "trace" }],
+    ["j.2", "px1.VDD", { "kind": "trace" }],
+    ["j.2", "px2.VDD", { "kind": "trace" }],
+    ["j.2", "px3.VDD", { "kind": "trace" }],
+    ["j.2", "px4.VDD", { "kind": "trace" }],
+    ["j.2", "px5.VDD", { "kind": "trace" }],
+    ["j.2", "px6.VDD", { "kind": "trace" }],
+    ["j.2", "px7.VDD", { "kind": "trace" }],
+    ["j.2", "px8.VDD", { "kind": "trace" }],
+    ["j.3", "px1.DIN", { "kind": "trace" }],
+    ["px1.DOUT", "px2.DIN", { "kind": "trace" }],
+    ["px2.DOUT", "px3.DIN", { "kind": "trace" }],
+    ["px3.DOUT", "px4.DIN", { "kind": "trace" }],
+    ["px4.DOUT", "px5.DIN", { "kind": "trace" }],
+    ["px5.DOUT", "px6.DIN", { "kind": "trace" }],
+    ["px6.DOUT", "px7.DIN", { "kind": "trace" }],
+    ["px7.DOUT", "px8.DIN", { "kind": "trace" }],
+  ],
+  "layout": {
+    "j": { "at": [-24.003, -1.27, 0], "rotate": [0, 0, 90] },
+    "px1": { "at": [-22.225, -1.27, 4.14] },
+    "px2": { "at": [-15.875, -1.27, 4.14] },
+    "px3": { "at": [-9.525, -1.27, 4.14] },
+    "px4": { "at": [-3.175, -1.27, 4.14] },
+    "px5": { "at": [3.175, -1.27, 4.14] },
+    "px6": { "at": [9.525, -1.27, 4.14] },
+    "px7": { "at": [15.875, -1.27, 4.14] },
+    "px8": { "at": [22.225, -1.27, 4.14] },
+  },
+  "pins": { "GND": "j.1", "5V": "j.2", "DIN": "j.3" },
+  "not_simulated": [
+    {
+      "what": "the drawing's connectors",
+      "why": "Product 1426's Eagle board uses two 1x4 surface-mount connectors. This module fits a 1x3 through-hole header at the input end, across the board width, GND then 5V then DIN, so it plugs into a breadboard. The fourth pin, a second GND, and the last pixel's DOUT are not brought out."
+    },
+    {
+      "what": "the series resistor and the supply capacitors",
+      "why": "The Eagle board places 470 ohm in series with DIN and capacitors on 5V. Those parts are not on this module. A scene puts its own resistor on DIN."
+    },
+    {
+      "what": "the LED package",
+      "why": "The Eagle board places 5050 LEDs on a 6.35 mm pitch. The pixels here are the catalog's SK68XXMINI-HS, 3.7 x 3.5 mm, on that same pitch and at the drawing's centres. The outline is the Eagle board, 50.80 x 10.16 mm, with its two 2.0 mm holes. The product page lists 51.10 x 10.22 x 3.19 mm overall, the board and the 5050s with no through-hole header. This model seats the board on a header, so the pins hang below the seating plane and the assembly is taller."
+    },
+  ],
+}

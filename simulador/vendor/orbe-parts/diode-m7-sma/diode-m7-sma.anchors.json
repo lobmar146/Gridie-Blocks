@@ -1,0 +1,8 @@
+{
+  "part": "diode-m7-sma",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [-1.99, 0.0, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [1.99, 0.0, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"}
+  ]
+}

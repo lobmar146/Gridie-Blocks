@@ -1,0 +1,9 @@
+{
+  "format": 1, "part": "crystal-3215", "version": "0.2.0", "listed": false, "title": "Crystal, 2 pads", "license": "MIT OR Apache-2.0",
+  "summary": "Two-pad SMD crystal, 3.2 x 1.5 mm, not polarized. The Nano uses it at 12 MHz beside the CH340G.",
+  "tags": ["crystal", "timing", "passive", "smd"],
+  "docs": { "3.2 x 1.5 mm two-pad crystal": null },
+  "real": { "generic": true, "maker": null, "number": null, "datasheet": "3.2 x 1.5 mm two-pad crystal" },
+  "pins": { "1": [1], "2": [2] },
+  "not_simulated": [{ "what": "crystal", "pins": ["1", "2"], "why": "The engine's chips take their clock as a value." }],
+}

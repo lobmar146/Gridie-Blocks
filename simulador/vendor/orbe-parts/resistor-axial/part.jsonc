@@ -1,0 +1,36 @@
+{
+  "format": 5,
+  "part": "resistor-axial",
+  "version": "0.2.1",
+  "title": "Resistor, 1/4 W axial",
+  "summary": "Carbon-film resistor with leads bent to 10.16 mm (0.4 inch) for a breadboard. Set its resistance.",
+  "tags": ["resistor", "passive", "through-hole", "pull-up", "pull-down", "current limit"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Yageo CFR-25": null }, // no URL checked yet, so this part fails the real-object check
+  "real": { "generic": true, "maker": "Yageo", "number": "CFR-25", "datasheet": "Yageo CFR-25" },
+  "buy": [
+    { "seller": "DigiKey", "url": "https://www.digikey.com/en/products/detail/yageo/CFR-25JB-52-220R/1295", "checked": "2026-11-08" },
+  ],
+  "pins": { "a": [1], "b": [2] },
+  "params": {
+    "resistance": { "unit": "ohm", "required": true, "example": 220, "min_exclusive": 0, "sets": "/resistance" },
+  },
+  "model": {
+    "kind": "resistor",
+    "ratings": {
+      "power": {
+        "value": 0.25,
+        "unit": "W",
+        "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet's overloads are pass-or-fail tests, not a pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": { "datasheet": { "doc": "Yageo CFR-25", "at": "Product specification, September 27, 2023, V.2, Table 1, CFR-25 Power Rating at 70 °C, 1/4 W", "basis": "absolute_max" } },
+      },
+    },
+  },
+  "view": {
+    "recolour": [{ "nodes": ["band1-brown", "band2-black", "band3-orange", "band4-gold"], "by": "resistance", "rule": "iec60062-4-band" }],
+  },
+  "not_simulated": [
+    { "what": "tolerance", "why": "The value is exact. The fourth band is drawn gold, 5 %." },
+    { "what": "temperature coefficient", "why": "The engine has no temperature." },
+  ],
+}

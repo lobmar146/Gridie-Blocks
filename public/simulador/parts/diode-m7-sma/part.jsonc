@@ -1,0 +1,96 @@
+// Comchip's CGRA4001-G through CGRA4007-G share one forward curve. They differ in reverse voltage.
+{
+  "format": 5,
+  "part": "diode-m7-sma",
+  "version": "0.2.1",
+  "title": "Rectifier diode, M7 (1N4007), SMA",
+  "summary": "M7 (1N4007) rectifier in SMA (DO-214AC). The band marks the cathode, lead 1.",
+  "tags": ["diode", "rectifier", "smd"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Comchip CGRA4001-G thru CGRA4007-G, QW-BG002, Rev. E": "https://xonstorage.z8.web.core.windows.net/pdf/comchip_cgra4004g_apr22_xonlink.pdf"
+  },
+  "real": {
+    "maker": "Comchip",
+    "number": "CGRA4007-G",
+    "datasheet": "Comchip CGRA4001-G thru CGRA4007-G, QW-BG002, Rev. E"
+  },
+  "pins": { "cathode": [1], "anode": [2] },
+  "model": {
+    "kind": "diode",
+    "saturation_current": {
+      "value": 1.6103e-09,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "Comchip CGRA4001-G thru CGRA4007-G, QW-BG002, Rev. E",
+          "at": "page 2, Fig. 2, Typical Forward Characteristics, TJ = 25 C, pulse width 300 us, 1% duty cycle; fit through (0.77 V, 50 mA), (0.89 V, 0.5 A), (1.01 V, 2.0 A) at kT/q for 298.15 K",
+          "basis": "typical"
+        }
+      }
+    },
+    "emission_coefficient": {
+      "value": 1.7329,
+      "unit": "1",
+      "source": {
+        "datasheet": {
+          "doc": "Comchip CGRA4001-G thru CGRA4007-G, QW-BG002, Rev. E",
+          "at": "page 2, Fig. 2, Typical Forward Characteristics, TJ = 25 C, pulse width 300 us, 1% duty cycle; fit through (0.77 V, 50 mA), (0.89 V, 0.5 A), (1.01 V, 2.0 A) at kT/q for 298.15 K",
+          "basis": "typical"
+        }
+      }
+    },
+    "series_resistance": {
+      "value": 0.03885,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "Comchip CGRA4001-G thru CGRA4007-G, QW-BG002, Rev. E",
+          "at": "page 2, Fig. 2, Typical Forward Characteristics, TJ = 25 C, pulse width 300 us, 1% duty cycle; fit through (0.77 V, 50 mA), (0.89 V, 0.5 A), (1.01 V, 2.0 A) at kT/q for 298.15 K",
+          "basis": "typical"
+        }
+      }
+    },
+    "ratings": {
+      "current": {
+        "value": 1.0,
+        "unit": "A",
+        "basis": { "sustained": { "average": "mean", "tau": { "value": 0.16, "unit": "s", "source": { "closed_form": { "note": "One 8.3 ms half sine of the 30 A IFSM, from cold, reaches the 1 A IF(AV) on a mean with this time constant, by the filter's exact step." } } }, "peak": { "value": 30.0, "unit": "A", "source": { "datasheet": { "doc": "Comchip CGRA4001-G thru CGRA4007-G, QW-BG002, Rev. E", "at": "page 1, Maximum Ratings, peak forward surge current IFSM, 8.3 ms single half sine-wave", "basis": "absolute_max" } } } } },
+        "source": {
+          "datasheet": {
+            "doc": "Comchip CGRA4001-G thru CGRA4007-G, QW-BG002, Rev. E",
+            "at": "page 1, Maximum Ratings, maximum average forward rectified current IF, TA = 25 C",
+            "basis": "absolute_max"
+          }
+        }
+      },
+      "power": null
+    }
+  },
+  "not_simulated": [
+    {
+      "what": "spread between parts",
+      "why": "The fit is Fig. 2's typical curve, about 0.94 V at 1 A. The table's maximum instantaneous forward voltage is 1.1 V at 1.0 A and 25 C."
+    },
+    {
+      "what": "reverse breakdown",
+      "why": "The engine's diode has no breakdown voltage. The CGRA4007-G is rated to 1000 V reverse, so a circuit below that sees the same blocking."
+    },
+    {
+      "what": "reverse leakage",
+      "why": "The engine's reverse current levels off near the fit's saturation current. The sheet's maximum is 5 uA at 25 C and 50 uA at 100 C, at the rated DC blocking voltage."
+    },
+    {
+      "what": "junction capacitance and reverse recovery",
+      "why": "The engine's diode has no charge storage, so it turns off at once. The sheet's typical junction capacitance is 10 pF."
+    },
+    {
+      "what": "temperature",
+      "why": "The fit is at 25 C and the engine has no temperature."
+    },
+    {
+      "what": "power rating",
+      "why": "The datasheet rates the average current, not a power, so only the current warns. The typical junction-to-case thermal resistance is 70 C/W."
+    }
+  ]
+}

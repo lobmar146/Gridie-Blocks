@@ -1,0 +1,73 @@
+{
+  "format": 5, "part": "ch340g", "version": "0.2.1", "listed": false, "title": "CH340G USB to serial, SOIC-16", "license": "MIT OR Apache-2.0",
+  "summary": "WCH CH340G USB-to-serial bridge in SOIC-16. V3 holds about 3.3 V while VCC is up. The dot marks lead 1.",
+  "tags": ["usb", "uart", "bridge", "soic"],
+  "docs": {
+    "WCH CH340 datasheet (the first), English, version 1D": null,
+    "WCH CH340 datasheet, version 3D": "https://www.wch-ic.com/download/file?id=79",
+    "DigiKey, Non-compliant use of the CH340 V3 pin, 2025": "https://www.digikey.com/en/maker/blogs/2025/non-compliant-use-of-ch340-v3-pin-deep-dive-for-engineers",
+  },
+  "real": { "maker": "WCH", "number": "CH340G", "datasheet": "WCH CH340 datasheet (the first), English, version 1D" },
+  "pins": {
+    "GND": [1], "TXD": [2], "RXD": [3], "V3": [4], "UDP": [5], "UDM": [6], "XI": [7], "XO": [8],
+    "CTS": [9], "DSR": [10], "RI": [11], "DCD": [12], "DTR": [13], "RTS": [14], "R232": [15], "VCC": [16],
+  },
+  // The chip's outputs drive high to its own VCC, so TXD and DTR are sources from VCC. The board's
+  // 5V rail sits a Schottky drop under USB, and a source from GND would hold them above it.
+  "model": {
+    "host_tx": {
+      "kind": "voltage_source",
+      "voltage": {
+        "kind": "serial",
+        "mark": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "A mark is the chip's own VCC, 0 V above it. Its sheet is not cited." } } },
+        "space": { "value": -5.0, "unit": "V", "source": { "closed_form": { "note": "A space is ground, 5 V under VCC on a 5 V rail. The board gives no events, so no space is sent. Its sheet is not cited." } } },
+        "events": [],
+      },
+      "pins": { "p": "TXD", "n": "VCC" },
+    },
+    "host_dtr": {
+      "kind": "voltage_source",
+      "voltage": {
+        "kind": "steps",
+        "initial": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "DTR idles high at the chip's own VCC, 0 V above it. Its sheet is not cited." } } },
+        "events": [],
+      },
+      "pins": { "p": "DTR", "n": "VCC" },
+    },
+    // V3 is the internal 3.3 V rail. It is a regulator from VCC, so the pin is off when VCC is.
+    "rail": {
+      "kind": "linear_regulator",
+      "output_voltage": { "value": 3.3, "unit": "V", "source": { "datasheet": { "doc": "WCH CH340 datasheet, version 3D", "at": "Section 5.1 names a 3.3 V supply as the voltage that connects V3 to VCC, and the pin table says the same. The sheet states no V3 output voltage. 3.3 V is that supply.", "basis": "nominal" } } },
+      "line_regulation": { "value": 0, "unit": "1", "source": { "closed_form": { "note": "The sheet states no line regulation. 0 holds the output still while VCC is up." } } },
+      "output_resistance": { "value": 1, "unit": "ohm", "source": { "closed_form": { "note": "A guess. The sheet states no output resistance. 1 ohm keeps a light load near 3.3 V. DigiKey's 2025 note of the PTSolns measurement read about 0.01 V of drop at about 28 mA, which is under 1 ohm." } } },
+      "dropout_voltage": { "value": 0.7, "unit": "V", "source": { "closed_form": { "note": "4.0 V, the section 6.2 minimum VCC when V3 is not tied to VCC, minus 3.3 V. The sheet states no dropout. This still holds the output at that minimum." } } },
+      "dropout_resistance": { "value": 1, "unit": "ohm", "source": { "closed_form": { "note": "A guess. The sheet states no dropout resistance. 1 ohm keeps the field positive." } } },
+      "current_limit": { "value": 0.03, "unit": "A", "source": { "closed_form": { "note": "A guess of a clamp the sheet does not state. It is the same 30 mA as the current rating, so a heavier load sags. The sheet gives no higher clamp." } } },
+      "quiescent_current": { "value": 0, "unit": "A", "source": { "closed_form": { "note": "The supply resistor already draws the sheet's typical working current from VCC, so this regulator adds none." } } },
+      "ground_current_ratio": { "value": 0, "unit": "1", "source": { "closed_form": { "note": "The supply resistor already draws the sheet's typical working current from VCC, so this regulator adds none." } } },
+      "ratings": {
+        "current": { "value": 0.03, "unit": "A", "basis": "peak", "source": { "closed_form": { "note": "The sheet states no V3 output current. DigiKey, Non-compliant use of the CH340 V3 pin, 2025, reckons about 20 to 30 mA and measured about 28 mA still near 3.3 V with VCC at 5 V on a CH340C, which that note treats like the CH340G. This rating is 30 mA, the top of that range." } } },
+        "power": null,
+        "input_voltage": { "value": 5.3, "unit": "V", "source": { "datasheet": { "doc": "WCH CH340 datasheet, version 3D", "at": "Section 6.2, VCC maximum when V3 is not connected to VCC. The table's maximum of the 5 V operating range, not an absolute maximum the sheet does not state.", "basis": "max" } } },
+      },
+      "pins": { "in": "VCC", "out": "V3", "gnd": "GND" },
+    },
+    // The chip's own draw: a resistance from VCC to GND that draws the sheet's typical
+    // working current at 5 V.
+    "supply": {
+      "kind": "resistor",
+      "resistance": { "value": 416.67, "unit": "ohm", "source": { "closed_form": { "note": "WCH CH340 datasheet (the first), English, version 1D, page 4, 6.2 Electrical parameter, TA = 25 C, VCC = 5 V: ICC, total source current when working, 12 mA typical, 30 mA maximum. 5 V / 12 mA" } } },
+      "ratings": { "power": null },
+      "pins": { "a": "VCC", "b": "GND" },
+    },
+  },
+  "not_simulated": [{
+    "what": "USB to serial",
+    "pins": ["RXD", "UDP", "UDM", "XI", "XO", "CTS", "DSR", "RI", "DCD", "RTS", "R232"],
+    "why": "The engine has no USB-serial chip. A serial source from VCC stands in for TXD, a steps source from VCC for DTR, each idle high at VCC, and a regulator from VCC for V3.",
+  }, {
+    "what": "supply current",
+    "pins": ["VCC"],
+    "why": "A resistance draws the sheet's typical 12 mA at 5 V, so the draw scales with VCC. The real draw depends on USB traffic and is up to 30 mA, and 0.15 mA while the host suspends USB.",
+  }],
+}

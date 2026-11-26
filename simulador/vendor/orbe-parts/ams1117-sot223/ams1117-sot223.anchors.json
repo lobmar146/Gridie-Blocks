@@ -1,0 +1,10 @@
+{
+  "part": "ams1117-sot223",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [2.15, -2.3, 0.06], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [2.15, 0.0, 0.06], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 3, "node": "lead-3", "also": [], "at": [2.15, 2.3, 0.06], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 4, "node": "lead-4", "also": [], "at": [-2.45, 0.0, 0.07], "axis": [0.0, 0.0, -1.0], "kind": "pad"}
+  ]
+}

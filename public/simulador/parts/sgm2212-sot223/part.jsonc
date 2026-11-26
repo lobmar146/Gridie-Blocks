@@ -1,0 +1,133 @@
+{
+  "format": 5,
+  "part": "sgm2212-sot223",
+  "version": "0.2.2",
+  "title": "SGM2212 3.3 V regulator, SOT-223",
+  "summary": "SG Micro SGM2212-3.3, a fixed 3.3 V low-dropout regulator in SOT-223-3 for loads up to 800 mA.",
+  "tags": ["regulator", "ldo", "sot-223", "power"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "SG Micro SGM2212, JULY 2023": "https://www.sg-micro.com/product/SGM2212" },
+  "real": { "maker": "SG Micro", "number": "SGM2212-3.3XKC3G/TR", "datasheet": "SG Micro SGM2212, JULY 2023" },
+  "pins": { "GND": [1], "OUT": [2, 4], "IN": [3] },
+  "model": {
+    "kind": "linear_regulator",
+    "output_voltage": {
+      "value": 3.3,
+      "unit": "V",
+      "source": {
+        "datasheet": {
+          "doc": "SG Micro SGM2212, JULY 2023",
+          "at": "Electrical Characteristics, SGM2212-3.3 VOUT typical at IOUT = 10 mA and TJ = +25 C. The row's limits are 3.267 V to 3.333 V.",
+          "basis": "typical"
+        }
+      }
+    },
+    "line_regulation": {
+      "value": 1.2738853503184713e-5,
+      "unit": "1",
+      "source": {
+        "closed_form": {
+          "note": "0.2 mV typical line regulation of the fixed 3.3 V row at IOUT = 0 mA and TJ = +25 C, divided by 15.7 V. The mV column does not print the input span. 15.7 V is VIN from VOUT(NOM) + 1 V, which is 4.3 V, to the 20 V operating maximum."
+        }
+      }
+    },
+    "output_resistance": {
+      "value": 0.0025,
+      "unit": "ohm",
+      "source": {
+        "closed_form": {
+          "note": "2 mV typical load regulation of the fixed 3.3 V row, IOUT from 0 to 800 mA at TJ = +25 C, divided by 0.8 A"
+        }
+      }
+    },
+    "dropout_voltage": {
+      "value": 0.0014285714285714245,
+      "unit": "V",
+      "source": {
+        "closed_form": {
+          "note": "The line through the fixed 3.3 V dropout typicals, 50 mV at 100 mA and 390 mV at 800 mA, both at TJ = +25 C. Note 1 defines dropout as VIN minus VOUT when VOUT has fallen to 95 percent of nominal."
+        }
+      }
+    },
+    "dropout_resistance": {
+      "value": 0.48571428571428577,
+      "unit": "ohm",
+      "source": {
+        "closed_form": {
+          "note": "The line through the fixed 3.3 V dropout typicals, 50 mV at 100 mA and 390 mV at 800 mA, both at TJ = +25 C. At 500 mA that line is about 0.244 V and the table typical is 0.240 V."
+        }
+      }
+    },
+    "current_limit": {
+      "value": 1.1,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "SG Micro SGM2212, JULY 2023",
+          "at": "Output Current Limit typical, 1100 mA, at VOUT = 80 percent of nominal. The minimum on that row is 810 mA. The 360 mA short-circuit typical at VIN = 3 V is a different row.",
+          "basis": "typical"
+        }
+      }
+    },
+    "quiescent_current": {
+      "value": 8.0e-5,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "SG Micro SGM2212, JULY 2023",
+          "at": "Ground Pin Current typical at IOUT = 0 mA and TJ = +25 C, 80 uA. The maximum on that row is 110 uA.",
+          "basis": "typical"
+        }
+      }
+    },
+    "ground_current_ratio": {
+      "value": 0.0015875,
+      "unit": "1",
+      "source": {
+        "closed_form": {
+          "note": "Ground pin current typical, 80 uA at 0 mA and 1350 uA at 800 mA, both at TJ = +25 C, as a straight line. At 100 mA that line is about 239 uA and the table typical is 290 uA, so the current is not linear."
+        }
+      }
+    },
+    "ratings": {
+      "current": {
+        "value": 0.8,
+        "unit": "A",
+        "basis": "peak",
+        "source": {
+          "datasheet": {
+            "doc": "SG Micro SGM2212, JULY 2023",
+            "at": "The 800 mA in the title, and the top of the load-regulation and dropout rows",
+            "basis": "max"
+          }
+        }
+      },
+      "power": {
+        "value": 0.8547008547008547,
+        "unit": "W",
+        "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": {
+          "closed_form": {
+            "note": "(125 C - 25 C) / 117 C/W. 125 C is the operating junction maximum in the electrical characteristics, and 117 C/W is the SOT-223-3 θJA."
+          }
+        }
+      },
+      "input_voltage": { "value": 22, "unit": "V", "source": { "datasheet": { "doc": "SG Micro SGM2212, JULY 2023", "at": "ABSOLUTE MAXIMUM RATINGS, VIN to GND, 22 V", "basis": "absolute_max" } } },
+    },
+    "pins": { "in": "IN", "out": "OUT", "gnd": "GND" }
+  },
+  "not_simulated": [
+    {
+      "what": "dropout definition",
+      "why": "The sheet's dropout is VIN minus VOUT when VOUT has fallen to 95 percent of nominal. The model is a straight line through the 100 mA and 800 mA typicals of the fixed 3.3 V row."
+    },
+    {
+      "what": "short-circuit current",
+      "why": "The 360 mA typical at VIN = 3 V into a short is not the current limit. The model uses the 1100 mA typical output current limit."
+    },
+    {
+      "what": "ground current shape",
+      "why": "Ground current is a straight line from 80 uA at no load to 1350 uA at 800 mA. That line is about 239 uA at 100 mA, and the table typical there is 290 uA."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+// GY-BMP280-3.3. Seated frame: z = 0 is the header plastic's underside, so the board's
+// underside is at z = 2.54 and its top at z = 4.14. Outline 15.0 x 11.5 mm and 2.54 mm pin
+// pitch are from https://domoticx.net/docs/bmp280-information/ (whose size photo labels the
+// board 15.5 x 12 mm). PCB thickness (1.6 mm), mounting-hole size and centres, and on-board
+// part positions are not dimensioned in either source and follow the module photos there and
+// at https://startingelectronics.org/pinout/GY-BMP280-pressure-sensor-module/ .
+// Pin order and the four 10 kΩ resistors are from those two sources: SCL, SDA and CSB pull up
+// to VCC, and SDO pulls down to GND, so the I2C address is 0x76 unless SDO is tied high. The
+// module has no regulator and no level shifter: VCC is the BMP280's VDD and VDDIO, 1.71 V to
+// 3.6 V, and the pull-ups hold SDA and SCL at VCC. The two supply capacitors are 100 nF, the
+// value Bosch recommends for C1 and C2; the module diagram shows two capacitors and does not
+// print the value.
+{
+  "format": 1,
+  "part": "gy-bmp280",
+  "version": "0.1.1",
+  "title": "GY-BMP280-3.3 pressure module",
+  "summary": "BMP280 pressure and temperature breakout for 3.3 V, with I2C pull-ups and a 6-pin header on 2.54 mm. It answers at I2C address 0x76.",
+  "tags": ["bmp280", "gy-bmp280", "temperature", "pressure", "sensor", "i2c", "breakout"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "BST-BMP280-DS001-26": "https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf",
+    "GY-BMP280-3.3 pinout": "https://startingelectronics.org/pinout/GY-BMP280-pressure-sensor-module/",
+    "GY-BMP280-3.3 module notes": "https://domoticx.net/docs/bmp280-information/"
+  },
+  "real": {
+    "generic": true,
+    "maker": null,
+    "number": "GY-BMP280-3.3",
+    "datasheet": "BST-BMP280-DS001-26"
+  },
+  "uses": {
+    "bmp280": "0.1.1",
+    "pin-header-1x6": "0.1.0",
+    "resistor-0603": "0.2.0",
+    "capacitor-0603": "0.2.0"
+  },
+  "parts": {
+    "j": { "type": "pin-header-1x6" },
+    "u": { "type": "bmp280" },
+    "r_scl": { "type": "resistor-0603", "resistance": "10k" },
+    "r_sda": { "type": "resistor-0603", "resistance": "10k" },
+    "r_csb": { "type": "resistor-0603", "resistance": "10k" },
+    "r_sdo": { "type": "resistor-0603", "resistance": "10k" },
+    "c_vdd": { "type": "capacitor-0603", "capacitance": "100n" },
+    "c_io": { "type": "capacitor-0603", "capacitance": "100n" }
+  },
+  "wires": [
+    ["j.1", "u.VDD", { "kind": "trace" }],
+    ["j.1", "u.VDDIO", { "kind": "trace" }],
+    ["j.1", "r_scl.a", { "kind": "trace" }],
+    ["j.1", "r_sda.a", { "kind": "trace" }],
+    ["j.1", "r_csb.a", { "kind": "trace" }],
+    ["j.1", "c_vdd.a", { "kind": "trace" }],
+    ["j.1", "c_io.a", { "kind": "trace" }],
+    ["j.2", "u.GND", { "kind": "trace" }],
+    ["j.2", "r_sdo.a", { "kind": "trace" }],
+    ["j.2", "c_vdd.b", { "kind": "trace" }],
+    ["j.2", "c_io.b", { "kind": "trace" }],
+    ["j.3", "u.SCK", { "kind": "trace" }],
+    ["r_scl.b", "u.SCK", { "kind": "trace" }],
+    ["j.4", "u.SDI", { "kind": "trace" }],
+    ["r_sda.b", "u.SDI", { "kind": "trace" }],
+    ["j.5", "u.CSB", { "kind": "trace" }],
+    ["r_csb.b", "u.CSB", { "kind": "trace" }],
+    ["j.6", "u.SDO", { "kind": "trace" }],
+    ["r_sdo.b", "u.SDO", { "kind": "trace" }]
+  ],
+  "layout": {
+    "j": { "at": [0, -4.48, 0] },
+    "u": { "at": [0, 2.3, 4.14], "rotate": [0, 0, 180] },
+    "c_vdd": { "at": [0, 4.6, 4.14] },
+    "c_io": { "at": [-3.8, -1.1, 4.14], "rotate": [0, 0, 90] },
+    "r_scl": { "at": [-1.9, -1.1, 4.14], "rotate": [0, 0, 90] },
+    "r_sda": { "at": [0, -1.1, 4.14], "rotate": [0, 0, 90] },
+    "r_csb": { "at": [1.9, -1.1, 4.14], "rotate": [0, 0, 90] },
+    "r_sdo": { "at": [3.8, -1.1, 4.14], "rotate": [0, 0, 90] }
+  },
+  "pins": {
+    "VCC": "j.1",
+    "GND": "j.2",
+    "SCL": "j.3",
+    "SDA": "j.4",
+    "CSB": "j.5",
+    "SDO": "j.6"
+  },
+  "not_simulated": [
+    {
+      "what": "the regulator and the level shifters",
+      "why": "This GY-BMP280-3.3 has neither. VCC is the BMP280 supply, 1.71 V to 3.6 V, so wire it straight to a 3.3 V board's 3V3 and GPIOs, or power it from a 5 V board's 3.3 V pin with a level shifter such as bss138-level-shifter on SDA and SCL. Wired straight to 5 V it still answers and rating.voltage warns."
+    },
+    {
+      "what": "SPI",
+      "why": "CSB is pulled up, so the module sits in I2C. Pulling CSB low selects SPI, which the BMP280 model refuses by name."
+    }
+  ]
+}

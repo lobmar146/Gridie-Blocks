@@ -1,0 +1,9 @@
+{
+  "part": "screw-terminal-3p-5mm",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "clamp-1", "also": [], "at": [-5.0, 3.8, 3.6], "axis": [0.0, 1.0, 0.0], "kind": "socket"},
+    {"lead": 2, "node": "clamp-2", "also": [], "at": [0.0, 3.8, 3.6], "axis": [0.0, 1.0, 0.0], "kind": "socket"},
+    {"lead": 3, "node": "clamp-3", "also": [], "at": [5.0, 3.8, 3.6], "axis": [0.0, 1.0, 0.0], "kind": "socket"}
+  ]
+}

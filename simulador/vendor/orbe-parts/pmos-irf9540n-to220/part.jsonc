@@ -1,0 +1,131 @@
+{
+  "format": 5,
+  "part": "pmos-irf9540n-to220",
+  "version": "0.2.1",
+  "title": "P-channel MOSFET, IRF9540N (TO-220)",
+  "summary": "100 V, 23 A P-channel power MOSFET in TO-220. It is not logic-level: it turns fully on with the gate 10 V below the source.",
+  "tags": ["transistor", "mosfet", "pmos", "switch", "power", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Infineon IRF9540NPbF, Rev. 2.1, 2026-07-17": "https://www.infineon.com/assets/row/public/documents/24/49/infineon-irf9540npbf-datasheet-en.pdf"
+  },
+  "real": {
+    "maker": "Infineon",
+    "number": "IRF9540NPbF",
+    "datasheet": "Infineon IRF9540NPbF, Rev. 2.1, 2026-07-17"
+  },
+  "pins": { "gate": [1], "drain": [2, 4], "source": [3] },
+  "model": {
+    "kind": "pmos",
+    "transconductance_parameter": {
+      "value": 1.3446092263051281,
+      "unit": "A/V^2",
+      "source": {
+        "closed_form": {
+          "note": "1 / (0.117 * (10 - 3 - 1.287 / 2)). 0.117 ohm is the RDS(on) maximum at VGS = -10 V and ID = -11 A, and 1.287 V is 11 A times that resistance, so the point is in the linear region. VTO is 3 V. The sheet has no typical on-resistance, so the model matches this maximum: 0.117 ohm and 11 A at that bias. Infineon IRF9540NPbF Rev. 2.1, Static."
+        }
+      }
+    },
+    "threshold_voltage": {
+      "value": 3.0,
+      "unit": "V",
+      "source": {
+        "closed_form": {
+          "note": "The middle of VGS(th) minimum -2.0 V and maximum -4.0 V. The typical column is blank. The kind stores the magnitude. The condition is VDS = VGS, ID = -250 µA. Infineon IRF9540NPbF Rev. 2.1, Static."
+        }
+      }
+    },
+    "channel_length_modulation": {
+      "value": 0.0,
+      "unit": "1/V",
+      "source": {
+        "closed_form": {
+          "note": "Not fitted. The on-resistance point is at |vds| = 1.287 V, in the linear region, so the output-curve slope was not read. Infineon IRF9540NPbF Rev. 2.1."
+        }
+      }
+    },
+    "gate_source_capacitance": {
+      "value": 1.06e-9,
+      "unit": "F",
+      "source": {
+        "datasheet": {
+          "doc": "Infineon IRF9540NPbF, Rev. 2.1, 2026-07-17",
+          "at": "Dynamic, Ciss typical minus Crss typical, 1300 pF minus 240 pF, VGS = 0 V, VDS = -25 V, f = 1.0 MHz",
+          "basis": "typical"
+        }
+      }
+    },
+    "gate_drain_capacitance": {
+      "value": 2.4e-10,
+      "unit": "F",
+      "source": {
+        "datasheet": {
+          "doc": "Infineon IRF9540NPbF, Rev. 2.1, 2026-07-17",
+          "at": "Dynamic, Crss typical, 240 pF, VGS = 0 V, VDS = -25 V, f = 1.0 MHz",
+          "basis": "typical"
+        }
+      }
+    },
+    "drain_source_capacitance": {
+      "value": 1.6e-10,
+      "unit": "F",
+      "source": {
+        "datasheet": {
+          "doc": "Infineon IRF9540NPbF, Rev. 2.1, 2026-07-17",
+          "at": "Dynamic, Coss typical minus Crss typical, 400 pF minus 240 pF, VGS = 0 V, VDS = -25 V, f = 1.0 MHz",
+          "basis": "typical"
+        }
+      }
+    },
+    "ratings": {
+      "current": {
+        "value": 23,
+        "unit": "A",
+        "basis": { "sustained": { "average": "rms", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": {
+          "datasheet": {
+            "doc": "Infineon IRF9540NPbF, Rev. 2.1, 2026-07-17",
+            "at": "Absolute maximum ratings, continuous drain current ID at TC = 25 C, VGS at -10 V, -23 A. The kind stores the magnitude.",
+            "basis": "absolute_max"
+          }
+        }
+      },
+      "power": {
+        "value": 2.4193548387096775,
+        "unit": "W",
+        "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": {
+          "closed_form": {
+            "note": "with no heat sink: (TJ maximum 175 C minus TA 25 C) over RθJA maximum 62 C/W, from the operating range and thermal resistance of Infineon IRF9540NPbF Rev. 2.1. The 140 W rating needs the case held at 25 C."
+          }
+        }
+      }
+    }
+  },
+  "not_simulated": [
+    {
+      "what": "body diode",
+      "why": "The engine's pmos has none, so the part does not conduct from drain to source when the drain rises above the source. The datasheet's VSD is -1.6 V maximum at -11 A. Add a diode from drain to source if a circuit needs that path."
+    },
+    {
+      "what": "drain and source resistance",
+      "why": "The square law folds them in. The model matches the 0.117 ohm maximum at VGS = -10 V and ID = -11 A. The sheet has no typical. At a lighter current and the same gate, the vds/2 term makes the resistance a little lower, about 0.107 ohm near 1 A."
+    },
+    {
+      "what": "subthreshold conduction",
+      "why": "Below 3.0 V of |Vgs| the drain passes only the engine's 1e-12 S leakage. 3.0 V is the middle of a blank typical, from -2.0 V to -4.0 V, not a measured typical."
+    },
+    {
+      "what": "voltage-dependent capacitances",
+      "why": "The capacitances are the typical values at VDS = -25 V, held constant, so gate charge is approximate."
+    },
+    {
+      "what": "breakdown",
+      "why": "VDS beyond 100 V and VGS beyond 20 V are not checked."
+    },
+    {
+      "what": "temperature",
+      "why": "The fit is at 25 C and the engine has no temperature."
+    }
+  ]
+}

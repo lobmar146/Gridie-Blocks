@@ -1,0 +1,9 @@
+{
+  "format": 1, "part": "screw-terminal-3p-5mm", "version": "0.1.0", "title": "Screw terminal, 3 positions, 5.0 mm", "license": "MIT OR Apache-2.0",
+  "summary": "A PCB screw terminal block with 3 clamps on a 5.0 mm pitch, the kind on relay modules. A wire goes in the front of a clamp and the screw on top holds it. Lead 1 is the clamp at one end.",
+  "tags": ["terminal", "screw", "connector", "through-hole"],
+  "joins_only": true,
+  "docs": { "5.0 mm PCB screw terminal": null },
+  "real": { "generic": true, "maker": null, "number": null, "datasheet": "5.0 mm PCB screw terminal" },
+  "pins": { "1": [1], "2": [2], "3": [3] },
+}

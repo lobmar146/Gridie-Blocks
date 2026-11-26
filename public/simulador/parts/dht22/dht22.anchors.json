@@ -1,0 +1,10 @@
+{
+  "part": "dht22",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [-3.81, 0.0, -6.5], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [-1.27, 0.0, -6.5], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "lead-3", "also": [], "at": [1.27, 0.0, -6.5], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 4, "node": "lead-4", "also": [], "at": [3.81, 0.0, -6.5], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

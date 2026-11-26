@@ -1,0 +1,133 @@
+{
+  "format": 5,
+  "part": "ams1117-sot223",
+  "version": "0.2.2",
+  "title": "AMS1117 regulator, SOT-223",
+  "summary": "AMS1117-5.0, a fixed 5 V low-dropout regulator in SOT-223 for loads up to 1 A.",
+  "tags": ["regulator", "ldo", "sot-223", "power"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "AMS1117 1A Low Dropout Voltage Regulator": "http://www.advanced-monolithic.com/pdf/ds1117.pdf" },
+  "real": { "maker": "Advanced Monolithic Systems", "number": "AMS1117-5.0", "datasheet": "AMS1117 1A Low Dropout Voltage Regulator" },
+  "pins": { "GND": [1], "OUT": [2, 4], "IN": [3] },
+  "model": {
+    "kind": "linear_regulator",
+    "output_voltage": {
+      "value": 5.0,
+      "unit": "V",
+      "source": {
+        "datasheet": {
+          "doc": "AMS1117 1A Low Dropout Voltage Regulator",
+          "at": "Electrical Characteristics, AMS1117-5.0 output voltage typical at VIN = 6.5 V and TJ = +25 C. The section is at IOUT = 0 unless a row says otherwise. The row's limits at 25 C are 4.925 V to 5.075 V.",
+          "basis": "typical"
+        }
+      }
+    },
+    "line_regulation": {
+      "value": 4.761904761904762e-05,
+      "unit": "1",
+      "source": {
+        "closed_form": {
+          "note": "0.5 mV typical line regulation of the AMS1117-5.0 at TJ = +25 C, divided by 10.5 V. The span is (VIN - VOUT) from 1.5 V to 12 V. The maximum on that row is 10 mV."
+        }
+      }
+    },
+    "output_resistance": {
+      "value": 0.00625,
+      "unit": "ohm",
+      "source": {
+        "closed_form": {
+          "note": "5 mV typical load regulation of the AMS1117-5.0 at VIN = 6.5 V, IOUT from 0 to 0.8 A, TJ = +25 C, divided by 0.8 A. The maximum on that row is 20 mV."
+        }
+      }
+    },
+    "dropout_voltage": {
+      "value": 1.0992,
+      "unit": "V",
+      "source": {
+        "closed_form": {
+          "note": "1.1 V typical dropout at 0.8 A, minus 0.001 ohm times 0.8 A, so the drop is 1.1 V at that current. The condition is a 1 percent fall in VOUT. The maximum on the row is 1.3 V. The sheet states that one current."
+        }
+      }
+    },
+    "dropout_resistance": {
+      "value": 0.001,
+      "unit": "ohm",
+      "source": {
+        "closed_form": {
+          "note": "0.001 ohm, so the drop stays 1.1 V at 0.8 A and the resistance stays positive. The sheet states dropout at that one current. The description says the drop decreases at lower load currents, and Note 4 says it is higher above 0.8 A. Neither slope is on the sheet."
+        }
+      }
+    },
+    "current_limit": {
+      "value": 1.1,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "AMS1117 1A Low Dropout Voltage Regulator",
+          "at": "Current Limit typical, 1100 mA, at (VIN - VOUT) = 1.5 V, for the fixed versions. The minimum on that row is 900 mA and the maximum is 1500 mA.",
+          "basis": "typical"
+        }
+      }
+    },
+    "quiescent_current": {
+      "value": 0.005,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "AMS1117 1A Low Dropout Voltage Regulator",
+          "at": "Quiescent Current typical, 5 mA, for the fixed versions. The maximum on that row is 11 mA. The table's condition is (VIN - VOUT) = 1.5 V, and the section is at IOUT = 0 unless a row says otherwise.",
+          "basis": "typical"
+        }
+      }
+    },
+    "ground_current_ratio": {
+      "value": 0,
+      "unit": "1",
+      "source": {
+        "closed_form": {
+          "note": "The quiescent-current row gives no load term, so the model holds the ground current at 5 mA while the input is up."
+        }
+      }
+    },
+    "ratings": {
+      "current": {
+        "value": 1.0,
+        "unit": "A",
+        "basis": "peak",
+        "source": {
+          "datasheet": {
+            "doc": "AMS1117 1A Low Dropout Voltage Regulator",
+            "at": "Features, output current of 1 A. The load-regulation and dropout rows stop at 0.8 A, and Note 4 says dropout above 0.8 A is higher.",
+            "basis": "max"
+          }
+        }
+      },
+      "power": {
+        "value": 1.1111111111111112,
+        "unit": "W",
+        "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": {
+          "closed_form": {
+            "note": "(125 C - 25 C) / 90 C/W. 125 C is the operating junction maximum and 90 C/W is the SOT-223 junction-to-ambient thermal resistance. Note 2 guarantees line and load regulation up to 1.2 W for the SOT-223."
+          }
+        }
+      },
+      "input_voltage": { "value": 15, "unit": "V", "source": { "datasheet": { "doc": "AMS1117 1A Low Dropout Voltage Regulator", "at": "ABSOLUTE MAXIMUM RATINGS, Input Voltage, 15 V", "basis": "absolute_max" } } },
+    },
+    "pins": { "in": "IN", "out": "OUT", "gnd": "GND" }
+  },
+  "not_simulated": [
+    {
+      "what": "dropout shape",
+      "why": "The sheet's dropout is VIN minus VOUT when VOUT has fallen by 1 percent, one typical: 1.1 V at 0.8 A. The model holds that drop. The description says it decreases at lower load currents, and Note 4 says it is higher above 0.8 A. The sheet gives no second current, so the model does neither."
+    },
+    {
+      "what": "ground current shape",
+      "why": "Ground current stays at the 5 mA typical. The quiescent-current row has no load term."
+    },
+    {
+      "what": "thermal shutdown and the input diode",
+      "why": "The sheet shuts the regulator down on overtemperature, and an internal diode from the output to the input handles a short surge. The model has no shutdown and blocks reverse current. The power rating warns instead."
+    }
+  ]
+}

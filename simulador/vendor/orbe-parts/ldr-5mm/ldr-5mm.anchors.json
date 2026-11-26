@@ -1,0 +1,8 @@
+{
+  "part": "ldr-5mm",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [-1.5, 0.0, -31.9], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [1.5, 0.0, -31.9], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

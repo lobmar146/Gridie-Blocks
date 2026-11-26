@@ -1,0 +1,10 @@
+{
+  "part": "pmos-irf9540n-to220",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [-2.54, 1.0, -13.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [0.0, 1.0, -13.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "lead-3", "also": [], "at": [2.54, 1.0, -13.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 4, "node": "tab", "also": [], "at": [0.0, 1.6, 15.65], "axis": [0.0, 0.0, 1.0], "kind": "pad"}
+  ]
+}

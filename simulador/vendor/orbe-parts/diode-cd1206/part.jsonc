@@ -1,0 +1,20 @@
+// The model's values and sources are the engine's D2, from
+// packages/engine/tests/circuits/atmega-board-button/netlist.json, part `d_reset`.
+{
+  "format": 5, "part": "diode-cd1206", "version": "0.2.1", "title": "Switching diode, CD1206-S01575, 1206", "license": "MIT OR Apache-2.0",
+  "summary": "Bourns CD1206-S01575 switching diode in 1206. The band marks the cathode, lead 1.",
+  "tags": ["diode", "smd"],
+  "docs": { "Bourns CD1206-S01575": "https://www.bourns.com/docs/technical-documents/obsolete-parts/cd1206_s01575_obsolete.pdf" },
+  "real": { "maker": "Bourns", "number": "CD1206-S01575", "datasheet": "Bourns CD1206-S01575" },
+  "pins": { "cathode": [1], "anode": [2] },
+  "model": {
+    "kind": "diode",
+    "saturation_current": { "value": 1.341e-12, "unit": "A", "source": { "datasheet": { "doc": "Bourns CD1206-S01575", "at": "Forward Characteristics, Ta = 25 C; fit through (0.82 V, 10 mA), (0.97 V, 100 mA), (1.07 V, 200 mA) at kT/q for 298.15 K", "basis": "typical" } } },
+    "emission_coefficient": { "value": 1.391, "unit": "1", "source": { "datasheet": { "doc": "Bourns CD1206-S01575", "at": "Forward Characteristics, Ta = 25 C; fit through (0.82 V, 10 mA), (0.97 V, 100 mA), (1.07 V, 200 mA) at kT/q for 298.15 K", "basis": "typical" } } },
+    "series_resistance": { "value": 0.7523, "unit": "ohm", "source": { "datasheet": { "doc": "Bourns CD1206-S01575", "at": "Forward Characteristics, Ta = 25 C; fit through (0.82 V, 10 mA), (0.97 V, 100 mA), (1.07 V, 200 mA) at kT/q for 298.15 K", "basis": "typical" } } },
+    "ratings": {
+      "current": { "value": 0.15, "unit": "A", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet's 4 A surge states no width, so there is nothing to fit, and this is the 10.2 ms default, five periods of a 490 Hz PWM." } } }, "peak": { "value": 4.0, "unit": "A", "source": { "datasheet": { "doc": "Bourns CD1206-S01575", "at": "Absolute Ratings, Forward Current, Surge, Isurge. The sheet states no width.", "basis": "absolute_max" } } } } }, "source": { "datasheet": { "doc": "Bourns CD1206-S01575", "at": "Absolute Ratings, Average Forward Current Io, 150 mA. The 4 A row is a surge.", "basis": "absolute_max" } } },
+      "power": { "value": 0.4, "unit": "W", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "Bourns CD1206-S01575", "at": "Absolute Ratings, Power Dissipation", "basis": "absolute_max" } } },
+    },
+  },
+}

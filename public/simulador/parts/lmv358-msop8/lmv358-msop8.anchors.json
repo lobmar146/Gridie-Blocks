@@ -1,0 +1,14 @@
+{
+  "part": "lmv358-msop8",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [-0.975, -1.975, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [-0.325, -1.975, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 3, "node": "lead-3", "also": [], "at": [0.325, -1.975, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 4, "node": "lead-4", "also": [], "at": [0.975, -1.975, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 5, "node": "lead-5", "also": [], "at": [0.975, 1.975, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 6, "node": "lead-6", "also": [], "at": [0.325, 1.975, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 7, "node": "lead-7", "also": [], "at": [-0.325, 1.975, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 8, "node": "lead-8", "also": [], "at": [-0.975, 1.975, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"}
+  ]
+}

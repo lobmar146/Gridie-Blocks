@@ -1,0 +1,14 @@
+{
+  "format": 1, "part": "inductor-0805", "version": "0.2.0", "title": "Inductor, 0805 chip", "license": "MIT OR Apache-2.0",
+  "summary": "Unpolarized 0805 chip, 2.0 x 1.25 mm, used as a ferrite bead or a chip inductor. Lead 1 and lead 2 are the end caps.",
+  "tags": ["inductor", "ferrite", "passive", "smd"],
+  "docs": { "Murata BLM21": null },
+  "real": { "generic": true, "maker": "Murata", "number": "BLM21", "datasheet": "Murata BLM21" },
+  "pins": { "1": [1], "2": [2] },
+  "params": {
+    "inductance": { "unit": "H", "required": true, "example": 1e-6, "min_exclusive": 0, "sets": "/inductance" },
+    "series_resistance": { "unit": "ohm", "required": true, "example": 1, "min_exclusive": 0, "sets": "/series_resistance" },
+  },
+  "model": { "kind": "inductor", "pins": { "a": "1", "b": "2" } },
+  "not_simulated": [{ "what": "ferrite loss", "why": "The engine's inductor is ideal past its series resistance, so a ferrite bead's loss at high frequency is left out." }],
+}

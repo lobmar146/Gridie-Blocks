@@ -1,0 +1,44 @@
+{
+  "format": 4, "part": "capacitor-tantalum-3216", "version": "0.2.2", "title": "Capacitor, 3216 tantalum", "license": "MIT OR Apache-2.0",
+  "summary": "Polarized 3216 (3.2 x 1.6 mm) tantalum chip capacitor, with a stripe marking the anode. Set its capacitance.",
+  "tags": ["capacitor", "tantalum", "polarized", "smd"],
+  "docs": { "KEMET T491, case A": null },
+  "real": { "generic": true, "maker": null, "number": null, "datasheet": "KEMET T491, case A" },
+  "pins": { "pos": [1], "neg": [2] },
+  "params": {
+    "capacitance": { "unit": "F", "required": true, "example": 1e-5, "sets": "/capacitance" },
+    "initial": { "unit": "V", "default": null, "sets": "/initial" },
+  },
+  "model": {
+    "kind": "capacitor",
+    "pins": { "a": "pos", "b": "neg" },
+    "series_resistance": {
+      "value": 3.0,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "KEMET T491, case A",
+          "at": "T491A106M016AT, the 10 µF 16 V case A the Nano's bulk capacitors match. ESR 3.0 ohm maximum at 100 kHz, 25 °C. This is that 100 kHz maximum, not the dissipation factor at 120 Hz. It does not change when the capacitance param does.",
+          "basis": "max"
+        }
+      }
+    },
+    "ratings": {
+      "reverse_voltage": {
+        "value": 2.4,
+        "unit": "V",
+        "source": {
+          "datasheet": {
+            "doc": "KEMET T491, case A",
+            "at": "Reverse Voltage: a transient reverse voltage of 15% of rated voltage at 25 °C, 5% at 85 °C, or 1% at 125 °C is allowed for a short period, and never continuously. This model is the 16 V part at 25 °C, so 15% of 16 V, 2.4 V.",
+            "basis": "absolute_max"
+          }
+        }
+      }
+    }
+  },
+  "not_simulated": [
+    { "what": "held reverse voltage", "why": "The sheet allows its reverse figure for short periods only. A reverse voltage held under 2.4 V does not warn." },
+    { "what": "ESR versus capacitance", "why": "The series resistance is the 10 µF 16 V case A figure at 100 kHz. It does not fall when the capacitance param is set lower." },
+  ],
+}

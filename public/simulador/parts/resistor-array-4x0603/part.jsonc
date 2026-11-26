@@ -1,0 +1,22 @@
+// Four resistors in one chip. Resistor A joins leads 1 and 8, B 2 and 7, C 3 and 6, D 4 and 5,
+// so each takes its own value and cites its own designator, such as RN2A.
+{
+  "format": 1, "part": "resistor-array-4x0603", "version": "0.2.0", "title": "Resistor array, 4 x 0603 in 1206", "license": "MIT OR Apache-2.0",
+  "summary": "Bourns CAY16, four isolated resistors in one 1206 chip. Eight terminations. Resistor k joins lead k to lead 9-k.",
+  "tags": ["resistor", "passive", "smd"],
+  "docs": { "Bourns CAY16-J4": null },
+  "real": { "generic": true, "maker": "Bourns", "number": "CAY16-J4", "datasheet": "Bourns CAY16-J4" },
+  "pins": { "1": [1], "2": [2], "3": [3], "4": [4], "5": [5], "6": [6], "7": [7], "8": [8] },
+  "params": {
+    "resistance_a": { "unit": "ohm", "required": true, "example": 220, "min_exclusive": 0, "sets": "/a/resistance" },
+    "resistance_b": { "unit": "ohm", "required": true, "example": 220, "min_exclusive": 0, "sets": "/b/resistance" },
+    "resistance_c": { "unit": "ohm", "required": true, "example": 220, "min_exclusive": 0, "sets": "/c/resistance" },
+    "resistance_d": { "unit": "ohm", "required": true, "example": 220, "min_exclusive": 0, "sets": "/d/resistance" },
+  },
+  "model": {
+    "a": { "kind": "resistor", "ratings": { "power": null }, "pins": { "a": "1", "b": "8" } },
+    "b": { "kind": "resistor", "ratings": { "power": null }, "pins": { "a": "2", "b": "7" } },
+    "c": { "kind": "resistor", "ratings": { "power": null }, "pins": { "a": "3", "b": "6" } },
+    "d": { "kind": "resistor", "ratings": { "power": null }, "pins": { "a": "4", "b": "5" } },
+  },
+}

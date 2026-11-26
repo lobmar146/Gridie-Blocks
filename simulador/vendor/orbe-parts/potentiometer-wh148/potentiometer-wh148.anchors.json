@@ -1,0 +1,9 @@
+{
+  "part": "potentiometer-wh148",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "pin-1", "also": [], "at": [-5.0, -7.5, -6.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "pin-2", "also": [], "at": [0.0, -7.5, -6.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "pin-3", "also": [], "at": [5.0, -7.5, -6.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

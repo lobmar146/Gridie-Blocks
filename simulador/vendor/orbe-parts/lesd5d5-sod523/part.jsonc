@@ -1,0 +1,16 @@
+{
+  "format": 1, "part": "lesd5d5-sod523", "version": "0.2.1", "listed": false, "title": "LESD5D5.0CT1G TVS diode, SOD-523", "license": "MIT OR Apache-2.0",
+  "summary": "Leshan LESD5D5.0CT1G bidirectional 5 V ESD protection diode in SOD-523, breaking down between 5.6 V and 7.8 V.",
+  "tags": ["tvs", "esd", "diode", "sod-523"],
+  "docs": {
+    "Leshan LESD5D5.0CT1G Rev.O": null,
+    "Leshan LESD5D5.0CT1G, Rev.A, May 2025": "https://www.lrc.cn/Upload/PDF/Product/ESD/LESD5D5.0CT1G.pdf",
+  },
+  "real": { "maker": "Leshan Radio Company", "number": "LESD5D5.0CT1G", "datasheet": "Leshan LESD5D5.0CT1G Rev.O" },
+  "pins": { "a": [1], "b": [2] },
+  "not_simulated": [{
+    "what": "bidirectional clamp",
+    "pins": ["a", "b"],
+    "why": "The clamp is open inside the 5 V standoff. A wire would short the line to ground, and a zener is one direction only. Leshan LESD5D5.0CT1G Rev.O: VRWM 5.0 V, IR 1 uA, VBR 5.6 V to 7.8 V at 1 mA, VC 11.6 V typical at 5 A and 18.6 V max at 9.4 A, PPK 174 W, C 15 pF typical.",
+  }],
+}

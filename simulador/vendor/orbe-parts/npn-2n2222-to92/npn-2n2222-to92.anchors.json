@@ -1,0 +1,9 @@
+{
+  "part": "npn-2n2222-to92",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [-2.54, 0.49, -12.7], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [0.0, 0.49, -12.7], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "lead-3", "also": [], "at": [2.54, 0.49, -12.7], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

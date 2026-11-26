@@ -1,0 +1,27 @@
+{
+  "name": "gridie-simulador",
+  "private": true,
+  "description": "Puente entre GrIDIE Blocks y el simulador ORBE (visor 3D + motor en WebAssembly). Se compila a ../public/simulador.",
+  "type": "module",
+  "scripts": {
+    "build": "vite build && node scripts/copiar-orbe.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.2",
+    "@react-three/postprocessing": "3.2.0",
+    "postprocessing": "6.39.5",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-react": "6.0.5",
+    "typescript": "5.9.3",
+    "vite": "8.2.1"
+  }
+}

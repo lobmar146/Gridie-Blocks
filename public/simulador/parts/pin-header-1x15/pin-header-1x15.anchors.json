@@ -1,0 +1,21 @@
+{
+  "part": "pin-header-1x15",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "pin-1", "also": ["housing-1"], "at": [-17.78, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "pin-2", "also": ["housing-2"], "at": [-15.24, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "pin-3", "also": ["housing-3"], "at": [-12.7, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 4, "node": "pin-4", "also": ["housing-4"], "at": [-10.16, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 5, "node": "pin-5", "also": ["housing-5"], "at": [-7.62, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 6, "node": "pin-6", "also": ["housing-6"], "at": [-5.08, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 7, "node": "pin-7", "also": ["housing-7"], "at": [-2.54, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 8, "node": "pin-8", "also": ["housing-8"], "at": [0.0, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 9, "node": "pin-9", "also": ["housing-9"], "at": [2.54, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 10, "node": "pin-10", "also": ["housing-10"], "at": [5.08, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 11, "node": "pin-11", "also": ["housing-11"], "at": [7.62, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 12, "node": "pin-12", "also": ["housing-12"], "at": [10.16, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 13, "node": "pin-13", "also": ["housing-13"], "at": [12.7, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 14, "node": "pin-14", "also": ["housing-14"], "at": [15.24, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 15, "node": "pin-15", "also": ["housing-15"], "at": [17.78, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

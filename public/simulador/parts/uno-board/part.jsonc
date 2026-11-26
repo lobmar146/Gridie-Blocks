@@ -1,0 +1,352 @@
+// An Uno R3 compatible board drawn as the common CH340G clone, with the ATmega328P in a DIP-28 socket.
+// Frame: the board's underside on z = 0 and its top at z = 1.6, the outline's center on the origin,
+// the USB and power jacks at -X, the digital header along +Y.
+// The circuit is RobotDyn's UNO R3 CH340G schematic, net by net, plus the 1k resistors in the
+// serial lines. RobotDyn wires those lines direct. The clone photo shows the 1k bodies in the LED
+// column, so they stay. Its nets name the 328P's pins by function, so they carry over from its
+// TQFP to the DIP-28. Values by role are the CH340 clone schematic at mischianti.org, and the
+// CH340G's are WCH's datasheet. The photo does not show the 1M across the 16 MHz crystal, and
+// RobotDyn's sheet has none, so that resistor is not on this board.
+// Placements are measured off the clone's top photo on Wikimedia Commons, scaled by its four mounting
+// holes. Maker Portal's photo of the same clone shows the USB-B socket it puts there. The DIP-28 socket and
+// its notch toward the ICSP header are the DIP boards' place, as Joy-IT's ARD_R3DIP shows it; the
+// headers, holes and ICSP header are RobotDyn's dimension diagram.
+{
+  "format": 5,
+  "part": "uno-board",
+  "version": "0.2.3",
+  "title": "Uno R3 compatible board",
+  "summary": "Uno R3 compatible board: an ATmega328P in a DIP-28 socket at 16 MHz and a CH340G USB-serial chip on 68.6 x 53.3 mm, with female headers in the Uno positions.",
+  "tags": ["board", "microcontroller", "avr", "atmega328p", "usb", "ch340g"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "RobotDyn UNO R3 CH340G schematic": "https://robotdyn.com/pub/media/0G-00004029%3D%3DUNO-R3-CH340G/DOCS/Schematic%3D%3D0G-00004029%3D%3DUNO-R3-CH340G.pdf",
+    "RobotDyn UNO R3 CH340G dimension diagram": "https://robotdyn.com/pub/media/0G-00004029%3D%3DUNO-R3-CH340G/DOCS/DIM%3D%3D0G-00004029%3D%3DUNO-R3-CH340G.pdf",
+    "CH340 clone schematic, mischianti.org": null,
+    "WCH CH340 datasheet": "https://www.wch-ic.com/download/file?id=79",
+    "CH340G clone, top photo": null,
+    "Maker Portal, CH340 board": null,
+    "Joy-IT ARD_R3DIP": null,
+  },
+  // A clone has no maker's sheet. RobotDyn's CH340G board, whose maker publishes its schematic and
+  // dimensions, is the representative for the circuit and the interface.
+  "real": { "generic": true, "maker": "RobotDyn", "number": "UNO R3 CH340G", "datasheet": "RobotDyn UNO R3 CH340G schematic" },
+  "uses": {
+    "ams1117-sot223": "0.2.2", "atmega328p-dip28": "0.2.2", "barrel-jack-dc21": "0.2.2", "capacitor-0603": "0.2.0",
+    "capacitor-electrolytic-smd": "0.2.2", "ch340g": "0.2.1", "crystal-hc49us": "0.2.0", "diode-cd1206": "0.2.1",
+    "diode-m7-sma": "0.2.1", "dip-socket-28": "0.2.0", "led-0805": "0.2.1", "lp2985-sot23-5": "0.2.2",
+    "pin-header-2x3": "0.2.0", "pmos-fdn340p-sot23": "0.2.1", "ptc-fuse-1812": "0.2.0", "resistor-0603": "0.2.0",
+    "socket-strip-1x10": "0.2.0", "socket-strip-1x6": "0.2.0", "socket-strip-1x8": "0.2.1",
+    "tactile-switch-ts42": "0.2.0", "usb-b-socket": "0.2.1",
+  },
+  "params": {
+    "firmware": {}, // the scene must set it, as `"firmware": "build/button.ino.hex"`
+  },
+  "ground": "usb.GND",
+  "parts": {
+    "usb": { "type": "usb-b-socket" }, // CN1
+    "usb_fuse": { "type": "ptc-fuse-1812" }, // F1
+    "usb_switch": { "type": "pmos-fdn340p-sot23" }, // Q1, USB to 5V while VIN is low
+    // R15 (r_vin) and R1 (r_gate) bias Q1's gate. The schematic ties R15 to VIN at D1's cathode and R1 to 5V, and prints
+    // no values, so 10k is a placeholder. D1, the jack and the 5 V regulator stay out, so R15's far end sits on ground,
+    // not on VIN, and USB holds the switch on. A Block that feeds VIN through power.8 leaves Q1 on, where a real Uno
+    // switches it off.
+    "r_vin": { "type": "resistor-0603", "resistance": "10k" },
+    "r_gate": { "type": "resistor-0603", "resistance": "10k" },
+    "jack": { "type": "barrel-jack-dc21", "voltage": 9, "not_simulated": "The board runs from USB. This jack stays out, so VIN stays unpowered." },
+    "d1": { "type": "diode-m7-sma", "not_simulated": "It guards VIN from the barrel jack. This instance stays out, so the jack does not feed VIN." }, // D1, M7
+    "c_vin": { "type": "capacitor-electrolytic-smd", "capacitance": "47u", "not_simulated": "It sits on VIN, which is not simulated." },
+    "regulator": { "type": "ams1117-sot223", "not_simulated": "It makes 5 V from VIN. This instance stays out, so the board runs from USB." }, // IC1, AMS1117-5.0
+    "c_5v": { "type": "capacitor-electrolytic-smd", "capacitance": "47u", "not_simulated": "A rail capacitor. The engine's board example leaves rail capacitors out." },
+    "c_reg": { "type": "capacitor-0603", "capacitance": "100n", "not_simulated": "A rail capacitor. The engine's board example leaves rail capacitors out." },
+    "reg_3v3": { "type": "lp2985-sot23-5" }, // U2, LP2985-33DBVR
+    "c_3v3": { "type": "capacitor-0603", "capacitance": "100n", "not_simulated": "A rail capacitor. The engine's board example leaves rail capacitors out." },
+    "usb_serial": { "type": "ch340g" }, // U3
+    // R9 and R10 sit in the USB data lines. The schematic prints no values. 22 ohm is a placeholder.
+    // WCH's application connects UD+ and UD- directly, and mischianti draws no series resistors there.
+    "r_dm": { "type": "resistor-0603", "resistance": "22", "not_simulated": "It is in the USB D- line, which is not simulated." }, // R9
+    "r_dp": { "type": "resistor-0603", "resistance": "22", "not_simulated": "It is in the USB D+ line, which is not simulated." }, // R10
+    // X2, the CH340G's 12 MHz crystal, in the same HC-49/US can as the 328P's.
+    // 12 MHz: the WCH CH340 datasheet asks for a 12 MHz crystal between XI and XO.
+    "crystal_usb": {
+      "type": "crystal-hc49us",
+      "not_simulated": "The engine's chips take their clock as a value.",
+    },
+    // R12 is across X2. The schematic prints no value. 1M is the role value mischianti prints across its 16 MHz crystal.
+    "r_x2": { "type": "resistor-0603", "resistance": "1M", "not_simulated": "It sits across the CH340G's crystal, which is not simulated." },
+    "c_xi": {
+      "type": "capacitor-0603",
+      "capacitance": { "value": 2.2e-11, "unit": "F", "source": { "datasheet": { "doc": "WCH CH340 datasheet", "at": "Application, C6 and C7 22pF", "basis": "nominal" } } },
+      "not_simulated": "It loads the CH340G's crystal, which is not simulated.",
+    },
+    "c_xo": {
+      "type": "capacitor-0603",
+      "capacitance": { "value": 2.2e-11, "unit": "F", "source": { "datasheet": { "doc": "WCH CH340 datasheet", "at": "Application, C6 and C7 22pF", "basis": "nominal" } } },
+      "not_simulated": "It loads the CH340G's crystal, which is not simulated.",
+    },
+    "c_v3": {
+      "type": "capacitor-0603",
+      "capacitance": { "value": 1e-08, "unit": "F", "source": { "datasheet": { "doc": "WCH CH340 datasheet", "at": "Pins, V3: 0.01uF decoupling at 5 V", "basis": "nominal" } } },
+      "not_simulated": "A rail capacitor on the CH340G's V3. The engine's board example leaves rail capacitors out.",
+    },
+    "c_usb_serial": {
+      "type": "capacitor-0603",
+      "capacitance": { "value": 1e-07, "unit": "F", "source": { "datasheet": { "doc": "WCH CH340 datasheet", "at": "Pins, VCC: an external 0.1uF", "basis": "nominal" } } },
+      "not_simulated": "A rail capacitor. The engine's board example leaves rail capacitors out.",
+    },
+    "r_txd": { "type": "resistor-0603", "resistance": { "value": 1000, "unit": "ohm", "source": { "datasheet": { "doc": "CH340 clone schematic, mischianti.org", "at": "R8 and R9, 1k, in the serial lines", "basis": "nominal" } } } },
+    "r_rxd": { "type": "resistor-0603", "resistance": "1k", "not_simulated": "Its far end is the CH340G's RXD, which its model does not cover." },
+    "led_tx": { "type": "led-0805", "color": "green", "not_simulated": "It hangs on the CH340G's RXD, which its model does not cover." },
+    "r_tx": { "type": "resistor-0603", "resistance": "1k", "not_simulated": "It feeds the TX LED, which is not simulated." },
+    "led_rx": { "type": "led-0805", "color": "green", "not_simulated": "It follows the CH340G's TXD, and the run does not watch it." },
+    "r_rx": { "type": "resistor-0603", "resistance": "1k", "not_simulated": "It feeds the RX LED, which is not simulated." },
+    "mcu_socket": { "type": "dip-socket-28" },
+    "mcu": { "type": "atmega328p-dip28", "firmware": { "param": "firmware" } }, // U4, the board's firmware reaches the 328P
+    // 16 MHz: the can by the 328P in the clone's top photo is marked 16.000.
+    "crystal": {
+      "type": "crystal-hc49us",
+      "not_simulated": "The engine's chips take their clock as a value.",
+    }, // Y1
+    // The engine's chips take their clock as a value, so the crystal is not simulated. Its load
+    // capacitors are, held at 0 V as the resonator part holds its own, so each clock pin has a DC
+    // path. Neither clone schematic prints their value; 22p is a guess.
+    "c_x1": { "type": "capacitor-0603", "capacitance": "22p", "initial": "0" },
+    "c_x2": { "type": "capacitor-0603", "capacitance": "22p", "initial": "0" },
+    // c_aref has no held voltage. A 0 V hold would pull a rail wired to AREF to 0 V at t = 0.
+    "c_aref": { "type": "capacitor-0603", "capacitance": { "value": 1e-07, "unit": "F", "source": { "datasheet": { "doc": "CH340 clone schematic, mischianti.org", "at": "C16, 100n on AREF", "basis": "nominal" } } } },
+    "c_vcc": { "type": "capacitor-0603", "capacitance": "100n", "not_simulated": "A rail capacitor. The engine's board example leaves rail capacitors out." },
+    "sw_reset": { "type": "tactile-switch-ts42" }, // S1
+    "r_reset": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "CH340 clone schematic, mischianti.org", "at": "R13, 10k, RESET to +5V", "basis": "nominal" } } } },
+    "d_reset": { "type": "diode-cd1206" }, // clamps RESET to 5V, beside R13
+    // The DTR capacitor's value is printed on neither clone schematic. 100n is a guess.
+    "c_reset": { "type": "capacitor-0603", "capacitance": "100n" },
+    // R11 ties DTR to ground. The schematic prints no value, so 10k is a placeholder.
+    // It is not simulated: a guessed resistor on the DTR source would be a fiction in the netlist.
+    "r_dtr": { "type": "resistor-0603", "resistance": "10k", "not_simulated": "It ties DTR to ground. The schematic prints no value." },
+    // C14 ties RESET to ground. The schematic prints no value, so 100n is a placeholder.
+    // It is not simulated: a guessed capacitor on RESET would change the reset edge.
+    "c_reset_gnd": { "type": "capacitor-0603", "capacitance": "100n", "not_simulated": "It ties RESET to ground. The schematic prints no value." },
+    "led_l": { "type": "led-0805", "color": "yellow" },
+    "r_l": { "type": "resistor-0603", "resistance": { "value": 1000, "unit": "ohm", "source": { "datasheet": { "doc": "CH340 clone schematic, mischianti.org", "at": "R16, 1k, to the L LED", "basis": "nominal" } } } },
+    "led_on": { "type": "led-0805", "color": "green" },
+    "r_on": { "type": "resistor-0603", "resistance": { "value": 1000, "unit": "ohm", "source": { "datasheet": { "doc": "CH340 clone schematic, mischianti.org", "at": "R17, 1k, to the ON LED", "basis": "nominal" } } } },
+    "icsp": { "type": "pin-header-2x3" }, // J2
+    "iol": { "type": "socket-strip-1x8" }, // D0 to D7
+    "ioh": { "type": "socket-strip-1x10" }, // D8 to D13, GND, AREF, SDA, SCL
+    "power": { "type": "socket-strip-1x8" }, // NC, IOREF, RESET, 3V3, 5V, GND, GND, VIN
+    "ad": { "type": "socket-strip-1x6" }, // A0 to A5
+  },
+  // Every wire but the socket's contacts is copper on the board, so each is a trace, which the viewer does not draw.
+  "wires": [
+    // USB 5 V through F1 and Q1 onto the 5V rail
+    ["usb.VBUS", "usb_fuse.1", { "kind": "trace" }],
+    ["usb_fuse.2", "usb_switch.S", { "kind": "trace" }],
+    ["usb_switch.D", "mcu.VCC", { "kind": "trace" }],
+    ["usb_switch.D", "mcu.AVCC", { "kind": "trace" }],
+    ["usb_switch.D", "usb_serial.VCC", { "kind": "trace" }],
+    ["usb_switch.D", "regulator.OUT", { "kind": "trace" }],
+    ["usb_switch.D", "reg_3v3.IN", { "kind": "trace" }],
+    ["usb_switch.D", "reg_3v3.ON_OFF", { "kind": "trace" }],
+    ["usb_switch.D", "r_gate.b", { "kind": "trace" }],
+    ["usb_switch.D", "r_reset.b", { "kind": "trace" }],
+    ["usb_switch.D", "d_reset.cathode", { "kind": "trace" }],
+    ["usb_switch.D", "r_on.a", { "kind": "trace" }],
+    ["usb_switch.D", "r_tx.a", { "kind": "trace" }],
+    ["usb_switch.D", "r_rx.a", { "kind": "trace" }],
+    ["usb_switch.D", "c_5v.pos", { "kind": "trace" }],
+    ["usb_switch.D", "c_reg.b", { "kind": "trace" }],
+    ["usb_switch.D", "c_vcc.b", { "kind": "trace" }],
+    ["usb_switch.D", "c_usb_serial.b", { "kind": "trace" }],
+    ["usb_switch.D", "icsp.2", { "kind": "trace" }],
+    ["usb_switch.D", "power.2", { "kind": "trace" }],
+    ["usb_switch.D", "power.5", { "kind": "trace" }],
+    ["usb_switch.G", "r_gate.a", { "kind": "trace" }],
+    ["usb_switch.G", "r_vin.b", { "kind": "trace" }],
+    // GND
+    ["usb.GND", "mcu.GND", { "kind": "trace" }],
+    ["usb.GND", "usb_serial.GND", { "kind": "trace" }],
+    ["usb.GND", "regulator.GND", { "kind": "trace" }],
+    ["usb.GND", "reg_3v3.GND", { "kind": "trace" }],
+    ["usb.GND", "jack.sleeve", { "kind": "trace" }],
+    ["usb.GND", "jack.switch", { "kind": "trace" }],
+    ["usb.GND", "c_vin.neg", { "kind": "trace" }],
+    ["usb.GND", "c_5v.neg", { "kind": "trace" }],
+    ["usb.GND", "c_reg.a", { "kind": "trace" }],
+    ["usb.GND", "c_3v3.a", { "kind": "trace" }],
+    ["usb.GND", "c_vcc.a", { "kind": "trace" }],
+    ["usb.GND", "c_usb_serial.a", { "kind": "trace" }],
+    ["usb.GND", "c_v3.a", { "kind": "trace" }],
+    ["usb.GND", "c_xi.b", { "kind": "trace" }],
+    ["usb.GND", "c_xo.b", { "kind": "trace" }],
+    ["usb.GND", "c_x1.b", { "kind": "trace" }],
+    ["usb.GND", "c_x2.b", { "kind": "trace" }],
+    ["usb.GND", "c_aref.a", { "kind": "trace" }],
+    ["usb.GND", "led_l.cathode", { "kind": "trace" }],
+    ["usb.GND", "led_on.cathode", { "kind": "trace" }],
+    ["usb.GND", "sw_reset.a", { "kind": "trace" }],
+    ["usb.GND", "icsp.6", { "kind": "trace" }],
+    ["usb.GND", "ioh.7", { "kind": "trace" }],
+    ["usb.GND", "power.6", { "kind": "trace" }],
+    ["usb.GND", "power.7", { "kind": "trace" }],
+    // VIN from the barrel jack through D1
+    ["jack.center", "d1.anode", { "kind": "trace" }],
+    ["d1.cathode", "regulator.IN", { "kind": "trace" }],
+    ["d1.cathode", "c_vin.pos", { "kind": "trace" }],
+    ["d1.cathode", "power.8", { "kind": "trace" }],
+    // R15 sits on ground, not on VIN. VIN stays unpowered, so the divider holds the gate near 2.5 V.
+    ["usb.GND", "r_vin.a", { "kind": "trace" }],
+    // 3V3
+    ["reg_3v3.OUT", "c_3v3.b", { "kind": "trace" }],
+    ["reg_3v3.OUT", "power.4", { "kind": "trace" }],
+    // RESET, with the auto-reset from DTR
+    ["mcu.PC6", "r_reset.a", { "kind": "trace" }],
+    ["mcu.PC6", "d_reset.anode", { "kind": "trace" }],
+    ["mcu.PC6", "sw_reset.b", { "kind": "trace" }],
+    ["mcu.PC6", "c_reset.b", { "kind": "trace" }],
+    ["mcu.PC6", "icsp.5", { "kind": "trace" }],
+    ["mcu.PC6", "power.3", { "kind": "trace" }],
+    ["usb_serial.DTR", "c_reset.a", { "kind": "trace" }],
+    ["usb_serial.DTR", "r_dtr.a", { "kind": "trace" }],
+    ["r_dtr.b", "usb.GND", { "kind": "trace" }],
+    ["mcu.PC6", "c_reset_gnd.a", { "kind": "trace" }],
+    ["c_reset_gnd.b", "usb.GND", { "kind": "trace" }],
+    // Serial between the CH340G and D0, D1, with the TX and RX LEDs on the CH340G's side
+    ["usb_serial.TXD", "r_txd.a", { "kind": "trace" }],
+    ["usb_serial.TXD", "led_rx.cathode", { "kind": "trace" }],
+    ["r_rx.b", "led_rx.anode", { "kind": "trace" }],
+    ["mcu.PD1", "r_rxd.a", { "kind": "trace" }],
+    ["r_rxd.b", "usb_serial.RXD", { "kind": "trace" }],
+    ["usb_serial.RXD", "led_tx.cathode", { "kind": "trace" }],
+    ["r_tx.b", "led_tx.anode", { "kind": "trace" }],
+    // The CH340G's clock and decoupling, and USB data
+    ["usb_serial.XI", "crystal_usb.1", { "kind": "trace" }],
+    ["usb_serial.XI", "c_xi.a", { "kind": "trace" }],
+    ["usb_serial.XI", "r_x2.a", { "kind": "trace" }],
+    ["usb_serial.XO", "crystal_usb.2", { "kind": "trace" }],
+    ["usb_serial.XO", "c_xo.a", { "kind": "trace" }],
+    ["usb_serial.XO", "r_x2.b", { "kind": "trace" }],
+    ["usb_serial.V3", "c_v3.b", { "kind": "trace" }],
+    ["usb.DM", "r_dm.a", { "kind": "trace" }],
+    ["r_dm.b", "usb_serial.UDM", { "kind": "trace" }],
+    ["usb.DP", "r_dp.a", { "kind": "trace" }],
+    ["r_dp.b", "usb_serial.UDP", { "kind": "trace" }],
+    // The 328P's clock and AREF
+    ["mcu.PB6", "crystal.1", { "kind": "trace" }],
+    ["mcu.PB6", "c_x1.a", { "kind": "trace" }],
+    ["mcu.PB7", "crystal.2", { "kind": "trace" }],
+    ["mcu.PB7", "c_x2.a", { "kind": "trace" }],
+    ["mcu.AREF", "c_aref.b", { "kind": "trace" }],
+    ["mcu.AREF", "ioh.8", { "kind": "trace" }],
+    // D13 and the L LED, and the ON LED
+    ["mcu.PB5", "r_l.a", { "kind": "trace" }],
+    ["r_l.b", "led_l.anode", { "kind": "trace" }],
+    ["r_on.b", "led_on.anode", { "kind": "trace" }],
+    // Header pins to the chip
+    ["mcu.PD0", "r_txd.b", { "kind": "trace" }],
+    ["mcu.PD0", "iol.1", { "kind": "trace" }],
+    ["mcu.PD1", "iol.2", { "kind": "trace" }],
+    ["mcu.PD2", "iol.3", { "kind": "trace" }],
+    ["mcu.PD3", "iol.4", { "kind": "trace" }],
+    ["mcu.PD4", "iol.5", { "kind": "trace" }],
+    ["mcu.PD5", "iol.6", { "kind": "trace" }],
+    ["mcu.PD6", "iol.7", { "kind": "trace" }],
+    ["mcu.PD7", "iol.8", { "kind": "trace" }],
+    ["mcu.PB0", "ioh.1", { "kind": "trace" }],
+    ["mcu.PB1", "ioh.2", { "kind": "trace" }],
+    ["mcu.PB2", "ioh.3", { "kind": "trace" }],
+    ["mcu.PB3", "ioh.4", { "kind": "trace" }],
+    ["mcu.PB3", "icsp.4", { "kind": "trace" }],
+    ["mcu.PB4", "ioh.5", { "kind": "trace" }],
+    ["mcu.PB4", "icsp.1", { "kind": "trace" }],
+    ["mcu.PB5", "ioh.6", { "kind": "trace" }],
+    ["mcu.PB5", "icsp.3", { "kind": "trace" }],
+    ["mcu.PC0", "ad.1", { "kind": "trace" }],
+    ["mcu.PC1", "ad.2", { "kind": "trace" }],
+    ["mcu.PC2", "ad.3", { "kind": "trace" }],
+    ["mcu.PC3", "ad.4", { "kind": "trace" }],
+    ["mcu.PC4", "ad.5", { "kind": "trace" }],
+    ["mcu.PC4", "ioh.9", { "kind": "trace" }],
+    ["mcu.PC5", "ad.6", { "kind": "trace" }],
+    ["mcu.PC5", "ioh.10", { "kind": "trace" }],
+    // The 328P sits in its socket.
+    ["mcu_socket.1", "mcu.PC6", { "kind": "contact" }], ["mcu_socket.2", "mcu.PD0", { "kind": "contact" }],
+    ["mcu_socket.3", "mcu.PD1", { "kind": "contact" }], ["mcu_socket.4", "mcu.PD2", { "kind": "contact" }],
+    ["mcu_socket.5", "mcu.PD3", { "kind": "contact" }], ["mcu_socket.6", "mcu.PD4", { "kind": "contact" }],
+    ["mcu_socket.7", "mcu.VCC", { "kind": "contact" }], ["mcu_socket.8", "mcu.GND", { "kind": "contact" }],
+    ["mcu_socket.9", "mcu.PB6", { "kind": "contact" }], ["mcu_socket.10", "mcu.PB7", { "kind": "contact" }],
+    ["mcu_socket.11", "mcu.PD5", { "kind": "contact" }], ["mcu_socket.12", "mcu.PD6", { "kind": "contact" }],
+    ["mcu_socket.13", "mcu.PD7", { "kind": "contact" }], ["mcu_socket.14", "mcu.PB0", { "kind": "contact" }],
+    ["mcu_socket.15", "mcu.PB1", { "kind": "contact" }], ["mcu_socket.16", "mcu.PB2", { "kind": "contact" }],
+    ["mcu_socket.17", "mcu.PB3", { "kind": "contact" }], ["mcu_socket.18", "mcu.PB4", { "kind": "contact" }],
+    ["mcu_socket.19", "mcu.PB5", { "kind": "contact" }], ["mcu_socket.20", "mcu.AVCC", { "kind": "contact" }],
+    ["mcu_socket.21", "mcu.AREF", { "kind": "contact" }], ["mcu_socket.22", "mcu.GND", { "kind": "contact" }],
+    ["mcu_socket.23", "mcu.PC0", { "kind": "contact" }], ["mcu_socket.24", "mcu.PC1", { "kind": "contact" }],
+    ["mcu_socket.25", "mcu.PC2", { "kind": "contact" }], ["mcu_socket.26", "mcu.PC3", { "kind": "contact" }],
+    ["mcu_socket.27", "mcu.PC4", { "kind": "contact" }], ["mcu_socket.28", "mcu.PC5", { "kind": "contact" }],
+  ],
+  // Measured off the clone's top photo, in mm from the board's center. The headers and the ICSP header
+  // are RobotDyn's dimension diagram, as model.py says. R9, R10, R11, R12 and C14 sit in the
+  // neighborhood the photo shows for that role. The sheet prints no position for them.
+  "layout": {
+    "usb": { "at": [-32.77, 11.43, 1.6] },
+    "jack": { "at": [-30.74, -18.77, 1.6] },
+    "usb_fuse": { "at": [-31.29, 0.53, 1.6] },
+    "usb_switch": { "at": [-31.69, -2.57, 1.6], "rotate": [0, 0, 90] },
+    "r_gate": { "at": [-28.59, -3.17, 1.6], "rotate": [0, 0, 90] },
+    "r_vin": { "at": [-26.09, -3.17, 1.6], "rotate": [0, 0, 90] },
+    "regulator": { "at": [-30.69, -9.67, 1.6] },
+    "c_reg": { "at": [-24.79, -9.67, 1.6], "rotate": [0, 0, 90] },
+    "reg_3v3": { "at": [-21.09, -9.87, 1.6] },
+    "c_3v3": { "at": [-17.49, -9.87, 1.6], "rotate": [0, 0, 90] },
+    "c_vin": { "at": [-19.89, -17.57, 1.6] },
+    "c_5v": { "at": [-12.49, -17.57, 1.6] },
+    "d1": { "at": [-13.49, -24.02, 1.6] },
+    "usb_serial": { "at": [-18.49, 4.13, 1.6] },
+    "r_dm": { "at": [-26.6, 4.6, 1.6] },
+    "r_dp": { "at": [-24.7, 4.6, 1.6] },
+    "crystal_usb": { "at": [-18.19, 11.43, 1.6] },
+    "r_x2": { "at": [-18.19, 8.15, 1.6] },
+    "c_xi": { "at": [-22.89, 15.53, 1.6] },
+    "c_xo": { "at": [-17.79, 15.53, 1.6] },
+    "c_aref": { "at": [-13.69, 15.53, 1.6] },
+    "c_v3": { "at": [-27.69, 2.93, 1.6] },
+    "c_usb_serial": { "at": [-11.99, 3.63, 1.6], "rotate": [0, 0, 90] },
+    "c_vcc": { "at": [-13.49, -5.67, 1.6] },
+    "led_on": { "at": [-8.89, 15.53, 1.6] },
+    "r_on": { "at": [-8.89, 13.63, 1.6] },
+    "r_rx": { "at": [-8.89, 11.43, 1.6] },
+    "led_rx": { "at": [-8.89, 9.13, 1.6] },
+    "r_rxd": { "at": [-8.89, 7.13, 1.6] },
+    "r_tx": { "at": [-8.89, 5.23, 1.6] },
+    "led_tx": { "at": [-8.89, 2.73, 1.6] },
+    "r_txd": { "at": [-8.89, 0.73, 1.6] },
+    "c_reset": { "at": [-8.89, -1.37, 1.6] },
+    "r_dtr": { "at": [-11.3, -1.37, 1.6], "rotate": [0, 0, 90] },
+    "c_reset_gnd": { "at": [-22.8, 21.0, 1.6] },
+    "led_l": { "at": [-8.89, -3.47, 1.6] },
+    "r_l": { "at": [-8.89, -5.67, 1.6] },
+    "mcu_socket": { "at": [11.71, -10.17, 1.6], "rotate": [0, 0, 180] },
+    "mcu": { "at": [11.71, -10.17, 5.9], "rotate": [0, 0, 180] },
+    "crystal": { "at": [18.41, 2.83, 1.6], "rotate": [0, 0, 90] },
+    "c_x1": { "at": [22.21, 7.93, 1.6], "rotate": [0, 0, 90] },
+    "c_x2": { "at": [22.21, -0.87, 1.6], "rotate": [0, 0, 90] },
+    "r_reset": { "at": [24.31, 2.83, 1.6], "rotate": [0, 0, 90] },
+    "d_reset": { "at": [26.41, 2.83, 1.6], "rotate": [0, 0, 90] },
+    "sw_reset": { "at": [-29.49, 23.13, 1.6] },
+    "icsp": { "at": [31.07, 1.13, 1.6] },
+    "ioh": { "at": [-4.1, 24.13, 1.6], "rotate": [0, 0, 180] },
+    "iol": { "at": [20.32, 24.13, 1.6], "rotate": [0, 0, 180] },
+    "power": { "at": [2.55, -24.13, 1.6] },
+    "ad": { "at": [22.87, -24.13, 1.6] },
+  },
+  "pins": {
+    "D0": "iol.1", "D1": "iol.2", "D2": "iol.3", "D3": "iol.4", "D4": "iol.5", "D5": "iol.6", "D6": "iol.7", "D7": "iol.8",
+    "D8": "ioh.1", "D9": "ioh.2", "D10": "ioh.3", "D11": "ioh.4", "D12": "ioh.5", "D13": "ioh.6",
+    "GND": ["ioh.7", "power.6", "power.7"], "AREF": "ioh.8", "SDA": "ioh.9", "SCL": "ioh.10",
+    "IOREF": "power.2", "RESET": "power.3", "3V3": "power.4", "5V": "power.5", "VIN": "power.8",
+    "A0": "ad.1", "A1": "ad.2", "A2": "ad.3", "A3": "ad.4", "A4": "ad.5", "A5": "ad.6",
+  },
+  // Nothing on the board drives AREF. A scene that leaves the pin open is the board as designed.
+  "open": ["AREF"],
+  "not_simulated": [{ "what": "VIN", "pins": ["VIN"], "why": "The barrel jack feeds it. The board runs from USB." }],
+}

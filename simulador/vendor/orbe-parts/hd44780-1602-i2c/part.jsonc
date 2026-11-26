@@ -1,0 +1,132 @@
+// A 16x2 character LCD panel (1602A class) driven by an HD44780U controller behind a PCF8574 I2C
+// backpack. The model runs the PCF8574 8-bit port (P0 RS, P1 RW, P2 E, P3 backlight, P4..P7 D4..D7)
+// driving the HD44780U in 4-bit mode per Hitachi ADE-207-272.
+{
+  "format": 6,
+  "part": "hd44780-1602-i2c",
+  "version": "0.1.1",
+  "title": "Character LCD panel, 16 x 2, HD44780 + PCF8574 I2C",
+  "summary": "Blue 16 x 2 character LCD with an HD44780U controller and a PCF8574 I2C interface at address 0x27: the panel inside the lcd1602-i2c module.",
+  "tags": ["lcd", "1602", "16x2", "hd44780", "pcf8574", "display", "screen", "i2c"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Hitachi HD44780U (ADE-207-272)": "https://www.sparkfun.com/datasheets/LCD/HD44780.pdf",
+    "NXP PCF8574": "https://www.nxp.com/docs/en/data-sheet/PCF8574_PCF8574A.pdf",
+    "NXP UM10204 Rev. 7.0": "https://www.nxp.com/docs/en/user-guide/UM10204.pdf",
+  },
+  "real": {
+    "generic": true,
+    "maker": "Hitachi",
+    "number": "HD44780U",
+    "datasheet": "Hitachi HD44780U (ADE-207-272)",
+  },
+  "pins": {
+    "GND": [1],
+    "VCC": [2],
+    "SDA": [3],
+    "SCL": [4],
+    "V0": [5],
+  },
+  "params": {
+    "address": {
+      "default": "0x27",
+      "choices": {
+        "0x20": { "sets": { "/address": 32 } },
+        "0x21": { "sets": { "/address": 33 } },
+        "0x22": { "sets": { "/address": 34 } },
+        "0x23": { "sets": { "/address": 35 } },
+        "0x24": { "sets": { "/address": 36 } },
+        "0x25": { "sets": { "/address": 37 } },
+        "0x26": { "sets": { "/address": 38 } },
+        "0x27": { "sets": { "/address": 39 } },
+      },
+    },
+    "backlight_jumper": {
+      "default": "on",
+      "choices": {
+        "on": { "sets": { "/backlight_jumper": true } },
+        "off": { "sets": { "/backlight_jumper": false } },
+      },
+    },
+  },
+  "model": {
+    "kind": "hd44780_i2c",
+    "address": 39,
+    "backlight_jumper": true,
+    "low_drop": {
+      "value": 0.0,
+      "unit": "V",
+      "source": { "closed_form": { "note": "an open drain pulls SDA to GND through its resistance alone" } },
+    },
+    "low_resistance": {
+      "value": 133.33333333333334,
+      "unit": "ohm",
+      "source": { "closed_form": { "note": "UM10204 Rev. 7.0 Table 9, VOL1 0.4 V at 3 mA, so 0.4 V / 3 mA" } },
+    },
+    "input_threshold": {
+      "low": {
+        "value": 0.3,
+        "unit": "1",
+        "source": { "datasheet": { "doc": "NXP PCF8574", "at": "Table 6, VIL 0.3 VDD maximum", "basis": "max" } },
+      },
+      "high": {
+        "value": 0.7,
+        "unit": "1",
+        "source": { "datasheet": { "doc": "NXP PCF8574", "at": "Table 6, VIH 0.7 VDD minimum", "basis": "min" } },
+      },
+    },
+    "draw": {
+      "logic_current": {
+        "value": 0.0015,
+        "unit": "A",
+        "source": { "datasheet": { "doc": "Hitachi HD44780U (ADE-207-272)", "at": "DC Characteristics at 5 V, typical module logic draw with PCF8574", "basis": "typical" } },
+      },
+      "backlight_current": {
+        "value": 0.02,
+        "unit": "A",
+        "source": { "closed_form": { "note": "typical 1602A white LED backlight draw at 5 V through the 100 ohm board resistor" } },
+      },
+      "holds_above": {
+        "value": 2.7,
+        "unit": "V",
+        "source": { "datasheet": { "doc": "Hitachi HD44780U (ADE-207-272)", "at": "DC Characteristics, operating voltage VDD 2.7 V minimum", "basis": "min" } },
+      },
+    },
+    "ratings": {
+      "rail_margin": {
+        "value": 0.5,
+        "unit": "V",
+        "source": { "datasheet": { "doc": "NXP PCF8574", "at": "Rev. 5, Table 7 Limiting values, p. 15: VI input voltage VSS - 0.5 V to VDD + 0.5 V, and VDD min -0.5 V", "basis": "absolute_max" } },
+      },
+      "supply_voltage": {
+        "value": 7.0,
+        "unit": "V",
+        "source": { "datasheet": { "doc": "NXP PCF8574", "at": "Rev. 5, Table 7 Limiting values, p. 15: VDD supply voltage -0.5 V to +7 V (Hitachi HD44780U ADE-207-272 p. 47 also rates VCC-GND max +7.0 V)", "basis": "absolute_max" } },
+      },
+    },
+    "pins": { "VCC": "VCC", "GND": "GND", "SCL": "SCL", "SDA": "SDA" },
+  },
+  "readings": {
+    "screen": { "of": "screen" },
+    "text": { "of": "text" },
+    "backlight": { "of": "backlight" },
+  },
+  "view": {
+    "screen": [{ "node": "glass", "by": "screen" }],
+  },
+  "not_simulated": [
+    {
+      "what": "contrast voltage",
+      "pins": ["V0"],
+      "why": "V0 sets LCD viewing contrast on the real glass. The module's contrast trimmer loads VCC and GND and turns in 3D, while the simulated glass draws at fixed readable contrast.",
+    },
+    {
+      "what": "blue transmissive visibility",
+      "why": "On a blue negative transmissive 1602 LCD, characters are only visible when both the display and the backlight are on. `text` returns two 16-space blank lines when either is off.",
+    },
+    {
+      "what": "8-bit bus use and 5x10 font",
+      "why": "Only D4 to D7 are wired on a PCF8574 backpack. Any non-Function-Set operation in 8-bit mode warns `chip.protocol` rule `bus_width` and is dropped. Requesting the 5x10 font (`F = 1`) warns rule `font` and keeps the 5x8 font.",
+    },
+  ],
+}

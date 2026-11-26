@@ -1,0 +1,31 @@
+// Torex XC6206P332MR, the 3.3 V regulator marked 662K on the common SSD1306 OLED modules.
+// Values are from Torex ETR0305_004b: the p5 Electrical Characteristics Chart row for 3.3 V,
+// the p4 table, and the p3 absolute maximum ratings.
+{
+  "format": 5, "part": "xc6206-sot23", "version": "0.1.1", "title": "XC6206 3.3 V regulator, SOT-23", "license": "MIT OR Apache-2.0",
+  "summary": "Torex XC6206P332MR, a fixed 3.3 V low-dropout regulator in SOT-23 for loads up to 200 mA from up to 6 V in.",
+  "tags": ["regulator", "ldo", "sot-23", "power", "662k"],
+  "docs": { "Torex XC6206 ETR0305_004b": "https://media.githubusercontent.com/media/eiten/EWS/main/doc/datasheets/XC6206P332MR-G.pdf" },
+  "real": { "maker": "Torex", "number": "XC6206P332MR", "datasheet": "Torex XC6206 ETR0305_004b" },
+  "pins": { "VSS": [1], "VOUT": [2], "VIN": [3] },
+  "model": {
+    "kind": "linear_regulator",
+    "output_voltage": { "value": 3.3, "unit": "V", "source": { "datasheet": { "doc": "Torex XC6206 ETR0305_004b", "at": "p5 Electrical Characteristics Chart, 3.3 V row, VOUT(E) 3.234 V to 3.366 V around 3.3 V", "basis": "nominal" } } },
+    "line_regulation": { "value": 0.00165, "unit": "1", "source": { "closed_form": { "note": "p4 line regulation 0.05 %/V typical, times 3.3 V" } } },
+    "output_resistance": { "value": 0.6060606060606061, "unit": "ohm", "source": { "closed_form": { "note": "p5 3.3 V row, load regulation 60 mV maximum from 1 mA to 100 mA, so 0.06 V / 0.099 A. The sheet gives no typical" } } },
+    "dropout_voltage": { "value": 0.001, "unit": "V", "source": { "closed_form": { "note": "the line through the p5 3.3 V row's typical dropouts, 75 mV at 30 mA and 250 mV at 100 mA, meets 0 V at 0 A. 1 mV keeps the field above 0" } } },
+    "dropout_resistance": { "value": 2.5, "unit": "ohm", "source": { "closed_form": { "note": "the slope of the line through the p5 3.3 V row's typical dropouts, (0.250 V - 0.075 V) / (0.100 A - 0.030 A)" } } },
+    "current_limit": { "value": 0.2, "unit": "A", "source": { "datasheet": { "doc": "Torex XC6206 ETR0305_004b", "at": "p5 3.3 V row, maximum output current 200 mA. The sheet gives no limit above it", "basis": "min" } } },
+    "quiescent_current": { "value": 1e-06, "unit": "A", "source": { "datasheet": { "doc": "Torex XC6206 ETR0305_004b", "at": "p4, supply current typical 1.0 uA", "basis": "typical" } } },
+    "ground_current_ratio": { "value": 0, "unit": "1", "source": { "closed_form": { "note": "the sheet gives the supply current only with no load" } } },
+    "ratings": {
+      "current": { "value": 0.2, "unit": "A", "basis": "peak", "source": { "datasheet": { "doc": "Torex XC6206 ETR0305_004b", "at": "p5 3.3 V row, maximum output current 200 mA", "basis": "min" } } },
+      "power": { "value": 0.25, "unit": "W", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "Torex XC6206 ETR0305_004b", "at": "p3 absolute maximum ratings, power dissipation 250 mW in SOT-23", "basis": "absolute_max" } } },
+      "input_voltage": { "value": 7, "unit": "V", "source": { "datasheet": { "doc": "Torex XC6206 ETR0305_004b", "at": "p3 absolute maximum ratings, VIN 7.0 V. p4 gives an operating range of 1.8 V to 6.0 V", "basis": "absolute_max" } } },
+    },
+    "pins": { "in": "VIN", "out": "VOUT", "gnd": "VSS" },
+  },
+  "not_simulated": [
+    { "what": "foldback", "why": "p5 gives a short-circuit current of 100 mA typical: past its limit the output current folds back. The engine's current limit is flat at 200 mA." },
+  ],
+}

@@ -1,0 +1,123 @@
+// Bosch BMP280, BST-BMP280-DS001-26. The LGA-8 pin order is the sheet's Table 29.
+// Package outline from Figure 18 (section 7.1): 2.50 x 2.00 x 0.95 mm metal-lid LGA,
+// 0.13 mm substrate, 2.25 x 1.75 mm lid brim, 1.55 x 1.05 mm lid top, 0.30 mm vent hole
+// 0.825 mm from the -X and +Y edges, and eight 0.35 x 0.35 mm pads on 0.65 mm pitch and
+// 1.45 mm rows. The engine kind reads the scene's temperature and pressure and answers on I2C.
+{
+  "format": 6,
+  "part": "bmp280",
+  "version": "0.1.1",
+  "title": "BMP280 temperature and pressure sensor",
+  "summary": "Bosch BMP280 barometric pressure and temperature sensor in an 8-pad 2.0 x 2.5 mm LGA. It talks I2C: SDO low is 0x76, SDO high is 0x77.",
+  "tags": ["bmp280", "temperature", "pressure", "sensor", "i2c", "lga"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "BST-BMP280-DS001-26": "https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf"
+  },
+  "real": {
+    "generic": false,
+    "maker": "Bosch Sensortec",
+    "number": "BMP280",
+    "datasheet": "BST-BMP280-DS001-26"
+  },
+  "pins": {
+    "GND": [1, 7],
+    "CSB": [2],
+    "SDI": [3],
+    "SCK": [4],
+    "SDO": [5],
+    "VDDIO": [6],
+    "VDD": [8]
+  },
+  "model": {
+    "kind": "bmp280",
+    "pins": {
+      "VDD": "VDD",
+      "VDDIO": "VDDIO",
+      "GND": "GND",
+      "CSB": "CSB",
+      "SDI": "SDI",
+      "SCK": "SCK",
+      "SDO": "SDO"
+    },
+    "low_resistance": {
+      "value": 108.0,
+      "unit": "ohm",
+      "source": {
+        "closed_form": {
+          "note": "Table 26, Vol_SDI maximum 0.2 * VDDIO at 3 mA with VDDIO 1.62 V. 0.324 V / 3 mA. The sheet gives no typical, so the open drain is that maximum."
+        }
+      }
+    },
+    "input_threshold": {
+      "low": {
+        "value": 0.2,
+        "unit": "1",
+        "source": {
+          "datasheet": {
+            "doc": "BST-BMP280-DS001-26",
+            "at": "Table 26, Vil_si maximum 0.2 * VDDIO, VDDIO from 1.2 V to 3.6 V",
+            "basis": "max"
+          }
+        }
+      },
+      "high": {
+        "value": 0.8,
+        "unit": "1",
+        "source": {
+          "datasheet": {
+            "doc": "BST-BMP280-DS001-26",
+            "at": "Table 26, Vih_si minimum 0.8 * VDDIO, VDDIO from 1.2 V to 3.6 V",
+            "basis": "min"
+          }
+        }
+      }
+    },
+    "ratings": {
+      "supply_voltage": {
+        "value": 4.25,
+        "unit": "V",
+        "source": {
+          "datasheet": {
+            "doc": "BST-BMP280-DS001-26",
+            "at": "Table 3, voltage at any supply pin, VDD and VDDIO, maximum 4.25 V",
+            "basis": "absolute_max"
+          }
+        }
+      },
+      "pin_margin": {
+        "value": 0.3,
+        "unit": "V",
+        "source": {
+          "datasheet": {
+            "doc": "BST-BMP280-DS001-26",
+            "at": "Table 3, voltage at any supply pin and at any interface pin, -0.3 V to VDDIO + 0.3 V",
+            "basis": "absolute_max"
+          }
+        }
+      }
+    }
+  },
+  "not_simulated": [
+    {
+      "what": "SPI",
+      "why": "CSB low selects SPI (section 5.3). The part does not answer on I2C then, and the first time is chip.protocol rule spi. No SPI transfer is modelled. spi3w_en set to 1 is rule spi3w."
+    },
+    {
+      "what": "NVM copy",
+      "why": "im_update is 1 while the trimming words are copied at power-on and before each conversion (section 4.3.3). That copy takes no time here, so the bit stays 0 and the words are readable from t = 0."
+    },
+    {
+      "what": "the supply current's maximum column, and a separate VDDIO current",
+      "why": "VDD draws Table 2's typical: 0.1 µA asleep, 0.2 µA in the standby of normal mode, 325 µA while temperature is measured and 720 µA while pressure is measured. The maximum column is not used, and VDDIO draws none of its own."
+    },
+    {
+      "what": "damage past Table 3",
+      "why": "Above 3.6 V on VDD or VDDIO, or with an interface pin past VDDIO + 0.3 V, the part keeps answering and rating.voltage warns. A real part there may drift or fail. Below 1.71 V on VDD or 1.2 V on VDDIO it is off and draws nothing."
+    },
+    {
+      "what": "accuracy",
+      "why": "A compensated read is the world's value, clamped to -40 to 85 °C and 300 to 1100 hPa, then quantized by the 20-bit sample and the integer formulas. The sheet allows ±1.0 °C from 0 to 65 °C and ±1 hPa absolute."
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "format": 5,
+  "part": "npn-l8050-sot23",
+  "version": "0.2.2",
+  "title": "NPN transistor, L8050 (SOT-23)",
+  "summary": "Leshan L8050QLT1G NPN transistor in SOT-23, marked 1YC, for up to 800 mA.",
+  "tags": ["transistor", "bjt", "npn", "switch", "sot-23"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Leshan Radio L8050QLT1G Rev.D Jun. 2023": "https://www.lrc.cn/Upload/PDF/Product/GPBJ/L8050QLT1G.pdf" },
+  "real": { "maker": "Leshan Radio Company", "number": "L8050QLT1G", "datasheet": "Leshan Radio L8050QLT1G Rev.D Jun. 2023" },
+  "pins": { "base": [1], "emitter": [2], "collector": [3] },
+  "model": {
+    "kind": "npn",
+    "saturation_current": {
+      "value": 9.476e-14,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+          "at": "Page 3, VBE(on) at 25 C, read as 0.593 V at 1 mA, 0.653 V at 10 mA and 0.724 V at 100 mA. Fitted by fit() of packages/engine/scripts/fit_transistor.py with NF = NR = 1, then solved again after RC was held at 0.01 ohm.",
+          "basis": "typical"
+        }
+      }
+    },
+    "forward_beta": {
+      "value": 212.1,
+      "unit": "1",
+      "source": {
+        "closed_form": {
+          "note": "geometric mean of hFE minimum 150 and maximum 300 at IC = 100 mA and VCE = 1 V, Leshan Radio L8050QLT1G Rev.D Jun. 2023, ON CHARACTERISTICS"
+        }
+      }
+    },
+    "reverse_beta": {
+      "value": 27.75,
+      "unit": "1",
+      "source": {
+        "datasheet": {
+          "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+          "at": "Page 4, VCE(sat) at 25 C and IC/IB = 10, read as 0.010 V at 1 mA, 0.019 V at 100 mA and 0.098 V at 0.8 A. Fitted by fit() of packages/engine/scripts/fit_transistor.py with NF = NR = 1, then solved again after RC was held at 0.01 ohm.",
+          "basis": "typical"
+        }
+      }
+    },
+    "forward_emission": { "value": 1.0, "unit": "1", "source": { "closed_form": { "note": "ideal junction" } } },
+    "reverse_emission": { "value": 1.0, "unit": "1", "source": { "closed_form": { "note": "ideal junction" } } },
+    "early_voltage": {
+      "value": 100.0,
+      "unit": "V",
+      "source": { "closed_form": { "note": "the sheet prints no Early voltage or output conductance, so this is 100 V" } }
+    },
+    "base_resistance": {
+      "value": 4.337,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+          "at": "Page 4, VBE(sat) at 25 C and IC/IB = 10, read as 0.798 V at 100 mA and 0.940 V at 0.8 A. Fitted by fit() of packages/engine/scripts/fit_transistor.py with NF = NR = 1, then solved again after RC was held at 0.01 ohm.",
+          "basis": "typical"
+        }
+      }
+    },
+    "collector_resistance": {
+      "value": 0.01,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+          "at": "Page 4, VCE(sat) at 25 C and IC/IB = 10, read as 0.010 V at 1 mA, 0.019 V at 100 mA and 0.098 V at 0.8 A. fit() of packages/engine/scripts/fit_transistor.py with NF = NR = 1 returned RC of about -0.027 ohm, which the engine refuses, so RC is held at 0.01 ohm. With that floor the model is about 4 mV high at 100 mA (0.023 V against the 0.019 V reading).",
+          "basis": "typical"
+        }
+      }
+    },
+    "emitter_resistance": {
+      "value": 0.1068,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+          "at": "Page 3, VBE(on) at 25 C, read as 0.593 V at 1 mA, 0.653 V at 10 mA and 0.724 V at 100 mA. The table typical at VCE = 1 V and IC = 10 mA is 0.66 V. Fitted by fit() of packages/engine/scripts/fit_transistor.py with NF = NR = 1, then solved again after RC was held at 0.01 ohm.",
+          "basis": "typical"
+        }
+      }
+    },
+    "base_emitter_capacitance": {
+      "value": 6.85e-11,
+      "unit": "F",
+      "source": {
+        "datasheet": {
+          "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+          "at": "Page 4, Cibo at f = 1 MHz, read as 68.5 pF at VR = 1 V",
+          "basis": "typical"
+        }
+      }
+    },
+    "base_collector_capacitance": {
+      "value": 1.14e-11,
+      "unit": "F",
+      "source": {
+        "datasheet": {
+          "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+          "at": "Page 4, Cobo at f = 1 MHz, read as 11.4 pF at VR = 1 V",
+          "basis": "typical"
+        }
+      }
+    },
+    "ratings": {
+      "current": {
+        "value": 0.8,
+        "unit": "A",
+        "basis": "peak",
+        "source": {
+          "datasheet": {
+            "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+            "at": "MAXIMUM RATINGS, collector current IC, 800 mA. The sheet does not call it continuous, so it is a peak.",
+            "basis": "absolute_max"
+          }
+        }
+      },
+      "power": {
+        "value": 0.225,
+        "unit": "W",
+        "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } },
+        "source": {
+          "datasheet": {
+            "doc": "Leshan Radio L8050QLT1G Rev.D Jun. 2023",
+            "at": "THERMAL CHARACTERISTICS, total device dissipation 225 mW on an FR-5 board at TA = 25 C, RθJA 556 C/W. The alumina board is 300 mW, and this uses the lower of the two.",
+            "basis": "max"
+          }
+        }
+      }
+    }
+  },
+  "not_simulated": [
+    { "what": "beta roll-off", "why": "Beta does not fall at high or low current. hFE is specified at 100 mA, and the board uses this transistor at well under 1 mA." },
+    { "what": "switching times", "why": "The capacitances are constant and there is no transit time, so a saturated switch has no storage time." },
+    { "what": "breakdown", "why": "The junctions do not break down. VCEO (25 V), VCBO (40 V) and VEBO (5 V) are not checked." },
+    { "what": "temperature", "why": "The fit is the 25 C traces. The sheet also draws 150 C traces, and the engine has no temperature." }
+  ]
+}

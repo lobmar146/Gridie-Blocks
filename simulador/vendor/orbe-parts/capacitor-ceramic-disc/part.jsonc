@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "part": "capacitor-ceramic-disc",
+  "version": "0.2.1",
+  "title": "Capacitor, ceramic disc",
+  "summary": "Small unpolarized ceramic disc capacitor with two leads on 5 mm, for decoupling, filtering and debouncing. Set its capacitance.",
+  "tags": ["capacitor", "ceramic", "passive", "decoupling", "filter", "debounce", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Vishay K-series ceramic disc": null },
+  "real": { "generic": true, "maker": null, "number": null, "datasheet": "Vishay K-series ceramic disc" },
+  "pins": { "a": [1], "b": [2] },
+  "params": {
+    "capacitance": { "unit": "F", "required": true, "example": 1e-7, "min_exclusive": 0, "sets": "/capacitance" },
+    "initial": { "unit": "V", "default": null, "sets": "/initial" },
+  },
+  "model": { "kind": "capacitor" },
+  "not_simulated": [
+    { "what": "voltage rating", "why": "The engine's capacitor has no rating, so a voltage past the disc's rating never warns." },
+    { "what": "DC bias and temperature", "why": "The capacitance is constant. A real X7R or Y5V disc loses capacitance with DC voltage and temperature." },
+    { "what": "tolerance, ESR and leakage", "why": "The capacitor is ideal." },
+  ],
+}

@@ -1,0 +1,12 @@
+{
+  "part": "usb-b-socket",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [6.985, -1.25, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [6.985, 1.25, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "lead-3", "also": [], "at": [4.985, 1.25, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 4, "node": "lead-4", "also": [], "at": [4.985, -1.25, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 5, "node": "lead-5", "also": [], "at": [2.275, 6.0, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 6, "node": "lead-6", "also": [], "at": [2.275, -6.0, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

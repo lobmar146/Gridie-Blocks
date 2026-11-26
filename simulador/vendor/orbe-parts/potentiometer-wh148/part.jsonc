@@ -1,0 +1,24 @@
+{
+  "format": 4,
+  "part": "potentiometer-wh148",
+  "version": "0.2.2",
+  "title": "Potentiometer, 16 mm rotary (WH148)",
+  "summary": "Linear rotary potentiometer with a knob and three pins on 5 mm. Set its resistance, the value printed on the can (B10K is 10k).",
+  "tags": ["potentiometer", "knob", "variable resistor", "voltage divider", "input", "analog", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "WH148 rotary potentiometer": null },
+  "real": { "generic": true, "maker": null, "number": "WH148", "datasheet": "WH148 rotary potentiometer" },
+  "pins": { "a": [1], "wiper": [2], "b": [3] },
+  "params": {
+    "resistance": { "unit": "ohm", "required": true, "example": 10000, "min_exclusive": 0, "sets": "/resistance" },
+    "position": { "unit": "1", "default": 0.5, "min_exclusive": 0, "max_exclusive": 1, "sets": "/position", "live": true },
+  },
+  "model": { "kind": "potentiometer" },
+  "joints": {
+    "knob": { "node": "shaft", "turn": [0, 0, -1], "range": { "value": 300, "unit": "deg" }, "by": "position" },
+  },
+  "not_simulated": [
+    { "what": "power rating", "why": "The engine's potentiometer has no rating, so it never warns." },
+    { "what": "tolerance and end resistance", "why": "The value is exact, and the track reaches its ends." },
+  ],
+}

@@ -1,0 +1,223 @@
+// Songle SRD-05VDC-SL-C, the high-sensitivity (L) form C (C) 5 V coil.
+// The contact follows the coil current. At DC that current is the coil voltage over 70 ohm,
+// so the thresholds are the sheet's must-operate and must-release voltages.
+{
+  "format": 5,
+  "part": "relay-srd-05vdc-sl-c",
+  "version": "0.1.1",
+  "title": "Relay, Songle SRD-05VDC-SL-C",
+  "summary": "Songle SRD-05VDC-SL-C, a 5 V SPDT relay with a 70 ohm coil. Its form C contacts are rated 7 A at 28 V DC.",
+  "tags": ["relay", "songle", "coil", "spdt", "5v"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Songle SRD, coil data chart at 20 C": "https://download.mikroe.com/documents/datasheets/SRD-05VDC-SL-C.pdf"
+  },
+  "real": {
+    "maker": "Songle",
+    "number": "SRD-05VDC-SL-C",
+    "datasheet": "Songle SRD, coil data chart at 20 C"
+  },
+  "pins": {
+    "COM": [1],
+    "coil_a": [2],
+    "NO": [3],
+    "NC": [4],
+    "coil_b": [5]
+  },
+  "model": {
+    "kind": "relay",
+    "pins": {
+      "coil_a": "coil_a",
+      "coil_b": "coil_b",
+      "com": "COM",
+      "no": "NO",
+      "nc": "NC"
+    },
+    "coil_resistance": {
+      "value": 70,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "Songle SRD, coil data chart at 20 C",
+          "at": "6. COIL DATA CHART (AT20 C), SRD high sensitivity, 05 V, coil resistance 70 ohm ±10%",
+          "basis": "nominal"
+        }
+      }
+    },
+    "inductance": {
+      "value": 0.07,
+      "unit": "H",
+      "source": {
+        "closed_form": {
+          "note": "The sheet gives no inductance. 70 mH reaches the must-operate current in 1.4 ms at 5 V, inside the 10 ms operate-time maximum, and falls from the nominal current to the must-release current in 2.3 ms, inside the 5 ms release-time maximum. The armature's travel is not a separate delay."
+        }
+      }
+    },
+    "pull_in_current": {
+      "value": 0.05357142857142857,
+      "unit": "A",
+      "source": {
+        "closed_form": {
+          "note": "Must-operate voltage, 75% of 5 V, over the 70 ohm coil. 6. COIL DATA CHART, pull-in voltage 75% max. The contact follows coil current, and at DC that current is the coil voltage over 70 ohm."
+        }
+      }
+    },
+    "drop_out_current": {
+      "value": 0.007142857142857143,
+      "unit": "A",
+      "source": {
+        "closed_form": {
+          "note": "Must-release voltage, 10% of 5 V, over the 70 ohm coil. 6. COIL DATA CHART, drop-out voltage 10% min."
+        }
+      }
+    },
+    "on_resistance": {
+      "value": 0.1,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "Songle SRD, coil data chart at 20 C",
+          "at": "8. PERFORMANCE, contact resistance 100 mohm max",
+          "basis": "max"
+        }
+      }
+    },
+    "off_resistance": {
+      "value": 1e8,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "Songle SRD, coil data chart at 20 C",
+          "at": "8. PERFORMANCE, insulation resistance 100 Mohm min at 500 V DC",
+          "basis": "min"
+        }
+      }
+    },
+    "ratings": {
+      "current": {
+        "value": 0.08571428571428572,
+        "unit": "A",
+        "basis": {
+          "sustained": {
+            "average": "mean",
+            "tau": {
+              "value": 0.0102,
+              "unit": "s",
+              "source": {
+                "closed_form": {
+                  "note": "The sheet gives no pulse rating for the coil, so this is the 10.2 ms default, five periods of a 490 Hz PWM."
+                }
+              }
+            }
+          }
+        },
+        "source": {
+          "closed_form": {
+            "note": "120% of 5 V, the high-sensitivity max allowable voltage on the coil data chart, over 70 ohm"
+          }
+        }
+      },
+      "power": {
+        "value": 0.5142857142857142,
+        "unit": "W",
+        "basis": {
+          "sustained": {
+            "average": "mean",
+            "tau": {
+              "value": 0.0102,
+              "unit": "s",
+              "source": {
+                "closed_form": {
+                  "note": "The sheet gives no pulse rating for the coil, so this is the 10.2 ms default, five periods of a 490 Hz PWM."
+                }
+              }
+            }
+          }
+        },
+        "source": {
+          "closed_form": {
+            "note": "The same 6 V max allowable coil voltage, squared, over 70 ohm. The chart's 0.36 W is the nominal coil power, 5 V squared over 70 ohm."
+          }
+        }
+      }
+    }
+  },
+  "readings": {
+    "closed": { "of": "contact" }
+  },
+  "facts": {
+    "must_operate": {
+      "value": 3.75,
+      "unit": "V",
+      "source": {
+        "datasheet": {
+          "doc": "Songle SRD, coil data chart at 20 C",
+          "at": "6. COIL DATA CHART, pull-in voltage 75% max of the 5 V nominal",
+          "basis": "max"
+        }
+      }
+    },
+    "must_release": {
+      "value": 0.5,
+      "unit": "V",
+      "source": {
+        "datasheet": {
+          "doc": "Songle SRD, coil data chart at 20 C",
+          "at": "6. COIL DATA CHART, drop-out voltage 10% min of the 5 V nominal",
+          "basis": "min"
+        }
+      }
+    },
+    "operate_time": {
+      "value": 0.01,
+      "unit": "s",
+      "source": {
+        "datasheet": {
+          "doc": "Songle SRD, coil data chart at 20 C",
+          "at": "8. PERFORMANCE, operation time 10 msec max",
+          "basis": "max"
+        }
+      }
+    },
+    "release_time": {
+      "value": 0.005,
+      "unit": "s",
+      "source": {
+        "datasheet": {
+          "doc": "Songle SRD, coil data chart at 20 C",
+          "at": "8. PERFORMANCE, release time 5 msec max",
+          "basis": "max"
+        }
+      }
+    },
+    "contact_current": {
+      "value": 7,
+      "unit": "A",
+      "source": {
+        "datasheet": {
+          "doc": "Songle SRD, coil data chart at 20 C",
+          "at": "7. CONTACT RATING, form C, resistive load 7 A at 28 V DC",
+          "basis": "absolute_max"
+        }
+      }
+    }
+  },
+  "not_simulated": [
+    {
+      "what": "where a real coil pulls in",
+      "why": "The sheet's pull-in is a maximum: the relay must have operated by 75% of nominal, and it may operate sooner. Drop-out is a minimum: it must still be open at 10%, and it may release higher. This model switches at those two bounds."
+    },
+    {
+      "what": "armature travel and bounce",
+      "why": "The contact moves when the coil current crosses a threshold. The sheet's 10 ms and 5 ms include the armature. The 70 mH coil puts both crossings inside those times, and there is no separate travel and no bounce."
+    },
+    {
+      "what": "contact current and voltage",
+      "why": "The engine watches the coil. A contact past 7 A or 28 V DC is not a warning. The contacts still open and close."
+    },
+    {
+      "what": "the ±10% coil resistance and temperature",
+      "why": "Every coil is the 70 ohm nominal at 20 C."
+    }
+  ]
+}

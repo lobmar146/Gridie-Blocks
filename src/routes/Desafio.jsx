@@ -7,6 +7,7 @@ import {
   HomeIcon,
   InfoCircledIcon,
   MinusIcon,
+  PlayIcon,
   PlusIcon,
   UpdateIcon,
   UploadIcon
@@ -31,6 +32,12 @@ import {
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import BlocklyComponent from '../components/BocklyComponent'
+import { TOOLBOXES_CON_SIMULADOR } from '../simulador/escenas'
+import PanelSimulador from '../simulador/PanelSimulador'
+
+// En la app de escritorio hay arduino-cli para subir a una placa real.
+// En el navegador (modalidad a distancia por web) solo está el simulador.
+const hayPlaca = typeof window !== 'undefined' && Boolean(window.electronAPI)
 
 const App = ({ titulo, consigna, toolBox, conexion }) => {
   // ==== Zoom / Pan / Center ====
@@ -194,11 +201,14 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   const [placaSeleccionada, setPlacaSeleccionada] = useState('')
   const [generatedCode, setGeneratedCode] = useState('')
   const [isUploading, setIsUploading] = useState(false)
+  const [mostrarSimulador, setMostrarSimulador] = useState(false)
+  const tieneSimulador = TOOLBOXES_CON_SIMULADOR.includes(Number(toolBox))
 
   const consignaRef = useRef(null) // Referencia al div de la consigna
   const [blocklyHeight, setBlocklyHeight] = useState('82vh') // Altura dinámica de Blockly
 
   const cargarPlacas = async () => {
+    if (!hayPlaca) return
     try {
       const salida = await window.electronAPI.listarPlacas()
       const lineas = salida.trim().split('\n').slice(1) // Saltamos el header
@@ -319,42 +329,57 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
           </div>
           {/* Right section: Board selection and upload */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center">
-              <span className="mr-1.5 text-xs text-gray-300">Placa:</span>
-              <Select
-                value={placaSeleccionada}
-                onValueChange={setPlacaSeleccionada}
-                onOpenChange={open => {
-                  if (open) cargarPlacas()
-                }}
+            {tieneSimulador && (
+              <Button
+                variant="default"
+                size="sm"
+                className="bg-violet-600 text-white hover:bg-violet-700"
+                onClick={() => setMostrarSimulador(visible => !visible)}
               >
-                <SelectTrigger className="h-8 w-[200px] border-gray-700 bg-gray-800 text-sm">
-                  <SelectValue placeholder="Seleccionar placa" />
-                </SelectTrigger>
-                <SelectContent className="border-gray-700 bg-gray-800">
-                  {placas.map((placa, idx) => (
-                    <SelectItem key={idx} value={placa.puerto}>
-                      {placa.nombre} ({placa.puerto})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
+                {mostrarSimulador ? 'Ocultar simulador' : 'Probar en simulador'}
+              </Button>
+            )}
+            {hayPlaca && (
+              <>
+                <div className="flex items-center">
+                  <span className="mr-1.5 text-xs text-gray-300">Placa:</span>
+                  <Select
+                    value={placaSeleccionada}
+                    onValueChange={setPlacaSeleccionada}
+                    onOpenChange={open => {
+                      if (open) cargarPlacas()
+                    }}
+                  >
+                    <SelectTrigger className="h-8 w-[200px] border-gray-700 bg-gray-800 text-sm">
+                      <SelectValue placeholder="Seleccionar placa" />
+                    </SelectTrigger>
+                    <SelectContent className="border-gray-700 bg-gray-800">
+                      {placas.map((placa, idx) => (
+                        <SelectItem key={idx} value={placa.puerto}>
+                          {placa.nombre} ({placa.puerto})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <Button
-              variant="default"
-              size="sm"
-              className={`min-w-[125.3px] justify-start bg-green-600 text-white hover:bg-green-700 ${isUploading ? 'opacity-70' : ''}`}
-              onClick={subirCodigo}
-              disabled={isUploading}
-            >
-              {isUploading ? (
-                <Spinner className="mr-1.5" />
-              ) : (
-                <UploadIcon className="mr-1.5 h-3.5 w-3.5" />
-              )}
-              {isUploading ? 'Subiendo...' : 'Subir Código'}
-            </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className={`min-w-[125.3px] justify-start bg-green-600 text-white hover:bg-green-700 ${isUploading ? 'opacity-70' : ''}`}
+                  onClick={subirCodigo}
+                  disabled={isUploading}
+                >
+                  {isUploading ? (
+                    <Spinner className="mr-1.5" />
+                  ) : (
+                    <UploadIcon className="mr-1.5 h-3.5 w-3.5" />
+                  )}
+                  {isUploading ? 'Subiendo...' : 'Subir Código'}
+                </Button>
+              </>
+            )}
           </div>
         </header>
       </div>
@@ -482,11 +507,22 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
         </ReactMarkdown>
       </div>
 
-      <BlocklyComponent
-        toolBoxDesafio={toolBox}
-        altura={blocklyHeight}
-        onCodeChange={handleCodeChange}
-      />
+      <div className="flex" style={{ height: blocklyHeight }}>
+        <div className="min-w-0 flex-1">
+          <BlocklyComponent
+            toolBoxDesafio={toolBox}
+            altura="100%"
+            onCodeChange={handleCodeChange}
+          />
+        </div>
+        {mostrarSimulador && (
+          <PanelSimulador
+            toolBox={toolBox}
+            codigo={generatedCode}
+            onCerrar={() => setMostrarSimulador(false)}
+          />
+        )}
+      </div>
     </>
   )
 }

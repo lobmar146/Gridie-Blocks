@@ -1,0 +1,48 @@
+// The two sources stand in for the USB-serial firmware a board runs on this chip. Their values
+// are the engine's U3 stand-ins, from packages/engine/tests/circuits/atmega-board-button/netlist.json, parts
+// `usb_tx` and `usb_dtr`.
+{
+  "format": 1, "part": "atmega16u2-qfn32", "version": "0.2.0", "listed": false, "title": "ATmega16U2 USB controller, QFN-32", "license": "MIT OR Apache-2.0",
+  "summary": "ATmega16U2-MU USB controller in a 5 x 5 mm QFN-32. The dot marks lead 1. The exposed pad is lead 33.",
+  "tags": ["microcontroller", "avr", "usb", "qfn"],
+  "docs": {
+    "Atmel 7799D": null,
+    "Microchip 7799E, ATmega8U2/16U2/32U2": "https://ww1.microchip.com/downloads/en/DeviceDoc/doc7799.pdf",
+  },
+  "real": { "maker": "Microchip", "number": "ATmega16U2-MU", "datasheet": "Atmel 7799D" },
+  "pins": {
+    "XTAL1": [1], "XTAL2": [2], "GND": [3, 33], "VCC": [4], "PC2": [5], "PD0": [6], "PD1": [7], "PD2": [8],
+    "PD3": [9], "PD4": [10], "PD5": [11], "PD6": [12], "PD7": [13], "PB0": [14], "PB1": [15], "PB2": [16],
+    "PB3": [17], "PB4": [18], "PB5": [19], "PB6": [20], "PB7": [21], "PC7": [22], "PC6": [23], "RESET": [24],
+    "PC5": [25], "PC4": [26], "UCAP": [27], "UGND": [28], "DP": [29], "DM": [30], "UVCC": [31], "AVCC": [32],
+  },
+  "model": {
+    "host_tx": {
+      "kind": "voltage_source",
+      "voltage": {
+        "kind": "serial",
+        "mark": { "value": 5.0, "unit": "V", "source": { "closed_form": { "note": "On a 5.0 V supply the chip's high is that rail. Figure 27-13 starts at VCC at 0 mA. Space is the ground rail." } } },
+        "space": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "On a 5.0 V supply the chip's high is that rail. Figure 27-13 starts at VCC at 0 mA. Space is the ground rail." } } },
+        "events": [],
+      },
+      "pins": { "p": "PD3", "n": "GND" },
+    },
+    "host_dtr": {
+      "kind": "voltage_source",
+      "voltage": {
+        "kind": "steps",
+        "initial": { "value": 5.0, "unit": "V", "source": { "closed_form": { "note": "PD7 high is the 5.0 V rail. Figure 27-13 starts at VCC at 0 mA." } } },
+        "events": [],
+      },
+      "pins": { "p": "PD7", "n": "GND" },
+    },
+  },
+  "not_simulated": [{
+    "what": "USB to serial",
+    "pins": [
+      "XTAL1", "XTAL2", "VCC", "PC2", "PD0", "PD1", "PD2", "PD4", "PD5", "PD6", "PB0", "PB1", "PB2", "PB3", "PB4", "PB5",
+      "PB6", "PB7", "PC7", "PC6", "RESET", "PC5", "PC4", "UCAP", "UGND", "DP", "DM", "UVCC", "AVCC",
+    ],
+    "why": "The engine has no ATmega16U2. A serial source stands in for TXD1 on PD3 and a steps source for DTR on PD7.",
+  }],
+}

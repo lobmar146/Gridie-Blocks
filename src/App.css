@@ -35,7 +35,7 @@ h1 {
 /* ESTILOS DEL WORKSPACE */
 .blockly-container {
   display: flex;
-  width: 100vw; /* Ajustar anchura total del contenedor */
+  width: 100%; /* Ajustar anchura total del contenedor (se achica si se abre el simulador) */
   position: relative;
   padding-inline: 8px;
   gap: 20px;

@@ -1,0 +1,36 @@
+{
+  "format": 5,
+  "part": "zener-1n4733a",
+  "version": "0.1.2",
+  "title": "Zener diode, 1N4733A, 5.1 V",
+  "summary": "5.1 V, 1 W zener diode in DO-41, with its leads bent to 10.16 mm (0.4 inch) for a breadboard. The band marks the cathode.",
+  "tags": ["diode", "zener", "5.1v", "clamp", "shunt", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Vishay 1N4728A to 1N4761A, Document Number 85816, Rev. 2.7": "https://www.vishay.com/docs/85816/1n4728a.pdf",
+    "onsemi 1N4728A to 1N4758A, 1N4736AT/D, August 2021, Rev. 10": "https://www.onsemi.com/download/data-sheet/pdf/1n4736at-d.pdf",
+    "EIC 1N4727A to 1N4761A": null,
+  },
+  "real": { "maker": "Vishay", "number": "1N4733A", "datasheet": "Vishay 1N4728A to 1N4761A, Document Number 85816, Rev. 2.7" },
+  "pins": { "anode": [1], "cathode": [2] },
+  "model": {
+    "kind": "zener",
+    "saturation_current": { "value": 2.908000103814407e-13, "unit": "A", "source": { "datasheet": { "doc": "Vishay 1N4728A to 1N4761A, Document Number 85816, Rev. 2.7", "at": "p3 Fig. 2, Typical Instantaneous Forward Characteristics, Tj = 25 C; fit through (0.622 V, 0.1 mA), (0.695 V, 1 mA), (0.876 V, 100 mA) by packages/engine/scripts/fit_zener.py", "basis": "typical" } } },
+    "emission_coefficient": { "value": 1.2314970051462708, "unit": "1", "source": { "datasheet": { "doc": "Vishay 1N4728A to 1N4761A, Document Number 85816, Rev. 2.7", "at": "p3 Fig. 2, Typical Instantaneous Forward Characteristics, Tj = 25 C; fit through (0.622 V, 0.1 mA), (0.695 V, 1 mA), (0.876 V, 100 mA) by packages/engine/scripts/fit_zener.py", "basis": "typical" } } },
+    "series_resistance": { "value": 0.3512998076842114, "unit": "ohm", "source": { "datasheet": { "doc": "Vishay 1N4728A to 1N4761A, Document Number 85816, Rev. 2.7", "at": "p3 Fig. 2, Typical Instantaneous Forward Characteristics, Tj = 25 C; fit through (0.622 V, 0.1 mA), (0.695 V, 1 mA), (0.876 V, 100 mA) by packages/engine/scripts/fit_zener.py", "basis": "typical" } } },
+    "zener_voltage": { "value": 5.1, "unit": "V", "source": { "datasheet": { "doc": "Vishay 1N4728A to 1N4761A, Document Number 85816, Rev. 2.7", "at": "p2 Electrical Characteristics, 1N4733A row, nominal VZ at IZT1 = 49 mA. Note (1): DC at thermal equilibrium, lead temperature 30 C ± 1 C, 9.5 mm (3/8 inch) from the body", "basis": "nominal" } } },
+    "zener_current": { "value": 0.049, "unit": "A", "source": { "datasheet": { "doc": "Vishay 1N4728A to 1N4761A, Document Number 85816, Rev. 2.7", "at": "p2 Electrical Characteristics, 1N4733A row, test current IZT1 at which VZ is measured", "basis": "nominal" } } },
+    "zener_impedance": { "value": 7.0, "unit": "ohm", "source": { "datasheet": { "doc": "Vishay 1N4728A to 1N4761A, Document Number 85816, Rev. 2.7", "at": "p2 Electrical Characteristics, 1N4733A row, typical dynamic resistance ZZT at IZT1, f = 1 kHz", "basis": "typical" } } },
+    "breakdown_resistance": { "value": 4.518344790967284, "unit": "ohm", "source": { "datasheet": { "doc": "EIC 1N4727A to 1N4761A", "at": "Fig. 1 at TA = 25 C, the breakdown resistance that puts 1 mA on the 4.46 V read, from packages/engine/scripts/fit_zener.py", "basis": "typical" } } },
+    "ratings": {
+      "current": { "value": 0.19607843137254902, "unit": "A", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.034, "unit": "s", "source": { "closed_form": { "note": "One 8.3 ms square surge of the 890 mA IZSM, from cold, reaches the current rating on a mean with this time constant." } } }, "peak": { "value": 0.89, "unit": "A", "source": { "datasheet": { "doc": "onsemi 1N4728A to 1N4758A, 1N4736AT/D, August 2021, Rev. 10", "at": "Electrical Characteristics, 1N4733A row, IZSM, a non-repetitive 8.3 ms square-wave surge (note 3)", "basis": "absolute_max" } } } } }, "source": { "datasheet": { "doc": "onsemi 1N4728A to 1N4758A, 1N4736AT/D, August 2021, Rev. 10", "at": "The sheet states no continuous current. IZSM on the 1N4733A row is 890 mA, a non-repetitive square-wave surge of 8.3 ms (note 3). 1.0 W / 5.1 V, that row's typical zener voltage, is 0.19607843137254902 A", "basis": "absolute_max" } } },
+      "power": { "value": 1.0, "unit": "W", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.067, "unit": "s", "source": { "closed_form": { "note": "The model dissipates 8.45 W at the 890 mA IZSM. One 8.3 ms square surge of that, from cold, reaches the 1 W rating on a mean with this time constant." } } } } }, "source": { "datasheet": { "doc": "onsemi 1N4728A to 1N4758A, 1N4736AT/D, August 2021, Rev. 10", "at": "Absolute Maximum Ratings, PD 1.0 W at TL at or below 50 C with the lead length 3/8 inch from the case, derate 6.67 mW/C above 50 C. No pulse width is stated", "basis": "absolute_max" } } },
+    },
+  },
+  "not_simulated": [
+    { "what": "temperature and the zener voltage's temperature coefficient", "why": "The fit is at 25 C and the engine has no temperature." },
+    { "what": "junction capacitance", "why": "The engine's zener has no charge storage, so the voltage changes at once." },
+    { "what": "the forward-voltage maximum", "why": "The forward drop follows the fitted curve. At 200 mA it is 0.93 V, under the 1.2 V maximum, and the current rating warns above 196 mA." },
+    { "what": "the reverse curve below 1 mA", "why": "No point under 1 mA was fitted, so a circuit biased below the knee draws less current than the figure." },
+  ],
+}

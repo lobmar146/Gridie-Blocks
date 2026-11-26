@@ -1,0 +1,28 @@
+{
+  "format": 1,
+  "part": "barrel-jack-dc21",
+  "version": "0.2.2",
+  "title": "DC barrel jack, 2.1 mm",
+  "summary": "2.1 mm DC barrel jack with a center pin, a sleeve and a sleeve switch. It supplies the voltage you set between the center pin and the sleeve.",
+  "tags": ["connector", "power", "through-hole", "supply", "adapter", "12v"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "2.1 mm DC barrel jack": null },
+  "real": { "generic": true, "maker": null, "number": null, "datasheet": "2.1 mm DC barrel jack" },
+  "pins": { "sleeve": [1], "center": [2], "switch": [3] },
+  "params": {
+    "voltage": { "unit": "V", "required": true, "example": 9, "min_exclusive": 0, "sets": "/supply/voltage" }
+  },
+  "model": {
+    "supply": {
+      "kind": "voltage_source",
+      "pins": { "p": "center", "n": "sleeve" }
+    }
+  },
+  "not_simulated": [
+    {
+      "what": "sleeve switch",
+      "pins": ["switch"],
+      "why": "The sleeve switch opens when a plug is inserted. Nothing senses a plug, so the switch pin stays open."
+    }
+  ]
+}

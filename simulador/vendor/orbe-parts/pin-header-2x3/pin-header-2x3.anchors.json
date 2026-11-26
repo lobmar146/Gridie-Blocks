@@ -1,0 +1,12 @@
+{
+  "part": "pin-header-2x3",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "pin-1", "also": [], "at": [-1.27, 2.54, 5.74], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 2, "node": "pin-2", "also": [], "at": [1.27, 2.54, 5.74], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 3, "node": "pin-3", "also": [], "at": [-1.27, 0.0, 5.74], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 4, "node": "pin-4", "also": [], "at": [1.27, 0.0, 5.74], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 5, "node": "pin-5", "also": [], "at": [-1.27, -2.54, 5.74], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 6, "node": "pin-6", "also": [], "at": [1.27, -2.54, 5.74], "axis": [0.0, 0.0, 1.0], "kind": "leg"}
+  ]
+}

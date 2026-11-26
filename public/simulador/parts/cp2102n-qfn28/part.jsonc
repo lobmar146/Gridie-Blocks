@@ -1,0 +1,89 @@
+{
+  "format": 1,
+  "part": "cp2102n-qfn28",
+  "version": "0.2.1",
+  "listed": false,
+  "title": "CP2102N USB to serial, QFN-28",
+  "summary": "Silicon Labs CP2102N-A02-GQFN28, a USB-to-UART bridge in a 5 x 5 mm QFN-28.",
+  "tags": ["usb", "uart", "bridge", "qfn"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Silicon Labs CP2102N Data Sheet Rev. 1.3": null },
+  "real": { "maker": "Silicon Labs", "number": "CP2102N-A02-GQFN28", "datasheet": "Silicon Labs CP2102N Data Sheet Rev. 1.3" },
+  "pins": {
+    "DCD": [1], "RI": [2], "GND": [3, 29], "DP": [4], "DM": [5], "VDD": [6], "VREGIN": [7], "VBUS": [8],
+    "RSTb": [9], "NC": [10], "SUSPENDb": [11], "SUSPEND": [12], "CHREN": [13], "CHR1": [14], "CHR0": [15],
+    "GPIO3": [16], "GPIO2": [17], "GPIO1": [18], "GPIO0": [19], "GPIO6": [20], "GPIO5": [21], "GPIO4": [22],
+    "CTS": [23], "RTS": [24], "RXD": [25], "TXD": [26], "DSR": [27], "DTR": [28]
+  },
+  "model": {
+    "host_tx": {
+      "kind": "voltage_source",
+      "voltage": {
+        "kind": "serial",
+        "mark": {
+          "value": 3.3,
+          "unit": "V",
+          "source": {
+            "closed_form": {
+              "note": "On CP2102N-A02, note 3 says VIO is VDD. The ESP32-S3-DevKitC-1 v1.1 ties VDD to 3.3 V, so a mark is that rail and a space is ground. Table 3.7 high-drive VOH is at least VIO minus 0.7 V at IOH = -7 mA when VIO is at least 3.0 V, and this ideal rail does not model that drop."
+            }
+          }
+        },
+        "space": {
+          "value": 0.0,
+          "unit": "V",
+          "source": {
+            "closed_form": {
+              "note": "A space is ground. The same note as the mark: the DevKit ties VDD, which is VIO on the A02, to 3.3 V."
+            }
+          }
+        },
+        "events": []
+      },
+      "pins": { "p": "TXD", "n": "GND" }
+    },
+    "host_dtr": {
+      "kind": "voltage_source",
+      "voltage": {
+        "kind": "steps",
+        "initial": {
+          "value": 3.3,
+          "unit": "V",
+          "source": {
+            "closed_form": {
+              "note": "Table 5.1 calls DTR an active-low output. It idles high, at the same 3.3 V rail as TXD, so the auto-reset transistors stay off until a program drives it."
+            }
+          }
+        },
+        "events": []
+      },
+      "pins": { "p": "DTR", "n": "GND" }
+    },
+    "host_rts": {
+      "kind": "voltage_source",
+      "voltage": {
+        "kind": "steps",
+        "initial": {
+          "value": 3.3,
+          "unit": "V",
+          "source": {
+            "closed_form": {
+              "note": "Table 5.1 calls RTS an active-low output. It idles high, at the same 3.3 V rail as TXD, so the auto-reset transistors stay off until a program drives it."
+            }
+          }
+        },
+        "events": []
+      },
+      "pins": { "p": "RTS", "n": "GND" }
+    }
+  },
+  "not_simulated": [{
+    "what": "USB to serial",
+    "pins": [
+      "DCD", "RI", "DP", "DM", "VDD", "VREGIN", "VBUS", "RSTb", "NC", "SUSPENDb", "SUSPEND",
+      "CHREN", "CHR1", "CHR0", "GPIO3", "GPIO2", "GPIO1", "GPIO0", "GPIO6", "GPIO5", "GPIO4",
+      "CTS", "RXD", "DSR"
+    ],
+    "why": "The engine has no USB-serial chip. A serial source stands in for TXD and steps sources for DTR and RTS. USB D+ and D- are called DP and DM here because a pin name cannot hold a plus or a minus. The sheet's GPIO names carry a dot, and these drop it. Pin 9 is RSTb. The sheet recommends a 1 kohm pull-up from RSTb to VDD on a device with no VIO pin, and that resistor is not in this part."
+  }]
+}

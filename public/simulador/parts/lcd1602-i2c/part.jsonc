@@ -1,0 +1,106 @@
+// The common blue 16x2 character LCD (1602A) with an FC-113 style PCF8574 I2C backpack.
+// Bench frame: z = 0 is the underside of the backpack components so the module lies flat with
+// the glass facing +Z. The FC-113 backpack PCB sits at z = 5.0 mm (top at z = 6.6 mm) under the
+// 1602A panel (at z = 10.5 mm), with its 4-pin right-angle header (GND, VCC, SDA, SCL on 2.54 mm)
+// pointing sideways along -X parallel to the PCB for female jumper wires.
+{
+  "format": 6,
+  "part": "lcd1602-i2c",
+  "version": "0.1.1",
+  "title": "LCD display module, 16 x 2 blue, HD44780 + PCF8574 I2C",
+  "summary": "Blue 16 x 2 character LCD module with a PCF8574 I2C backpack at address 0x27 and a 4-pin right-angle header. LiquidCrystal_I2C drives it.",
+  "tags": ["lcd", "1602", "16x2", "hd44780", "pcf8574", "display", "screen", "i2c", "backpack"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Hitachi HD44780U (ADE-207-272)": "https://www.sparkfun.com/datasheets/LCD/HD44780.pdf",
+    "NXP PCF8574": "https://www.nxp.com/docs/en/data-sheet/PCF8574_PCF8574A.pdf",
+    "NXP UM10204 Rev. 7.0": "https://www.nxp.com/docs/en/user-guide/UM10204.pdf",
+  },
+  "real": {
+    "generic": true,
+    "maker": "Hitachi",
+    "number": "1602A + PCF8574",
+    "datasheet": "Hitachi HD44780U (ADE-207-272)",
+  },
+  "uses": {
+    "hd44780-1602-i2c": "0.1.1",
+    "pin-header-1x4": "0.1.0",
+    "resistor-0603": "0.2.0",
+    "trimmer-3362p": "0.2.2",
+  },
+  "params": {
+    "address": { "default": "0x27" },
+    "backlight_jumper": { "default": "on" },
+  },
+  "parts": {
+    "j": { "type": "pin-header-1x4" },
+    "display": {
+      "type": "hd44780-1602-i2c",
+      "address": { "param": "address" },
+      "backlight_jumper": { "param": "backlight_jumper" },
+    },
+    "r1": {
+      "type": "resistor-0603",
+      "resistance": {
+        "value": 4700,
+        "unit": "ohm",
+        "source": { "closed_form": { "note": "standard 4.7 kohm I2C SDA pull-up on the PCF8574 backpack" } },
+      },
+    },
+    "r2": {
+      "type": "resistor-0603",
+      "resistance": {
+        "value": 4700,
+        "unit": "ohm",
+        "source": { "closed_form": { "note": "standard 4.7 kohm I2C SCL pull-up on the PCF8574 backpack" } },
+      },
+    },
+    "contrast": {
+      "type": "trimmer-3362p",
+      "resistance": {
+        "value": 10000,
+        "unit": "ohm",
+        "source": { "closed_form": { "note": "standard 10 kohm contrast trimmer potentiometer on the PCF8574 backpack" } },
+      },
+    },
+  },
+  "wires": [
+    ["j.1", "display.GND", { "kind": "trace" }],
+    ["j.2", "display.VCC", { "kind": "trace" }],
+    ["j.3", "display.SDA", { "kind": "trace" }],
+    ["j.4", "display.SCL", { "kind": "trace" }],
+    ["j.2", "r1.a", { "kind": "trace" }],
+    ["j.3", "r1.b", { "kind": "trace" }],
+    ["j.2", "r2.a", { "kind": "trace" }],
+    ["j.4", "r2.b", { "kind": "trace" }],
+    ["j.2", "contrast.a", { "kind": "trace" }],
+    ["j.1", "contrast.b", { "kind": "trace" }],
+    ["contrast.wiper", "display.V0", { "kind": "trace" }],
+  ],
+  "layout": {
+    "j": { "at": [-34.5, 6.5, 3.73], "rotate": [-90, 0, -90] },
+    "display": { "at": [0, 0, 10.5] },
+    "r1": { "at": [-18.5, 1.0, 5.0], "rotate": [180, 0, 0] },
+    "r2": { "at": [-18.5, 3.0, 5.0], "rotate": [180, 0, 0] },
+    "contrast": { "at": [-25.5, 7.5, 5.0], "rotate": [180, 0, 0] },
+  },
+  "pins": { "GND": "j.1", "VCC": "j.2", "SDA": "j.3", "SCL": "j.4" },
+  "readings": {
+    "text": { "of": "text" },
+    "backlight": { "of": "backlight" },
+  },
+  "not_simulated": [
+    {
+      "what": "contrast pot effect on glass",
+      "why": "The 10 kohm contrast trimmer loads VCC to GND and its rotor turns in 3D, while the glass renders at fixed readable contrast.",
+    },
+    {
+      "what": "blue transmissive visibility",
+      "why": "On a blue negative transmissive 1602 LCD, characters are only visible when both the display and the backlight are on. `@<lcd>.text` is blank when either is off.",
+    },
+    {
+      "what": "backpack power LED",
+      "why": "The small red power indicator LED on the back of the PCF8574 backpack is omitted.",
+    },
+  ],
+}

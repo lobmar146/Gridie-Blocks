@@ -1,0 +1,55 @@
+{
+  "format": 5,
+  "part": "capacitor-electrolytic-radial",
+  "version": "0.2.2",
+  "title": "Capacitor, radial electrolytic",
+  "summary": "Polarized aluminum electrolytic capacitor, 6.3 mm across, with leads on 2.5 mm; the longer lead is positive and the stripe marks negative. Set its capacitance.",
+  "tags": ["capacitor", "electrolytic", "polarized", "passive", "bulk", "filter", "timing", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Nichicon UVR": null,
+    "Nichicon, General Descriptions of Aluminum Electrolytic Capacitors": "https://www.nichicon.co.jp/english/products/pdf/aluminum.pdf",
+  },
+  "real": { "generic": true, "maker": "Nichicon", "number": "UVR", "datasheet": "Nichicon UVR" },
+  "pins": { "pos": [1], "neg": [2] },
+  "params": {
+    "capacitance": { "unit": "F", "required": true, "example": 1e-5, "min_exclusive": 0, "sets": "/capacitance" },
+    "initial": { "unit": "V", "default": null, "sets": "/initial" },
+  },
+  "model": {
+    "kind": "capacitor",
+    "pins": { "a": "pos", "b": "neg" },
+    "series_resistance": {
+      "tan_delta": {
+        "value": 0.2,
+        "unit": "1",
+        "source": {
+          "datasheet": {
+            "doc": "Nichicon UVR",
+            "at": "Tangent of loss angle (tan δ) max 0.20 at 120 Hz, 20 °C, for a rated voltage of 16 V. The series resistance is tan δ / (2 π f C) at the capacitance set, 2.65 ohm at 100 µF.",
+            "basis": "max"
+          }
+        }
+      },
+      "frequency": { "value": 120, "unit": "Hz", "source": { "datasheet": { "doc": "Nichicon UVR", "at": "The frequency tan δ is stated at", "basis": "nominal" } } }
+    },
+    "ratings": {
+      "reverse_voltage": {
+        "value": 1,
+        "unit": "V",
+        "source": {
+          "datasheet": {
+            "doc": "Nichicon, General Descriptions of Aluminum Electrolytic Capacitors",
+            "at": "Section 2-3-2 Reverse Voltage: a cathode foil withstands about 1 V because of the natural oxide layer on its surface. A reverse voltage over that raises the internal pressure and opens the vent.",
+            "basis": "absolute_max"
+          }
+        }
+      }
+    }
+  },
+  "not_simulated": [
+    { "what": "voltage rating", "why": "A forward voltage past the can's working voltage never warns. The reverse rating is separate: pos more than 1 V below neg warns." },
+    { "what": "tolerance and leakage", "why": "The capacitance is the value set, with no tolerance and no leakage." },
+    { "what": "ESR versus frequency", "why": "The series resistance is tan δ at 120 Hz, held at every frequency. Above 1000 µF the sheet adds 0.02 to tan δ per 1000 µF, and this does not." },
+  ],
+}

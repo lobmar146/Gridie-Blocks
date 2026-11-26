@@ -1,0 +1,47 @@
+// The sensor is the engine's dht22 device, which reads the scene's temperature and humidity and
+// answers a host's start pulse on DATA with the AM2302 manual's 40 bits and timing. Its internal
+// pull-up is a second model, a resistor from VDD to DATA. The output and input levels are table
+// 4 of Aosong's AM2302 product manual v1.1, at VDD 5 V.
+{
+  "format": 1,
+  "part": "dht22",
+  "version": "0.2.1",
+  "title": "DHT22 (AM2302) temperature and humidity sensor",
+  "summary": "Digital temperature and humidity sensor that reports -40 to 80 °C and relative humidity, each to 0.1, over one data line, at most once every 2 s.",
+  "tags": ["dht22", "am2302", "temperature", "humidity", "sensor", "one-wire", "digital", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Aosong AM2302 product manual v1.1": null,
+    "Aosong DHT22 datasheet": null,
+    "Aosong AM2302 Technical Manual": "https://www.aosong.com/uploadfiles/2025/04/20250417105409216.pdf",
+  },
+  "real": { "maker": "Aosong", "number": "AM2302", "datasheet": "Aosong AM2302 product manual v1.1" },
+  "buy": [
+    { "seller": "LCSC", "url": "https://www.lcsc.com/product-detail/C83988.html", "checked": "2026-11-16" },
+  ],
+  "pins": { "VDD": [1], "DATA": [2], "NC": [3], "GND": [4] },
+  "model": {
+    "sensor": {
+      "kind": "dht22",
+      "low_resistance": { "value": 37.5, "unit": "ohm", "source": { "closed_form": { "note": "table 4: low output voltage at most 300 mV, and output current 8 mA typical when on. 300 mV / 8 mA. The sheet gives no typical low voltage, so the open drain is its worst case" } } },
+      "input_threshold": {
+        "low": { "value": 0.3, "unit": "1", "source": { "datasheet": { "doc": "Aosong AM2302 product manual v1.1", "at": "table 4, low input voltage, falling, at most 30 % of VDD", "basis": "max" } } },
+        "high": { "value": 0.7, "unit": "1", "source": { "datasheet": { "doc": "Aosong AM2302 product manual v1.1", "at": "table 4, high input voltage, rising, at least 70 % of VDD", "basis": "min" } } },
+      },
+      "pins": { "VCC": "VDD", "DATA": "DATA", "GND": "GND" },
+    },
+    "pull_up": {
+      "kind": "resistor",
+      "resistance": { "value": 45000.0, "unit": "ohm", "source": { "datasheet": { "doc": "Aosong AM2302 product manual v1.1", "at": "table 4, Rpu, the pull-up resistor, 45 kohm typical (30 to 60) at VDD 5 V and VIN = VSS", "basis": "typical" } } },
+      "ratings": { "power": null },
+      "pins": { "a": "VDD", "b": "DATA" },
+    },
+  },
+  "not_simulated": [
+    { "what": "accuracy", "why": "A read is the world's value rounded to 0.1. The sheet allows ±2 %RH (±5 at most) and ±0.5 °C." },
+    { "what": "response time", "why": "A measurement reads the world at its time. The sheet takes about 5 s to follow a humidity step and 10 s for temperature, to 63 %." },
+    { "what": "range", "why": "Temperature reads -40 to 80 °C, the sheet's range; the scene's temperature past it reads the nearer end." },
+    { "what": "supply", "why": "The sensor answers at any supply. The sheet asks for 3.3 to 5.5 V, and the levels and pull-up above are its 5 V values." },
+    { "what": "timing spread", "why": "Every reply has the sheet's typical times: 80 us response low and high, 50 us bit lows, 26 us and 70 us highs, 50 us last low, 30 us after the start." },
+  ],
+}

@@ -1,0 +1,60 @@
+// A 0.96 inch 128 x 64 monochrome OLED panel with its SSD1306 controller on the glass, the
+// UG-2864HSWEG01 class the common I2C modules carry. The pins are FPC pins from section 1.5 of
+// the panel sheet: 1 and 30 are N.C.(GND) and 29 is VLSS, which section 1.5 ties to ground, so
+// they join VSS on 8. 19 and 20 are D1 and D2, which I2C joins as SDA. The model is the engine's
+// ssd1306 on I2C.
+{
+  "format": 6, "part": "ssd1306-oled-128x64", "version": "0.1.1", "title": "OLED panel, 0.96 inch 128 x 64, SSD1306", "license": "MIT OR Apache-2.0",
+  "summary": "0.96 inch 128 x 64 white OLED panel with an SSD1306 controller on the glass and a 30-pin FPC, wired for I2C at address 0x3C.",
+  "tags": ["oled", "display", "screen", "ssd1306", "128x64", "i2c"],
+  "docs": {
+    "Solomon Systech SSD1306 Rev 1.1": "https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf",
+    "Univision UG-2864HSWEG01": "https://cdn-shop.adafruit.com/datasheets/UG-2864HSWEG01.pdf",
+    "NXP UM10204 Rev. 7.0": "https://www.nxp.com/docs/en/user-guide/UM10204.pdf",
+  },
+  "real": { "maker": "Univision", "number": "UG-2864HSWEG01", "datasheet": "Univision UG-2864HSWEG01" },
+  "pins": {
+    "VSS": [1, 8, 29, 30], "C2P": [2], "C2N": [3], "C1P": [4], "C1N": [5], "VBAT": [6], "NC": [7], "VDD": [9],
+    "BS0": [10], "BS1": [11], "BS2": [12], "CS": [13], "RES": [14], "SA0": [15], "RW": [16], "ERD": [17],
+    "SCL": [18], "SDA": [19, 20], "D3": [21], "D4": [22], "D5": [23], "D6": [24], "D7": [25],
+    "IREF": [26], "VCOMH": [27], "VCC": [28],
+  },
+  "model": {
+    "kind": "ssd1306",
+    "address": 60,
+    "low_drop": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "an open drain pulls SDA to VSS through its resistance alone" } } },
+    "low_resistance": { "value": 133.33333333333334, "unit": "ohm", "source": { "closed_form": { "note": "UM10204 Rev. 7.0 Table 9, VOL1 0.4 V at 3 mA for a Fast-mode device, so 0.4 V / 3 mA. SSD1306 Table 12-1 gives VOL only at 100 uA" } } },
+    "input_threshold": {
+      "low": { "value": 0.2, "unit": "1", "source": { "datasheet": { "doc": "Solomon Systech SSD1306 Rev 1.1", "at": "Table 12-1, VIL 0.2 VDD maximum", "basis": "max" } } },
+      "high": { "value": 0.8, "unit": "1", "source": { "datasheet": { "doc": "Solomon Systech SSD1306 Rev 1.1", "at": "Table 12-1, VIH 0.8 VDD minimum", "basis": "min" } } },
+    },
+    // The panel's logic and charge pump draw together from VDD, as the modules tie VBAT to VDD.
+    "draw": {
+      "sleep_current": { "value": 1e-6, "unit": "A", "source": { "datasheet": { "doc": "Univision UG-2864HSWEG01", "at": "section 3.2, sleep mode current for VDD, IDD,SLEEP 1 uA typical, with the display off", "basis": "typical" } } },
+      "logic_current": { "value": 1.8e-4, "unit": "A", "source": { "datasheet": { "doc": "Univision UG-2864HSWEG01", "at": "section 3.2, operating current for VDD, IDD 180 uA typical", "basis": "typical" } } },
+      "half_lit_current": { "value": 0.0173, "unit": "A", "source": { "datasheet": { "doc": "Univision UG-2864HSWEG01", "at": "section 3.2 note 7, operating current for VBAT with the internal DC/DC, 17.3 mA typical with 50% of the display area on", "basis": "typical" } } },
+      "all_lit_current": { "value": 0.0231, "unit": "A", "source": { "datasheet": { "doc": "Univision UG-2864HSWEG01", "at": "section 3.2 note 8, operating current for VBAT with the internal DC/DC, 23.1 mA typical with 100% of the display area on", "basis": "typical" } } },
+      "holds_above": { "value": 1.65, "unit": "V", "source": { "datasheet": { "doc": "Univision UG-2864HSWEG01", "at": "section 3.2, supply voltage for logic VDD 1.65 V minimum", "basis": "min" } } },
+    },
+    "ratings": {
+      "rail_margin": { "value": 0.3, "unit": "V", "source": { "datasheet": { "doc": "Solomon Systech SSD1306 Rev 1.1", "at": "Table 11-1, Maximum Ratings (Voltage Referenced to VSS), p. 47: Vin Input voltage VSS - 0.3 to VDD + 0.3 V, and VDD min -0.3 V", "basis": "absolute_max" } } },
+      "supply_voltage": { "value": 4.0, "unit": "V", "source": { "datasheet": { "doc": "Solomon Systech SSD1306 Rev 1.1", "at": "Table 11-1, Maximum Ratings (Voltage Referenced to VSS), p. 47: VDD Supply Voltage -0.3 to +4 V (also Univision UG-2864HSWEG01 section 2, p. 7)", "basis": "absolute_max" } } },
+    },
+    "pins": { "VDD": "VDD", "VSS": "VSS", "SCL": "SCL", "SDA": "SDA", "RES": "RES" },
+  },
+  "readings": {
+    "screen": { "of": "screen" },
+  },
+  "view": {
+    "screen": [{ "node": "glass", "by": "screen" }],
+  },
+  "not_simulated": [
+    { "what": "address select", "pins": ["SA0"], "why": "D/C# is SA0 on I2C (SSD1306 section 8.1.5.1). The model answers at 0x3C, SA0 low, whatever this pin reads. The common modules tie it low through 4.7 kohm." },
+    { "what": "the panel supply", "pins": ["VBAT", "C1P", "C1N", "C2P", "C2N", "VCC", "VCOMH", "IREF"], "why": "The charge pump makes the panel's VCC from VBAT with C1 and C2 (SSD1306 charge pump application note, 8Dh), VCOMH and IREF set its drive. The model lights the glass while the charge pump is on, and draws the pump's VBAT current from VDD, as the modules tie the two. Wire VBAT to VDD. That current is the line through section 3.2's 17.3 mA with half the glass lit and 23.1 mA with all of it, which gives 11.5 mA with none lit, where the sheet gives no figure. It is the sheet's at VBAT 3.5 V to 4.2 V, and the modules run VBAT at 3.3 V." },
+    { "what": "interface select", "pins": ["BS0", "BS1", "BS2", "CS", "RW", "ERD", "D3", "D4", "D5", "D6", "D7", "NC"], "why": "BS0 and BS2 low with BS1 high pick I2C (SSD1306 Table 7-1), and I2C leaves CS#, R/W#, E/RD# and D3 to D7 to ground. The model is I2C only, whatever these pins read." },
+    { "what": "scrolling and reads", "why": "26h, 27h, 29h, 2Ah, A3h and 2Fh warn chip.protocol rule scroll and the picture stays still. A read transfer warns rule read and reads 0xFF. Any command not in Table 9-1 warns rule command." },
+    { "what": "page commands in other modes", "why": "Table 9-1 says 00h to 1Fh and B0h to B7h are for page addressing mode. U8g2 sends them in horizontal mode, so the model moves the address pointer with them in every mode." },
+    { "what": "contrast, timing and power-on noise", "why": "Contrast, 81h, is in the panel's settings and the glass does not dim. D5h, D9h and DBh are stored and change nothing drawn. The GDDRAM starts at 0, where a real panel holds noise until it is written." },
+    { "what": "panel colour", "why": "The glass is white on black. Blue and yellow-and-blue panels draw the same pixels." },
+  ],
+}

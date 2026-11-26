@@ -1,0 +1,12 @@
+{
+  "part": "pin-header-1x6",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "pin-1", "also": ["housing-1"], "at": [-6.35, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "pin-2", "also": ["housing-2"], "at": [-3.81, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "pin-3", "also": ["housing-3"], "at": [-1.27, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 4, "node": "pin-4", "also": ["housing-4"], "at": [1.27, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 5, "node": "pin-5", "also": ["housing-5"], "at": [3.81, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 6, "node": "pin-6", "also": ["housing-6"], "at": [6.35, 0.0, -8.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

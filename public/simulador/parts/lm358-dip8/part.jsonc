@@ -1,0 +1,54 @@
+// One op_amp body per channel, both on the shared supply pins. The values are the typicals of
+// TI SLOS068AB p10 section 5.7, the LM358 column, at VS 5 V and 25 °C unless a row says otherwise.
+// The high swing and the output resistance are the line through figure 5-46 at 0.1 mA and 10 mA.
+// input_headroom is the VCM maximum, (V+) - 1.5 V at 25 °C. The bias current still turns off
+// at a fixed 0.8 V below vcc. The stage keeps comparing above the headroom, and the run warns.
+{
+  "format": 5, "part": "lm358-dip8", "version": "0.2.2", "title": "LM358 dual op-amp, DIP-8", "license": "MIT OR Apache-2.0",
+  "summary": "TI LM358P dual op-amp in PDIP-8, with two amplifiers sharing one supply. The notch marks lead 1.",
+  "tags": ["op-amp", "amplifier", "through-hole"],
+  "docs": { "TI SLOS068AB": "https://www.ti.com/lit/ds/symlink/lm358.pdf" },
+  "real": { "maker": "Texas Instruments", "number": "LM358P", "datasheet": "TI SLOS068AB" },
+  "pins": { "OUT1": [1], "IN1_N": [2], "IN1_P": [3], "GND": [4], "IN2_P": [5], "IN2_N": [6], "OUT2": [7], "VCC": [8] },
+  "model": {
+    "a": {
+      "kind": "op_amp",
+      "gain_bandwidth": { "value": 700000.0, "unit": "Hz", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, GBW typical, header VS 5 V", "basis": "typical" } } },
+      "slew_rate": { "value": 300000.0, "unit": "V/s", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, SR typical, G = +1", "basis": "typical" } } },
+      "open_loop_gain": { "value": 100000.0, "unit": "1", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, AOL 100 V/mV typical at VS 15 V, VO 1 V to 11 V, RL at least 2 kohm", "basis": "typical" } } },
+      "input_bias_current": { "value": 2.0e-08, "unit": "A", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, IB typical -20 nA into the pin at VO 1.4 V. The field is the current that leaves", "basis": "typical" } } },
+      "swing_high": { "value": 1.21, "unit": "V", "source": { "closed_form": { "note": "p23 figure 5-46, section 5.12. The stroke center is 1.211 V below Vcc at 0.1 mA and 1.549 V below Vcc at 10 mA. The line through them falls 34.1 ohm and starts 1.208 V below Vcc, rounded to 1.21 V. The x-axis is printed Output Sink Current. The title is Output Sourcing Characteristics and the axis is the drop from Vcc, so the current is source current. The figure does not print a supply. Section 5.7's 5 V positive-rail row is a maximum of 1.5 V from V+ and has no typical" } } },
+      "swing_low": { "value": 0.005, "unit": "V", "source": { "closed_form": { "note": "p10 section 5.7 VOL typical 5 mV from V- at VS 5 V, RL at most 10 kohm, returned to V-. One load, so the intercept is that typical. Figure 5-47's slope is not output_resistance" } } },
+      "output_resistance": { "value": 30.0, "unit": "ohm", "source": { "closed_form": { "note": "the slope of the swing_high line, 338 mV over 9.9 mA, 34.1 ohm, rounded to 30. One resistance covers sourcing and sinking. Sinking into a load returned above V- is optimistic against p23 figure 5-47. Section 5.7's sink row at VO 200 mV is 30 uA typical and 12 uA minimum, so above about 30 uA the output leaves the bottom rail. Figure 5-47's 5 V curve goes vertical between 11 mA and 12 mA, while short_circuit_current lets the model sink 40 mA at 5 V. The model reads 12.5 mV into 10 kohm and 41.9 mV into 2 kohm, both returned to 2.5 V" } } },
+      "short_circuit_current": { "value": 0.04, "unit": "A", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, ISC +/-40 mA typical at VS 10 V, VO = VS / 2", "basis": "typical" } } },
+      "supply_current": { "value": 0.00035, "unit": "A", "source": { "closed_form": { "note": "p10 section 5.7 IQ 350 uA typical per amplifier at VO 2.5 V and IO 0 A. The row is already one amplifier" } } },
+      "input_headroom": { "value": 1.5, "unit": "V", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, VCM MAX (V+) - 1.5 V for the LM358 at 25 C, VS 5 V to 30 V. Over 0 C to 70 C the same row is (V+) - 2 V", "basis": "max" } } },
+      "ratings": {
+        "supply_voltage": { "value": 32, "unit": "V", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p4 section 5.1 Absolute Maximum Ratings, supply voltage VS, 32 V for the LM358. Only this amplifier carries it, since both share the supply pins.", "basis": "absolute_max" } } },
+        "input_below_gnd": { "value": 0.3, "unit": "V", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p4 section 5.1 Absolute Maximum Ratings, input voltage VI on either input, -0.3 V", "basis": "absolute_max" } } },
+      },
+      "pins": { "in_p": "IN1_P", "in_n": "IN1_N", "out": "OUT1", "vcc": "VCC", "gnd": "GND" },
+    },
+    "b": {
+      "kind": "op_amp",
+      "gain_bandwidth": { "value": 700000.0, "unit": "Hz", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, GBW typical, header VS 5 V", "basis": "typical" } } },
+      "slew_rate": { "value": 300000.0, "unit": "V/s", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, SR typical, G = +1", "basis": "typical" } } },
+      "open_loop_gain": { "value": 100000.0, "unit": "1", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, AOL 100 V/mV typical at VS 15 V, VO 1 V to 11 V, RL at least 2 kohm", "basis": "typical" } } },
+      "input_bias_current": { "value": 2.0e-08, "unit": "A", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, IB typical -20 nA into the pin at VO 1.4 V. The field is the current that leaves", "basis": "typical" } } },
+      "swing_high": { "value": 1.21, "unit": "V", "source": { "closed_form": { "note": "p23 figure 5-46, section 5.12. The stroke center is 1.211 V below Vcc at 0.1 mA and 1.549 V below Vcc at 10 mA. The line through them falls 34.1 ohm and starts 1.208 V below Vcc, rounded to 1.21 V. The x-axis is printed Output Sink Current. The title is Output Sourcing Characteristics and the axis is the drop from Vcc, so the current is source current. The figure does not print a supply. Section 5.7's 5 V positive-rail row is a maximum of 1.5 V from V+ and has no typical" } } },
+      "swing_low": { "value": 0.005, "unit": "V", "source": { "closed_form": { "note": "p10 section 5.7 VOL typical 5 mV from V- at VS 5 V, RL at most 10 kohm, returned to V-. One load, so the intercept is that typical. Figure 5-47's slope is not output_resistance" } } },
+      "output_resistance": { "value": 30.0, "unit": "ohm", "source": { "closed_form": { "note": "the slope of the swing_high line, 338 mV over 9.9 mA, 34.1 ohm, rounded to 30. One resistance covers sourcing and sinking. Sinking into a load returned above V- is optimistic against p23 figure 5-47. Section 5.7's sink row at VO 200 mV is 30 uA typical and 12 uA minimum, so above about 30 uA the output leaves the bottom rail. Figure 5-47's 5 V curve goes vertical between 11 mA and 12 mA, while short_circuit_current lets the model sink 40 mA at 5 V. The model reads 12.5 mV into 10 kohm and 41.9 mV into 2 kohm, both returned to 2.5 V" } } },
+      "short_circuit_current": { "value": 0.04, "unit": "A", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, ISC +/-40 mA typical at VS 10 V, VO = VS / 2", "basis": "typical" } } },
+      "supply_current": { "value": 0.00035, "unit": "A", "source": { "closed_form": { "note": "p10 section 5.7 IQ 350 uA typical per amplifier at VO 2.5 V and IO 0 A. The row is already one amplifier" } } },
+      "input_headroom": { "value": 1.5, "unit": "V", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p10 section 5.7, VCM MAX (V+) - 1.5 V for the LM358 at 25 C, VS 5 V to 30 V. Over 0 C to 70 C the same row is (V+) - 2 V", "basis": "max" } } },
+      "ratings": {
+        "input_below_gnd": { "value": 0.3, "unit": "V", "source": { "datasheet": { "doc": "TI SLOS068AB", "at": "p4 section 5.1 Absolute Maximum Ratings, input voltage VI on either input, -0.3 V", "basis": "absolute_max" } } },
+      },
+      "pins": { "in_p": "IN2_P", "in_n": "IN2_N", "out": "OUT2", "vcc": "VCC", "gnd": "GND" },
+    },
+  },
+  "not_simulated": [
+    { "what": "common-mode failure", "why": "The input stage keeps comparing above input_headroom, and the run warns rating.voltage. TI SLOS068AB section 7.3.3, page 26, says the output phase is correct while at least one input stays in the common-mode range, from device ground to VS - 1.5 V at 25 C, and undefined when both inputs are outside it. An input more than 0.3 V below V- is not checked." },
+    { "what": "noise", "why": "A comparator with no hysteresis chatters on a slow input on the bench, and positive feedback fixes it. The engine has no noise, so a run does not show that chatter." },
+  ],
+}

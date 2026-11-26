@@ -1,0 +1,10 @@
+{
+  "format": 1, "part": "resistor-0603", "version": "0.2.0", "title": "Resistor, 0603 chip", "license": "MIT OR Apache-2.0",
+  "summary": "0603 chip resistor, 1.6 x 0.8 mm. Set its resistance. Lead 1 and lead 2 are the end caps.",
+  "tags": ["resistor", "passive", "smd"],
+  "docs": { "Yageo RC0603": null },
+  "real": { "generic": true, "maker": "Yageo", "number": "RC0603", "datasheet": "Yageo RC0603" },
+  "pins": { "a": [1], "b": [2] },
+  "params": { "resistance": { "unit": "ohm", "required": true, "example": 220, "min_exclusive": 0, "sets": "/resistance" } },
+  "model": { "kind": "resistor", "ratings": { "power": null } },
+}

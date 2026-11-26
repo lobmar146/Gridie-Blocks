@@ -1,0 +1,115 @@
+// The common 0.96 inch 128 x 64 SSD1306 OLED module on I2C, with a 4-pin header. Seated frame:
+// z = 0 is the header plastic's underside, so the board's underside is at z = 2.54 and its top at
+// z = 4.14. The board is the LCDWiki MC096 drawing, 27.30 x 27.80 mm, centred on the origin. The
+// header's pins are centred 1.50 mm below the top edge. The panel's top edge is 4.27 mm below the
+// board's, which centres the 19.26 mm panel on the board. The parts and their values are the
+// LCDWiki MC096 schematic: U1 XC6206 with C6, C7 and C8 at 1 uF, R1 and R2 4.7 kohm pull-ups to
+// 3.3 V, R3 4.7 kohm and C3 10 uF on RES#, R6 4.7 kohm from SA0 to ground. The back-side
+// placement is this model's own: the drawing gives no positions for those parts.
+{
+  "format": 6,
+  "part": "oled-ssd1306-128x64",
+  "version": "0.1.1",
+  "title": "OLED display module, 0.96 inch 128 x 64, SSD1306, I2C",
+  "summary": "0.96 inch 128 x 64 white OLED module with an SSD1306 on I2C at address 0x3C, for 3.3 V or 5 V. Adafruit SSD1306 and U8g2 drive it.",
+  "tags": ["oled", "display", "screen", "ssd1306", "128x64", "i2c", "0.96"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "LCDWiki MC096 schematic": "https://www.lcdwiki.com/res/MC096VX/0.96inch-OLED-MC096VX-schematic-diagram.pdf",
+    "LCDWiki MC096GX size drawing": "https://www.lcdwiki.com/res/MC096GX/MC096GX-size-EN.jpg",
+    "LCDWiki 0.96 inch OLED module MC096GX": "https://lcdwiki.com/0.96inch_OLED_Module_MC096GX",
+  },
+  "real": {
+    "generic": true,
+    "maker": "LCDWiki",
+    "number": "MC096GX",
+    "datasheet": "LCDWiki 0.96 inch OLED module MC096GX",
+  },
+  "uses": {
+    "capacitor-0603": "0.2.0", "pin-header-1x4": "0.1.0", "resistor-0603": "0.2.0",
+    "ssd1306-oled-128x64": "0.1.1", "xc6206-sot23": "0.1.1",
+  },
+  "parts": {
+    "j": { "type": "pin-header-1x4" },
+    "display": { "type": "ssd1306-oled-128x64" },
+    "u1": { "type": "xc6206-sot23" },
+    "c6": { "type": "capacitor-0603", "capacitance": { "value": 1e-6, "unit": "F", "source": { "datasheet": { "doc": "LCDWiki MC096 schematic", "at": "C6, 105, on U1's input", "basis": "nominal" } } } },
+    "c7": { "type": "capacitor-0603", "capacitance": { "value": 1e-6, "unit": "F", "source": { "datasheet": { "doc": "LCDWiki MC096 schematic", "at": "C7, 105, on the 3.3 V rail", "basis": "nominal" } } } },
+    "c8": { "type": "capacitor-0603", "capacitance": { "value": 1e-6, "unit": "F", "source": { "datasheet": { "doc": "LCDWiki MC096 schematic", "at": "C8, 105, on the 3.3 V rail", "basis": "nominal" } } } },
+    "r1": { "type": "resistor-0603", "resistance": { "value": 4700, "unit": "ohm", "source": { "datasheet": { "doc": "LCDWiki MC096 schematic", "at": "R1, 4.7K, SCL to 3.3 V", "basis": "nominal" } } } },
+    "r2": { "type": "resistor-0603", "resistance": { "value": 4700, "unit": "ohm", "source": { "datasheet": { "doc": "LCDWiki MC096 schematic", "at": "R2, 4.7K, SDA to 3.3 V", "basis": "nominal" } } } },
+    "r3": { "type": "resistor-0603", "resistance": { "value": 4700, "unit": "ohm", "source": { "datasheet": { "doc": "LCDWiki MC096 schematic", "at": "R3, 4.7K, RES# to 3.3 V", "basis": "nominal" } } } },
+    "c3": { "type": "capacitor-0603", "capacitance": { "value": 1e-5, "unit": "F", "source": { "datasheet": { "doc": "LCDWiki MC096 schematic", "at": "C3, 10 uF, RES# to ground", "basis": "nominal" } } } },
+    "r6": { "type": "resistor-0603", "resistance": { "value": 4700, "unit": "ohm", "source": { "datasheet": { "doc": "LCDWiki MC096 schematic", "at": "R6, 4.7K, SA0 to ground for address 0x78, which is 0x3C", "basis": "nominal" } } } },
+  },
+  "wires": [
+    ["j.2", "u1.VIN", { "kind": "trace" }],
+    ["j.2", "c6.a", { "kind": "trace" }],
+    ["j.1", "c6.b", { "kind": "trace" }],
+    ["j.1", "u1.VSS", { "kind": "trace" }],
+    ["u1.VOUT", "c7.a", { "kind": "trace" }],
+    ["j.1", "c7.b", { "kind": "trace" }],
+    ["u1.VOUT", "c8.a", { "kind": "trace" }],
+    ["j.1", "c8.b", { "kind": "trace" }],
+    ["u1.VOUT", "display.VDD", { "kind": "trace" }],
+    ["u1.VOUT", "display.VBAT", { "kind": "trace" }],
+    ["j.1", "display.VSS", { "kind": "trace" }],
+    ["j.3", "display.SCL", { "kind": "trace" }],
+    ["j.4", "display.SDA", { "kind": "trace" }],
+    ["u1.VOUT", "r1.a", { "kind": "trace" }],
+    ["j.3", "r1.b", { "kind": "trace" }],
+    ["u1.VOUT", "r2.a", { "kind": "trace" }],
+    ["j.4", "r2.b", { "kind": "trace" }],
+    ["u1.VOUT", "r3.a", { "kind": "trace" }],
+    ["display.RES", "r3.b", { "kind": "trace" }],
+    ["display.RES", "c3.a", { "kind": "trace" }],
+    ["j.1", "c3.b", { "kind": "trace" }],
+    ["display.SA0", "r6.a", { "kind": "trace" }],
+    ["j.1", "r6.b", { "kind": "trace" }],
+    // The interface straps of SSD1306 Table 7-1: BS1 high, the rest low, for I2C.
+    ["u1.VOUT", "display.BS1", { "kind": "trace" }],
+    ["j.1", "display.BS0", { "kind": "trace" }],
+    ["j.1", "display.BS2", { "kind": "trace" }],
+    ["j.1", "display.CS", { "kind": "trace" }],
+    ["j.1", "display.RW", { "kind": "trace" }],
+    ["j.1", "display.ERD", { "kind": "trace" }],
+    ["j.1", "display.D3", { "kind": "trace" }],
+    ["j.1", "display.D4", { "kind": "trace" }],
+    ["j.1", "display.D5", { "kind": "trace" }],
+    ["j.1", "display.D6", { "kind": "trace" }],
+    ["j.1", "display.D7", { "kind": "trace" }],
+  ],
+  "layout": {
+    "j": { "at": [0, 12.4, 0] },
+    "display": { "at": [0, 0, 4.14] },
+    // Underside: a half turn about X hangs each child from the board's underside.
+    "u1": { "at": [-6.0, 5.0, 2.54], "rotate": [180, 0, 0] },
+    "c6": { "at": [-9.5, 5.0, 2.54], "rotate": [180, 0, 90] },
+    "c7": { "at": [-2.5, 5.0, 2.54], "rotate": [180, 0, 90] },
+    "c8": { "at": [-2.5, 2.0, 2.54], "rotate": [180, 0, 90] },
+    "r1": { "at": [3.0, 6.0, 2.54], "rotate": [180, 0, 0] },
+    "r2": { "at": [3.0, 4.0, 2.54], "rotate": [180, 0, 0] },
+    "r3": { "at": [8.0, 1.0, 2.54], "rotate": [180, 0, 0] },
+    "c3": { "at": [8.0, -1.5, 2.54], "rotate": [180, 0, 0] },
+    "r6": { "at": [3.0, 1.0, 2.54], "rotate": [180, 0, 0] },
+  },
+  "pins": { "GND": "j.1", "VCC": "j.2", "SCL": "j.3", "SDA": "j.4" },
+  "not_simulated": [
+    {
+      "what": "the panel's own parts",
+      "why": "The schematic's charge-pump capacitors C1 and C2, VCOMH C4, VCC C5 and the 910 kohm IREF resistor R4 serve pins of the panel the model has no law for, so they are not on this module. The model lights the glass while the SSD1306's charge pump is on."
+    },
+    {
+      "what": "the reset diode",
+      "why": "The schematic puts an SS14 Schottky diode D2 across R3, which empties C3 into the 3.3 V rail when the supply falls. Without it C3 drains through R3, with a 47 ms time constant, so a supply that comes back sooner gives RES# a shorter low pulse. The controller resets as its VDD rises over 1.65 V all the same."
+    },
+    {
+      "what": "the supply jumper and the header order",
+      "why": "The schematic's note says J1 is open for 5 V in and shorted for 3.3 V in, bypassing U1. This module keeps it open, so U1 always regulates. The MC096 drawing's silkscreen reads VCC, GND, SCL, SDA. Boards with GND first, as this module is, are sold as often. Check the board in hand."
+    },
+    {
+      "what": "clamp diodes",
+      "why": "R1 and R2 pull SCL and SDA to the 3.3 V regulator. On a 5 V board with only weak internal pull-ups (as Wire enables on a Nano), the divider stays near 3.46 V, inside the SSD1306's VDD + 0.3 V input limit in Table 11-1. A 5 V bus with stronger pull-ups pulls SCL and SDA past VDD + 0.3 V; the model has no clamp diodes, so the pins stay where the circuit drives them, the run warns `rating.voltage`, and the controller keeps answering."
+    },
+  ],
+}

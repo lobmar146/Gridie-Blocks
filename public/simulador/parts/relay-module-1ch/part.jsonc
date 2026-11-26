@@ -1,0 +1,129 @@
+// Keyes KY-019, the red 1-channel board in Arduino starter kits.
+// https://arduinomodules.info/ky-019-5v-relay-module/ names the Songle SRD-05VDC-SL-C,
+// the S8050, the 1N4007 and the indicator LED, and says the coil current comes from
+// VCC. The board is active high: IN high turns the relay on.
+//
+// The two resistors on that board are marked 102, which is 1 kohm. IN goes through
+// one to the S8050 base. The emitter is GND. The collector is the coil, and the
+// other coil pin is VCC. The 1N4007 sits across the coil with its cathode at VCC.
+// The LED and the other 1 kohm sit from VCC to the collector, so the LED lights
+// while IN is high and VCC is up. A drawing that puts 1 Mohm in the base and swaps
+// the transistor cannot drive this coil, and this model does not follow it.
+//
+// The header stands on one edge of the board with its pins pointing up, for female
+// jumpers. The screw terminal is on the opposite edge, COM in the middle, with its wire
+// entries facing out. The board does not plug into a breadboard. It lies beside one,
+// wired with jumpers.
+{
+  "format": 5,
+  "part": "relay-module-1ch",
+  "version": "0.2.0",
+  "title": "Relay module, 1 channel, 5 V",
+  "summary": "Keyes KY-019 style active-high 5 V relay module with a Songle SRD-05VDC-SL-C, S8050, 1N4007 and indicator LED. Its SPDT contacts are rated 7 A at 28 V DC.",
+  "tags": ["relay", "module", "songle", "5v", "ky-019"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Keyes KY-019 5V relay module": "https://arduinomodules.info/ky-019-5v-relay-module/",
+    "Songle SRD, coil data chart at 20 C": "https://download.mikroe.com/documents/datasheets/SRD-05VDC-SL-C.pdf"
+  },
+  "real": {
+    "generic": true,
+    "maker": "Keyes",
+    "number": "KY-019",
+    "datasheet": "Keyes KY-019 5V relay module"
+  },
+  "uses": {
+    "relay-srd-05vdc-sl-c": "0.1.1",
+    "npn-l8050-sot23": "0.2.2",
+    "resistor-0603": "0.2.0",
+    "diode-do41-flush": "0.1.0",
+    "led-0805": "0.2.1",
+    "pin-header-1x3": "0.1.0",
+    "screw-terminal-3p-5mm": "0.1.0"
+  },
+  "parts": {
+    "hdr": { "type": "pin-header-1x3" },
+    "t": { "type": "screw-terminal-3p-5mm" },
+    "k": { "type": "relay-srd-05vdc-sl-c" },
+    "q": { "type": "npn-l8050-sot23" },
+    "rb": {
+      "type": "resistor-0603",
+      "resistance": {
+        "value": 1000,
+        "unit": "ohm",
+        "source": {
+          "datasheet": {
+            "doc": "Keyes KY-019 5V relay module",
+            "at": "The base resistor on the red KY-019 board is marked 102",
+            "basis": "nominal"
+          }
+        }
+      }
+    },
+    "rled": {
+      "type": "resistor-0603",
+      "resistance": {
+        "value": 1000,
+        "unit": "ohm",
+        "source": {
+          "datasheet": {
+            "doc": "Keyes KY-019 5V relay module",
+            "at": "The indicator resistor on the red KY-019 board is marked 102",
+            "basis": "nominal"
+          }
+        }
+      }
+    },
+    "d": { "type": "diode-do41-flush" },
+    "led": { "type": "led-0805", "color": "red" }
+  },
+  "wires": [
+    ["hdr.1", "rb.a", { "kind": "trace" }],
+    ["rb.b", "q.base", { "kind": "trace" }],
+    ["q.emitter", "hdr.3", { "kind": "trace" }],
+    ["q.collector", "k.coil_b", { "kind": "trace" }],
+    ["k.coil_a", "hdr.2", { "kind": "trace" }],
+    ["d.cathode", "hdr.2", { "kind": "trace" }],
+    ["d.anode", "q.collector", { "kind": "trace" }],
+    ["rled.a", "hdr.2", { "kind": "trace" }],
+    ["rled.b", "led.anode", { "kind": "trace" }],
+    ["led.cathode", "q.collector", { "kind": "trace" }],
+    ["k.NC", "t.1", { "kind": "trace" }],
+    ["k.COM", "t.2", { "kind": "trace" }],
+    ["k.NO", "t.3", { "kind": "trace" }]
+  ],
+  // The header stands on the -Y edge, its pins up and its tails through the board. The
+  // terminal stands on the +Y edge beside the relay, its front at the edge. The diode lies on the board in the free margin, its leads through the board and
+  // trimmed at the underside, with the transistor, the resistors and the LED.
+  "layout": {
+    "hdr": { "at": [0, -10, 6.68], "rotate": [180, 0, 0] },
+    "t": { "at": [5, 11.7, 4.14] },
+    "k": { "at": [7, -0.8, 4.14] },
+    "q": { "at": [-10, -2.6, 4.14] },
+    "rb": { "at": [-10, -5.4, 4.14] },
+    "rled": { "at": [-10, -7.2, 4.14] },
+    "d": { "at": [-10, 2.5, 4.14] },
+    "led": { "at": [-10, -9.2, 4.14] }
+  },
+  "pins": {
+    "IN": "hdr.1",
+    "VCC": "hdr.2",
+    "GND": "hdr.3",
+    "COM": "t.2",
+    "NO": "t.3",
+    "NC": "t.1"
+  },
+  "readings": {
+    "closed": { "of": "contact" }
+  },
+  "not_simulated": [
+    {
+      "what": "the silkscreen and the screw heads",
+      "why": "The drawing is the 34 x 27 mm outline with its four holes, the header, the terminal, the relay and the parts that drive it. The screws do not turn."
+    },
+    {
+      "what": "a coil below its supply",
+      "why": "With VCC off the coil and the LED stay off. IN can still source the base current. A coil voltage between 0.5 V and 3.75 V leaves the contact where it was. That is not a fault."
+    }
+  ]
+}

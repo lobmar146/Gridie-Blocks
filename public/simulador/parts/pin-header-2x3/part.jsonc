@@ -1,0 +1,9 @@
+{
+  "format": 1, "part": "pin-header-2x3", "version": "0.2.0", "title": "Pin header, 2 x 3, 2.54 mm", "license": "MIT OR Apache-2.0",
+  "summary": "2 x 3 pin header on 2.54 mm, one plastic block. Leads 1 and 2 sit on one row. Used as an ICSP header.",
+  "tags": ["header", "connector", "through-hole"],
+  "joins_only": true,
+  "docs": { "2.54 mm pin header": null },
+  "real": { "generic": true, "maker": null, "number": null, "datasheet": "2.54 mm pin header" },
+  "pins": { "1": [1], "2": [2], "3": [3], "4": [4], "5": [5], "6": [6] },
+}

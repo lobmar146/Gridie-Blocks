@@ -1,0 +1,52 @@
+// Tower Pro SG90, the 9 g micro servo in Arduino starter kits. The mechanical travel the
+// model follows is the measured 0.5 ms at 0° to 2.4 ms at 180°. The Luxorparts sheet says
+// 1 ms is 0°, 1.5 ms is 90° and 2 ms is 180°. Tower Pro's page gives the 4.8 V speed and the
+// 1 µs dead band. Luxorparts gives that speed and 0.10 s per 60° at 6 V. SunFounder's SF0180
+// specification gives the currents. The control board is an AA51880, which states no
+// operating supply range. 4tronix lists 3.0 V to 7.2 V, the lowest such minimum cited.
+// The shape follows Tower Pro's SG90 drawing: a 22.2 x 11.8 mm case, ears 32.2 mm end to end
+// with their underside 16 mm up, and 31 mm to the top of the horn. The lead ends in a 3-pin
+// female connector, so the servo stands beside the breadboard and jumpers reach its pins.
+{
+  "format": 6,
+  "part": "servo-sg90",
+  "version": "0.4.0",
+  "title": "SG90 micro servo",
+  "summary": "Tower Pro SG90, a 9 g 180° micro servo, 0.12 s per 60° at 4.8 V. Its 3-pin female lead is brown GND, red VCC, orange SIGNAL.",
+  "tags": ["servo", "sg90", "motor", "pwm", "hobby", "starter"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Tower Pro SG90 Analog": "https://towerpro.com.tw/product/sg90-analog/",
+    "Tower Pro SG90 datasheet, with the drawing": "https://tams.informatik.uni-hamburg.de/lehre/2023ss/vorlesung/es/doc/sg90.pdf",
+    "Components101, SG90 pinout and drawing": "https://components101.com/motors/servo-motor-basics-pinout-datasheet",
+    "Luxorparts SG90 datasheet, Kjell 87897": "https://www.kjell.com/globalassets/mediaassets/701916_87897_datasheet_en.pdf",
+    "SunFounder SF0180 electrical specification": "https://www.sunfounder.com/products/sf0180-servo-motor",
+    "SunFounder SG90, operating angle": "https://www.sunfounder.com/products/sg90-micro-digital-servo",
+    "Arduino forum, servo pulse widths": "https://forum.arduino.cc/t/servo-pulse-widths/286525",
+    "DroneBot Workshop, ESP32 servo": "https://dronebotworkshop.com/esp32-servo/",
+    "Last Minute Engineers, ESP32 servo": "https://lastminuteengineers.com/esp32-servo-motor-tutorial/",
+    "Agamem AA51880 servo controller": "http://www.projects.scorchingbay.nz/dokuwiki/_media/electronic/datasheet/agamem/aa51880.pdf",
+    "4tronix SG90, operating voltage": "https://shop.4tronix.co.uk/products/sg90-9g-micro-servo"
+  },
+  "real": { "maker": "Tower Pro", "number": "SG90", "datasheet": "Tower Pro SG90 Analog" },
+  "pins": { "GND": [1], "VCC": [2], "SIGNAL": [3] },
+  "model": {
+    "kind": "sg90",
+    "input_threshold": {
+      "low": { "value": 0.3, "unit": "1", "source": { "closed_form": { "note": "The AA51880 sheet lists no VIN threshold. 0.3 of the supply is the low, under the high." } } },
+      "high": { "value": 0.5, "unit": "1", "source": { "closed_form": { "note": "The AA51880 sheet lists no VIN threshold. ESP32 boards drive the signal from a 3.3 V GPIO while the motor runs from 5 V, as in the Last Minute Engineers and DroneBot Workshop ESP32 servo pages. 0.5 of the supply is 3.0 V at the 6 V sheet maximum and 2.5 V at 5 V, so a 3.3 V high clears it." } } }
+    },
+    "pins": { "VCC": "VCC", "GND": "GND", "SIGNAL": "SIGNAL" }
+  },
+  "readings": {
+    "angle": { "of": "angle" }
+  },
+  "joints": {
+    "horn": { "node": "horn", "turn": [0, 0, -1], "range": { "value": 180, "unit": "deg" }, "by": "angle" }
+  },
+  "not_simulated": [
+    { "what": "load and stall", "why": "Nothing pushes on the shaft, so the 1.8 kg·cm stall torque and the 520 mA stall current from the sheets are not states. The current is 140 mA while the shaft is moving and 5 mA while it holds." },
+    { "what": "speed off the two cited points", "why": "Tower Pro and Luxorparts state 0.12 s per 60° at 4.8 V. Luxorparts states 0.10 s per 60° at 6 V. Between 4.8 V and 6 V the speed is the straight line through those two figures. Below 4.8 V, down to 3.0 V, no slower figure is cited, so the speed is the 4.8 V figure times the supply over 4.8 V. Below 4.5 V the part warns supply. 4.5 V is the low end of the range the Nano's 5 V pin can read, so that pin does not warn. At 6 V and above it holds the 6 V speed." },
+    { "what": "supply below 3.0 V", "why": "The AA51880 sheet lists no operating supply range, no UVLO and no restart level. Its 2.3 V is VREG minimum, the regulator output at Vcc 4.8 V. 4tronix lists an SG90 operating voltage of 3.0 V to 7.2 V, the lowest such minimum among the cited sheets. Below 3.0 V the shaft stays put and the draw is none. Above 3.0 V it follows, including after a dip below 3.0 V. When the 140 mA moving draw itself pulls the supply under 3.0 V, the shaft holds and the part warns that the supply sags under the moving draw. A real SG90 browns out and jitters there, because the controller resets and tries again. The model holds the shaft instead of buzzing, and the draw returns to the 5 mA hold as soon as the rail recovers." }
+  ]
+}

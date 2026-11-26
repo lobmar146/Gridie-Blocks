@@ -1,0 +1,25 @@
+// The load values and sources are the engine's resonator loads, from
+// packages/engine/tests/circuits/atmega-board-button/netlist.json, parts `res_xtal1` and `res_xtal2`.
+{
+  "format": 1, "part": "resonator-cstce", "version": "0.2.0", "listed": false, "title": "Ceramic resonator, 16 MHz, 3 terminals", "license": "MIT OR Apache-2.0",
+  "summary": "Murata CSTCE 16 MHz ceramic resonator with built-in load capacitors. Three terminals: IN, GND in the middle, OUT.",
+  "tags": ["resonator", "clock", "ceramic", "smd"],
+  "docs": { "Murata CSTCE16M0V53-R0": null },
+  "real": { "maker": "Murata", "number": "CSTCE16M0V53-R0", "datasheet": "Murata CSTCE16M0V53-R0" },
+  "pins": { "IN": [1], "GND": [2], "OUT": [3] },
+  "model": {
+    "load_in": {
+      "kind": "capacitor",
+      "capacitance": { "value": 1.5e-11, "unit": "F", "source": { "datasheet": { "doc": "Murata CSTCE16M0V53-R0", "at": "Built-in Load Capacitance, 15 pF", "basis": "nominal" } } },
+      "initial": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "held at 0 V, so the operating point has a DC path on this net" } } },
+      "pins": { "a": "IN", "b": "GND" },
+    },
+    "load_out": {
+      "kind": "capacitor",
+      "capacitance": { "value": 1.5e-11, "unit": "F", "source": { "datasheet": { "doc": "Murata CSTCE16M0V53-R0", "at": "Built-in Load Capacitance, 15 pF", "basis": "nominal" } } },
+      "initial": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "held at 0 V, so the operating point has a DC path on this net" } } },
+      "pins": { "a": "OUT", "b": "GND" },
+    },
+  },
+  "not_simulated": [{ "what": "oscillation", "why": "The engine's chips take their clock as a value. The built-in loads stand in." }],
+}

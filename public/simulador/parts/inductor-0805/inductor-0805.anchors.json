@@ -1,0 +1,8 @@
+{
+  "part": "inductor-0805",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [-0.84, 0.0, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [0.84, 0.0, 0.0], "axis": [0.0, 0.0, -1.0], "kind": "pad"}
+  ]
+}

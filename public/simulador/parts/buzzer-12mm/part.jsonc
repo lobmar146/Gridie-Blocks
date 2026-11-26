@@ -1,0 +1,46 @@
+// Same Sky CEM-1203(42), magnetic buzzer transducer, rev 1.05, 2025-01-29.
+// The coil is the engine's resistor. Sound pressure, inductance and the resonant current are not.
+{
+  "format": 6,
+  "part": "buzzer-12mm",
+  "version": "0.2.1",
+  "title": "12 mm magnetic buzzer",
+  "summary": "Externally driven 12 mm magnetic buzzer, Same Sky CEM-1203(42), with a 42 ohm coil for 3 V to 5 V. It sounds the note of the wave that drives it.",
+  "tags": ["buzzer", "sound", "transducer", "passive", "through-hole", "tone"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "Same Sky CEM-1203(42), rev 1.05, 2025-01-29": "https://www.sameskydevices.com/product/resource/cem-1203-42-.pdf",
+  },
+  "real": { "maker": "Same Sky", "number": "CEM-1203(42)", "datasheet": "Same Sky CEM-1203(42), rev 1.05, 2025-01-29" },
+  "pins": { "+": [1], "-": [2] },
+  "model": {
+    "kind": "resistor",
+    "resistance": {
+      "value": 42,
+      "unit": "ohm",
+      "source": {
+        "datasheet": {
+          "doc": "Same Sky CEM-1203(42), rev 1.05, 2025-01-29",
+          "at": "Specifications, coil resistance, typical 42 ohm (36 to 48)",
+          "basis": "typical",
+        },
+      },
+    },
+    "ratings": {
+      "power": null,
+      "voltage": {
+        "min": { "value": 3.0, "unit": "V", "source": { "datasheet": { "doc": "Same Sky CEM-1203(42), rev 1.05, 2025-01-29", "at": "Specifications, operating voltage, 3 to 5 Vo-p", "basis": "min" } } },
+        "max": { "value": 5.0, "unit": "V", "source": { "datasheet": { "doc": "Same Sky CEM-1203(42), rev 1.05, 2025-01-29", "at": "Specifications, operating voltage, 3 to 5 Vo-p", "basis": "max" } } },
+      },
+    },
+    "pins": { "a": "+", "b": "-" },
+  },
+  "readings": {
+    "hz": { "of": "hz" },
+  },
+  "not_simulated": [
+    { "what": "sound", "why": "The engine reports the pitch, as `hz`, and not sound pressure. `hz` is 0, the note that was playing, or the note now playing, within 0.5% of the timer frequency, and never another pitch. It shows a new note by the end of its first full cycle, rise to rise, and PWM, whose high and low differ, by the end of its second. A cycle counts when its high and low agree within 0.5%, or repeat the cycle before, and the reading is the median of the cycles that count and are within 0.6% of the latest. A `tone()` start pulse never counts, and a cycle that spans a note change counts only as the old note or the new one. The drive still for 17 ms, longer than a half-cycle of 31 Hz, the lowest note a Nano plays, reads 0. So `noTone()` reads 0 17 ms after the last edge, and a pulse train slower than 31 Hz reads 0 between its pulses. The coil must swing 0.2 V within the latest cycle, so a coil with no supply or an open circuit reads 0. Above 20 kHz reads 0. The sheet's 85 dBA minimum is at 3.5 V peak, 2048 Hz, half duty, at 10 cm. A drive outside the 3 V to 5 V operating window still sounds, and the run warns `rating.voltage`." },
+    { "what": "inductance and resonance", "why": "The coil is its DC resistance, 42 ohm. At the 2048 Hz rated frequency the sheet's current is 35 mA maximum at 3.5 V peak, so the impedance there is higher than 42 ohm. A 5 V pin across 42 ohm draws more than that pin's 40 mA and the run warns. There is no inductance, so there is no flyback pulse and the sheet's diode is not required for this model." },
+    { "what": "self oscillation", "why": "This part is quiet on DC. A buzzer with its own oscillator sounds at its resonant frequency whenever DC is applied, and that part is not this one." },
+  ],
+}

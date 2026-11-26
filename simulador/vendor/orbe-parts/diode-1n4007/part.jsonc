@@ -1,0 +1,29 @@
+// Vishay's 1N4001 datasheet covers the 1N4001 to the 1N4007, which differ only in reverse voltage.
+{
+  "format": 5,
+  "part": "diode-1n4007",
+  "version": "0.2.1",
+  "title": "Rectifier diode, 1N4007",
+  "summary": "1 A, 1000 V rectifier in DO-41, with its leads bent to 10.16 mm (0.4 inch) for a breadboard. The band marks the cathode.",
+  "tags": ["diode", "rectifier", "flyback", "reverse protection", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Vishay 1N4001, Document Number 88503, Revision 29-Apr-2020": "https://www.vishay.com/docs/88503/1n4001.pdf" },
+  "real": { "maker": "Vishay", "number": "1N4007", "datasheet": "Vishay 1N4001, Document Number 88503, Revision 29-Apr-2020" },
+  "pins": { "anode": [1], "cathode": [2] },
+  "model": {
+    "kind": "diode",
+    "saturation_current": { "value": 9.4334e-08, "unit": "A", "source": { "datasheet": { "doc": "Vishay 1N4001, Document Number 88503, Revision 29-Apr-2020", "at": "Fig. 4, Typical Instantaneous Forward Characteristics, TJ = 25 C; fit through (0.62 V, 10 mA), (0.80 V, 0.25 A), (1.00 V, 2.6 A) at kT/q for 298.15 K", "basis": "typical" } } },
+    "emission_coefficient": { "value": 2.0844, "unit": "1", "source": { "datasheet": { "doc": "Vishay 1N4001, Document Number 88503, Revision 29-Apr-2020", "at": "Fig. 4, Typical Instantaneous Forward Characteristics, TJ = 25 C; fit through (0.62 V, 10 mA), (0.80 V, 0.25 A), (1.00 V, 2.6 A) at kT/q for 298.15 K", "basis": "typical" } } },
+    "series_resistance": { "value": 0.0317, "unit": "ohm", "source": { "datasheet": { "doc": "Vishay 1N4001, Document Number 88503, Revision 29-Apr-2020", "at": "Fig. 4, Typical Instantaneous Forward Characteristics, TJ = 25 C; fit through (0.62 V, 10 mA), (0.80 V, 0.25 A), (1.00 V, 2.6 A) at kT/q for 298.15 K", "basis": "typical" } } },
+    "ratings": {
+      "current": { "value": 1.0, "unit": "A", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.16, "unit": "s", "source": { "closed_form": { "note": "One 8.3 ms half sine of the 30 A IFSM, from cold, reaches the 1 A IF(AV) on a mean with this time constant, by the filter's exact step." } } }, "peak": { "value": 30.0, "unit": "A", "source": { "datasheet": { "doc": "Vishay 1N4001, Document Number 88503, Revision 29-Apr-2020", "at": "MAXIMUM RATINGS, peak forward surge current IFSM, 8.3 ms single half sine-wave", "basis": "absolute_max" } } } } }, "source": { "datasheet": { "doc": "Vishay 1N4001, Document Number 88503, Revision 29-Apr-2020", "at": "MAXIMUM RATINGS, maximum average forward rectified current IF(AV), TA = 75 C", "basis": "absolute_max" } } },
+      "power": null,
+    },
+  },
+  "not_simulated": [
+    { "what": "reverse breakdown", "why": "The engine's diode has no breakdown voltage. The 1N4007 is rated to 1000 V reverse, so a circuit below that sees the same blocking." },
+    { "what": "junction capacitance and reverse recovery", "why": "The engine's diode has no charge storage, so it turns off at once." },
+    { "what": "temperature", "why": "The fit is at 25 C and the engine has no temperature." },
+    { "what": "power rating", "why": "The datasheet rates the average current, not a power, so only the current warns." },
+  ],
+}

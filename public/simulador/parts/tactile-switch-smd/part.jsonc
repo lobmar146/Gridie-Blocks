@@ -1,0 +1,27 @@
+// The contact values are the engine's reset button, from
+// packages/engine/tests/circuits/atmega-board-button/netlist.json, part `sw_reset`. No sheet for the part
+// number was found, so each value here is a guess with a note that says so.
+{
+  "format": 1, "part": "tactile-switch-smd", "version": "0.2.0", "title": "Push button, SMD", "license": "MIT OR Apache-2.0",
+  "summary": "Surface-mount tact switch, 3.5 x 4.7 mm. Legs 1-2 are one contact and legs 3-4 the other. Pressing joins the pairs.",
+  "tags": ["switch", "button", "tactile", "smd"],
+  "docs": { "TS42031-160R-TR-7260": null },
+  "real": { "generic": true, "maker": null, "number": "TS42031-160R-TR-7260", "datasheet": "TS42031-160R-TR-7260" },
+  "pins": { "a": [1, 2], "b": [3, 4] },
+  "params": {
+    "bounce": { "unit": "s", "default": null, "sets": "/bounce/window" },
+    "max_bounces": { "unit": "1", "default": 2, "sets": "/bounce/max_bounces" },
+  },
+  "model": {
+    "kind": "switch",
+    "on_resistance": { "value": 0.1, "unit": "ohm", "source": { "closed_form": { "note": "A guess. The schematic names TS42031-160R-TR-7260. No sheet for that part number was found. The closed model is 0.1 ohm, a 100 milliohm contact." } } },
+    "off_resistance": { "value": 100000000.0, "unit": "ohm", "source": { "closed_form": { "note": "A guess. The schematic names TS42031-160R-TR-7260. No sheet for that part number was found. The open model is 1e8 ohm, a 100 megohm insulation." } } },
+    "initial": "open",
+    "events": [],
+    "bounce": null,
+  },
+  "controls": { "press": { "input": "contact", "joint": "plunger" } },
+  "joints": {
+    "plunger": { "node": "button", "slide": [0, 0, -1], "range": { "value": 0.2, "unit": "mm", "source": { "closed_form": { "note": "A guess. No sheet for TS42031-160R-TR-7260 was found, so the travel is 0.2 mm until one is." } } } },
+  },
+}

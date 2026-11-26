@@ -1,0 +1,31 @@
+{
+  "name": "orbe-wasm",
+  "version": "0.3.1",
+  "private": true,
+  "license": "MIT OR Apache-2.0",
+  "type": "module",
+  "main": "./orbe_wasm.js",
+  "module": "./orbe_wasm.js",
+  "types": "./orbe_wasm.d.ts",
+  "exports": {
+    ".": {
+      "types": "./orbe_wasm.d.ts",
+      "default": "./orbe_wasm.js"
+    },
+    "./orbe_wasm_bg.wasm": "./orbe_wasm_bg.wasm",
+    "./worker.js": "./worker.js"
+  },
+  "files": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "package.json",
+    "orbe_wasm.d.ts",
+    "orbe_wasm.js",
+    "orbe_wasm_bg.wasm",
+    "orbe_wasm_bg.wasm.d.ts",
+    "worker.js"
+  ],
+  "orbe": {
+    "commit": "de9991a78f5f2e7422ccfc2e63ca4b5f5a04da70"
+  }
+}

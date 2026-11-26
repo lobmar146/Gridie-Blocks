@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "part": "tactile-switch-6mm",
+  "version": "0.2.0",
+  "title": "Push button, 6 mm",
+  "summary": "Momentary 6 x 6 mm tact switch with four legs. Legs 1-2 are joined, legs 3-4 are joined, and pressing joins the two pairs.",
+  "tags": ["button", "switch", "input", "momentary", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Omron B3F": "https://omronfs.omron.com/en_US/ecb/products/pdf/en-b3f.pdf" },
+  "real": { "maker": "Omron", "number": "B3F-1000", "datasheet": "Omron B3F" },
+  "buy": [
+    { "seller": "DigiKey", "url": "https://www.digikey.com/en/products/detail/omron-electronics-inc-emc-div/B3F-1000/33150", "checked": "2026-11-08" },
+  ],
+  "pins": { "a": [1, 2], "b": [3, 4] },
+  "params": {
+    "bounce": { "unit": "s", "default": null, "sets": "/bounce/window" },
+    "max_bounces": { "unit": "1", "default": 2, "sets": "/bounce/max_bounces" },
+  },
+  "model": {
+    "kind": "switch",
+    "on_resistance": { "value": 0.1, "unit": "ohm", "source": { "datasheet": { "doc": "Omron B3F", "at": "Ratings/Characteristics, contact resistance (initial value) 100 mohm max.", "basis": "max" } } },
+    "off_resistance": { "value": 1e8, "unit": "ohm", "source": { "datasheet": { "doc": "Omron B3F", "at": "Ratings/Characteristics, insulation resistance 100 Mohm min.", "basis": "min" } } },
+    "initial": "open",
+    "events": [],
+    "bounce": null,
+  },
+  "controls": { "press": { "input": "contact", "joint": "plunger" } },
+  "joints": {
+    "plunger": { "node": "stem", "slide": [0, 0, -1], "range": { "value": 0.25, "unit": "mm", "source": { "datasheet": { "doc": "Omron B3F", "at": "Operating Characteristics, 6 x 6 mm, pretravel", "basis": "nominal" } } } },
+  },
+  "facts": {
+    "bounce_time": { "value": 5, "unit": "ms", "source": { "datasheet": { "doc": "Omron B3F", "at": "Ratings/Characteristics, bounce time", "basis": "max" } } },
+    "pretravel": { "value": 0.25, "unit": "mm", "source": { "datasheet": { "doc": "Omron B3F", "at": "Operating Characteristics, 6 x 6 mm, pretravel", "basis": "nominal" } } },
+  },
+  "not_simulated": [
+    { "what": "operating force", "why": "A press is a contact change. Force and travel are drawing facts only." },
+  ],
+}

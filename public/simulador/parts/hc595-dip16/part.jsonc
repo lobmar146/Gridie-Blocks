@@ -1,0 +1,55 @@
+// TI SN74HC595, PDIP-16. QA is the first shift-register stage and QH the last.
+// QHp is the sheet's QH', the serial output that feeds the next register.
+{
+  "format": 5,
+  "part": "hc595-dip16",
+  "version": "0.1.1",
+  "title": "74HC595 8-bit shift register (DIP-16)",
+  "summary": "8-bit serial-in, parallel-out shift register in a DIP-16. Three pins from a microcontroller drive eight outputs, and it chains to more registers.",
+  "tags": ["74hc595", "shift-register", "output", "through-hole", "dip"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "TI SNx4HC595 datasheet, SCLS041J": "https://www.ti.com/lit/ds/symlink/sn74hc595.pdf"
+  },
+  "real": { "maker": "Texas Instruments", "number": "SN74HC595N", "datasheet": "TI SNx4HC595 datasheet, SCLS041J" },
+  "pins": {
+    "QB": [1], "QC": [2], "QD": [3], "QE": [4], "QF": [5], "QG": [6], "QH": [7], "GND": [8],
+    "QHp": [9], "SRCLR": [10], "SRCLK": [11], "RCLK": [12], "OE": [13], "SER": [14], "QA": [15], "VCC": [16]
+  },
+  "model": {
+    "kind": "hc595",
+    "output": {
+      "high_drop": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "The stage is a resistance from the rail. SCLS041J section 6.5, VOH typical 4.3 V at IOH = -6 mA, VCC = 4.5 V, TA = 25 C, QA–QH" } } },
+      "high_resistance": { "value": 33.333333333333336, "unit": "ohm", "source": { "closed_form": { "note": "(4.5 V - 4.3 V) / 6 mA, from the VOH typical above" } } },
+      "low_drop": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "The stage is a resistance from the rail. SCLS041J section 6.5, VOL typical 0.17 V at IOL = 6 mA, VCC = 4.5 V, TA = 25 C, QA–QH" } } },
+      "low_resistance": { "value": 28.333333333333332, "unit": "ohm", "source": { "closed_form": { "note": "0.17 V / 6 mA, from the VOL typical above" } } }
+    },
+    "serial_output": {
+      "high_drop": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "The stage is a resistance from the rail. SCLS041J section 6.5, VOH typical 4.3 V at IOH = -4 mA, VCC = 4.5 V, TA = 25 C, QH'" } } },
+      "high_resistance": { "value": 50.0, "unit": "ohm", "source": { "closed_form": { "note": "(4.5 V - 4.3 V) / 4 mA, from the QH' VOH typical above" } } },
+      "low_drop": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "The stage is a resistance from the rail. SCLS041J section 6.5, VOL typical 0.17 V at IOL = 4 mA, VCC = 4.5 V, TA = 25 C, QH'" } } },
+      "low_resistance": { "value": 42.5, "unit": "ohm", "source": { "closed_form": { "note": "0.17 V / 4 mA, from the QH' VOL typical above" } } }
+    },
+    "input_threshold": {
+      "low": { "value": 0.3, "unit": "1", "source": { "datasheet": { "doc": "TI SNx4HC595 datasheet, SCLS041J", "at": "section 6.3, VIL max 1.35 V at VCC = 4.5 V and 1.8 V at VCC = 6 V, both 0.3 VCC", "basis": "max" } } },
+      "high": { "value": 0.7, "unit": "1", "source": { "datasheet": { "doc": "TI SNx4HC595 datasheet, SCLS041J", "at": "section 6.3, VIH min 3.15 V at VCC = 4.5 V and 4.2 V at VCC = 6 V, both 0.7 VCC", "basis": "min" } } }
+    },
+    "ratings": {
+      "pin_current": { "value": 0.035, "unit": "A", "basis": { "sustained": { "average": "rms", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "TI SNx4HC595 datasheet, SCLS041J", "at": "section 6.1 Absolute Maximum Ratings, continuous output current, ±35 mA", "basis": "absolute_max" } } },
+      "supply_current": { "value": 0.07, "unit": "A", "basis": { "sustained": { "average": "rms", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "TI SNx4HC595 datasheet, SCLS041J", "at": "section 6.1 Absolute Maximum Ratings, continuous current through VCC or GND, ±70 mA", "basis": "absolute_max" } } },
+      "input_margin": { "value": 0.5, "unit": "V", "source": { "datasheet": { "doc": "TI SNx4HC595 datasheet, SCLS041J", "at": "section 6.1, VI -0.5 V to VCC + 0.5 V, and IIK ±20 mA when VI is below GND or above VCC", "basis": "absolute_max" } } },
+      "output_margin": { "value": 0.5, "unit": "V", "source": { "datasheet": { "doc": "TI SNx4HC595 datasheet, SCLS041J", "at": "section 6.1, VO -0.5 V to VCC + 0.5 V, and IOK ±20 mA when VO is below GND or above VCC", "basis": "absolute_max" } } }
+    },
+    "pins": {
+      "QB": "QB", "QC": "QC", "QD": "QD", "QE": "QE", "QF": "QF", "QG": "QG", "QH": "QH", "GND": "GND",
+      "QHp": "QHp", "SRCLR": "SRCLR", "SRCLK": "SRCLK", "RCLK": "RCLK", "OE": "OE", "SER": "SER", "QA": "QA", "VCC": "VCC"
+    }
+  },
+  "not_simulated": [
+    { "what": "power-on state", "why": "The shift register and the storage register power on cleared, and the outputs follow that while OE is low. A real part's power-on state is undefined." },
+    { "what": "supply ceiling", "why": "The outputs and QHp release, and the inputs are ignored, while VCC is below 2 V, the section 6.3 recommended minimum. At 2 V they drive. Section 6.3's 6 V recommended maximum and section 6.1's 7 V absolute maximum are not voltage ratings. A pin above VCC does not charge VCC: the model has no clamp diode." },
+    { "what": "thresholds at 2 V", "why": "The thresholds are 0.3 VCC and 0.7 VCC, the 4.5 V and 6 V columns of section 6.3. At 2 V the sheet's limits are 0.5 V and 1.5 V, 0.25 VCC and 0.75 VCC." },
+    { "what": "output curve", "why": "Each stage is the section 6.5 typical resistance at VCC = 4.5 V and 25 C, QA–QH at 6 mA and QH' at 4 mA, and it does not saturate. A shorted output therefore reads more current than a real pin. rating.current reads the model's current." },
+    { "what": "timing spread", "why": "SRCLK moves QHp after 17 ns, RCLK moves QA–QH after 17 ns, SRCLR clears after 18 ns, and OE enables in 15 ns and disables in 23 ns. Those are the section 6.7 typicals at VCC = 4.5 V, CL = 50 pF and 25 C. They do not move with VCC or load. Setup time, hold time and minimum pulse width are not checked." }
+  ]
+}

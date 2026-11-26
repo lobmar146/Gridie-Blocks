@@ -1,0 +1,57 @@
+// The model's values and sources are the engine's ATmega328P values, from
+// packages/engine/tests/circuits/atmega-board-button/netlist.json, part `mcu`. The ratings
+// cite DS40002061B §29.1 directly, and `active_current` and `reset_current` cite its pages.
+{
+  "format": 5, "part": "atmega328p-tqfp32", "version": "0.2.2", "title": "ATmega328P, TQFP-32", "license": "MIT OR Apache-2.0",
+  "summary": "ATmega328P-AU in a 7 x 7 mm TQFP-32: an 8-bit AVR microcontroller with 32 KB of flash. The dot marks the lead-1 corner.",
+  "tags": ["microcontroller", "avr", "tqfp"],
+  "docs": {
+    "DS40002061B": "https://ww1.microchip.com/downloads/en/DeviceDoc/ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061B.pdf",
+    "avr-1.8.6 boards.txt": null,
+  },
+  "real": { "maker": "Microchip", "number": "ATmega328P-AU", "datasheet": "DS40002061B" },
+  "pins": {
+    "PD3": [1], "PD4": [2], "GND": [3, 5, 21], "VCC": [4, 6], "PB6": [7], "PB7": [8], "PD5": [9], "PD6": [10],
+    "PD7": [11], "PB0": [12], "PB1": [13], "PB2": [14], "PB3": [15], "PB4": [16], "PB5": [17], "AVCC": [18],
+    "ADC6": [19], "AREF": [20], "ADC7": [22], "PC0": [23], "PC1": [24], "PC2": [25], "PC3": [26], "PC4": [27],
+    "PC5": [28], "PC6": [29], "PD0": [30], "PD1": [31], "PD2": [32],
+  },
+  "params": { "firmware": { "file": "hex", "as": "text", "required": true, "example": "example.hex", "sets": "/firmware" } },
+  "model": {
+    "kind": "atmega328p",
+    "clock_hz": { "value": 16000000, "unit": "Hz", "source": { "datasheet": { "doc": "avr-1.8.6 boards.txt", "at": "f_cpu 16000000, the resonator CSTCE16M0V53-R0 frequency the runtime programs", "basis": "nominal" } } },
+    "fuses": { "low": 255, "high": 223, "extended": 253 },
+    "output": {
+      "high_drop": { "value": 0.0, "unit": "V", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-355", "basis": "typical" } } },
+      "high_resistance": { "value": 25.0, "unit": "ohm", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-355", "basis": "typical" } } },
+      "low_drop": { "value": 0.0, "unit": "V", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-353", "basis": "typical" } } },
+      "low_resistance": { "value": 25.0, "unit": "ohm", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-353", "basis": "typical" } } },
+    },
+    "pull_up_resistance": { "value": 35714.0, "unit": "ohm", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-348", "basis": "typical" } } },
+    "reset_pull_up_resistance": { "value": 46296.0, "unit": "ohm", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-351", "basis": "typical" } } },
+    "leakage_resistance": { "value": 5500000.0, "unit": "ohm", "source": { "closed_form": { "note": "DS40002061B Table 30-1: IIL and IIH at most 1 uA at VCC = 5.5 V, so 5.5 V / 1 uA" } } },
+    "input_threshold": {
+      "low": { "value": 0.42, "unit": "1", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-357", "basis": "typical" } } },
+      "high": { "value": 0.52, "unit": "1", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-356", "basis": "typical" } } },
+    },
+    "reset_threshold": {
+      "low": { "value": 0.42, "unit": "1", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-360", "basis": "typical" } } },
+      "high": { "value": 0.44, "unit": "1", "source": { "datasheet": { "doc": "DS40002061B", "at": "Figure 31-359", "basis": "typical" } } },
+    },
+    "pins": { "GND_8": "GND", "GND_22": "GND" },
+    "active_current": { "value": 0.0114, "unit": "A", "source": { "closed_form": { "note": "DS40002061B page 502, Figure 31-333, Active Supply Current vs. Frequency: 9.6 mA on the 5.0 V curve at 16 MHz, measured with every PRR bit set. The Arduino core leaves PRR at its reset value 0x00, so the seven modules it gates draw 18.3 % more, page 506, Table 31-16: 9.6 mA x 1.183" } } },
+    "reset_current": { "value": 0.002, "unit": "A", "source": { "datasheet": { "doc": "DS40002061B", "at": "page 525, Figure 31-377, Reset Supply Current vs. Frequency: about 2.0 mA on the 5.0 V curve at 16 MHz", "basis": "typical" } } },
+    "ratings": {
+      "pin_current": { "value": 0.04, "unit": "A", "basis": { "sustained": { "average": "rms", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "DS40002061B", "at": "§29.1 Absolute Maximum Ratings, page 308: DC Current per I/O Pin, 40.0 mA", "basis": "absolute_max" } } },
+      "supply_current": { "value": 0.2, "unit": "A", "basis": { "sustained": { "average": "rms", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "DS40002061B", "at": "§29.1 Absolute Maximum Ratings, page 308: DC Current VCC and GND Pins, 200.0 mA", "basis": "absolute_max" } } },
+      "rail_margin": { "value": 0.5, "unit": "V", "source": { "datasheet": { "doc": "DS40002061B", "at": "§29.1 Absolute Maximum Ratings, page 308: Voltage on any Pin except RESET with respect to Ground, -0.5 V to VCC + 0.5 V", "basis": "absolute_max" } } },
+      "reset_voltage": { "value": 13.0, "unit": "V", "source": { "datasheet": { "doc": "DS40002061B", "at": "§29.1 Absolute Maximum Ratings, page 308: Voltage on RESET with respect to Ground, -0.5 V to +13.0 V", "basis": "absolute_max" } } },
+      "supply_voltage": { "value": 6.0, "unit": "V", "source": { "datasheet": { "doc": "DS40002061B", "at": "§29.1 Absolute Maximum Ratings, page 308: Maximum Operating Voltage, 6.0 V", "basis": "absolute_max" } } },
+    },
+  },
+  "not_simulated": [
+    { "what": "output saturation", "why": "Each output stage is linear, 25 ohm from its rail, read at 20 mA. A real driver saturates far past that, so a pin shorted to the other rail reads 200 mA at 5 V, about twice a real pin's current. `rating.current` reads the model's current." },
+    { "what": "clamp diodes", "why": "No protection diode conducts, so a pin driven past VCC or below GND draws no clamp current. `rating.voltage` reports the pin." },
+    { "what": "supply current", "why": "The core's own draw is a conductance from VCC to GND that draws the sheet's typical 11.4 mA at 5 V and 16 MHz while it runs, and its typical 2.0 mA while RESET or a brown-out holds it in reset, so each scales with VCC. A real chip's draw moves with the sketch, sleep modes, the clock and the part, and the sheet's typical curves are not tested limits. The ratings sum this draw with the pins' currents through VCC and GND." },
+  ],
+}

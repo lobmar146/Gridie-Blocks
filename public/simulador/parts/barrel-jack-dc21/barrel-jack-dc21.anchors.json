@@ -1,0 +1,9 @@
+{
+  "part": "barrel-jack-dc21",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "lead-1", "also": [], "at": [3.748, -4.495, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "lead-2", "also": [], "at": [6.745, 0.509, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "lead-3", "also": [], "at": [0.751, 0.509, -3.0], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

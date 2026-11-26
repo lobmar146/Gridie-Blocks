@@ -1,0 +1,11 @@
+{
+  "part": "relay-srd-05vdc-sl-c",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "pin-1", "also": [], "at": [-8.1, 0.0, 0.0], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 2, "node": "pin-2", "also": [], "at": [-6.1, 6.0, 0.0], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 3, "node": "pin-3", "also": [], "at": [6.1, 6.0, 0.0], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 4, "node": "pin-4", "also": [], "at": [6.1, -6.0, 0.0], "axis": [0.0, 0.0, 1.0], "kind": "leg"},
+    {"lead": 5, "node": "pin-5", "also": [], "at": [-6.1, -6.0, 0.0], "axis": [0.0, 0.0, 1.0], "kind": "leg"}
+  ]
+}

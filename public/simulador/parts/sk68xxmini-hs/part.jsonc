@@ -1,0 +1,152 @@
+{
+  "format": 6,
+  "part": "sk68xxmini-hs",
+  "version": "0.2.2",
+  "title": "SK68XXMINI-HS addressable RGB LED",
+  "summary": "SK68XXMINI-HS addressable RGB LED in a 3.7 x 3.5 mm package. It takes a 24-bit colour on DIN and passes the rest of the chain on to DOUT.",
+  "tags": ["led", "rgb", "addressable", "ws2812"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "SPC / SK68XX MINI-HS Rev. 04": null },
+  "real": { "maker": "SPC", "number": "SK68XXMINI-HS", "datasheet": "SPC / SK68XX MINI-HS Rev. 04" },
+  "pins": { "GND": [1], "DIN": [2], "VDD": [3], "DOUT": [4] },
+  "model": {
+    "kind": "ws2812",
+    "leds": 1,
+    "pins": { "VCC": "VDD", "GND": "GND", "DIN": "DIN", "DOUT": "DOUT" },
+    "input_threshold": {
+      "low": {
+        "value": 0.3,
+        "unit": "1",
+        "source": {
+          "datasheet": {
+            "doc": "SPC / SK68XX MINI-HS Rev. 04",
+            "at": "Section 10, VIL 0.3 VDD maximum, test condition VDD = 5.0 V",
+            "basis": "max"
+          }
+        }
+      },
+      "high": {
+        "value": 0.7,
+        "unit": "1",
+        "source": {
+          "datasheet": {
+            "doc": "SPC / SK68XX MINI-HS Rev. 04",
+            "at": "Section 10, VIH 0.7 VDD minimum, test condition VDD = 5.0 V",
+            "basis": "min"
+          }
+        }
+      }
+    },
+    "draw": {
+      "channel_current": {
+        "value": 0.012,
+        "unit": "A",
+        "source": {
+          "datasheet": {
+            "doc": "SPC / SK68XX MINI-HS Rev. 04",
+            "at": "Section 9 names SK6812MINI-HS at 12 mA, the 12 mA current version of section 7. The sheet gives one current for the part, so each channel draws 12 mA at 255",
+            "basis": "typical"
+          }
+        }
+      },
+      "idle_current": {
+        "value": 0.001,
+        "unit": "A",
+        "source": {
+          "datasheet": {
+            "doc": "SPC / SK68XX MINI-HS Rev. 04",
+            "at": "Section 10, static IDD, typical 1 mA",
+            "basis": "typical"
+          }
+        }
+      },
+      "holds_above": {
+        "value": 3.7,
+        "unit": "V",
+        "source": {
+          "datasheet": {
+            "doc": "SPC / SK68XX MINI-HS Rev. 04",
+            "at": "Section 8, VDD +3.7 V to +5.5 V. Below 3.7 V the draw fades to none at 0 V",
+            "basis": "min"
+          }
+        }
+      }
+    },
+    "min_supply": {
+      "value": 3.0,
+      "unit": "V",
+      "source": {
+        "closed_form": {
+          "note": "SPC / SK68XX MINI-HS Rev. 04 section 8 lists VDD +3.7 V to +5.5 V and states no under-voltage floor, while ESP32-S3-DevKitC-1 ties this LED to its 3.3 V regulator (SGM2212-3.3, 3.267 V minimum). 3.0 V sits below that rail so the board LED lights while an unpowered or collapsed supply stays off."
+        }
+      }
+    },
+    "dout": {
+      "output": {
+        "high_drop": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "The sheet gives no DOUT output voltage. DOUT drives the next LED's DIN, which draws no current in the engine, so a high sits at VDD" } } },
+        "high_resistance": { "value": 100.0, "unit": "ohm", "source": { "closed_form": { "note": "The sheet gives no DOUT drive strength. DIN draws no current, so the level DOUT sets does not depend on this value. 100 ohm keeps a DOUT shorted to GND at 50 mA at 5 V" } } },
+        "low_drop": { "value": 0.0, "unit": "V", "source": { "closed_form": { "note": "The sheet gives no DOUT output voltage. DOUT drives the next LED's DIN, which draws no current in the engine, so a low sits at GND" } } },
+        "low_resistance": { "value": 100.0, "unit": "ohm", "source": { "closed_form": { "note": "The sheet gives no DOUT drive strength. DIN draws no current, so the level DOUT sets does not depend on this value. 100 ohm keeps a DOUT shorted to VDD at 50 mA at 5 V" } } }
+      },
+      "delay": {
+        "value": 500000,
+        "unit": "ps",
+        "source": {
+          "datasheet": {
+            "doc": "SPC / SK68XX MINI-HS Rev. 04",
+            "at": "Section 11, DIN to DOUT transmission delay, 500 ns maximum",
+            "basis": "max"
+          }
+        }
+      }
+    },
+    "ratings": {
+      "rail_margin": {
+        "value": 0.5,
+        "unit": "V",
+        "source": {
+          "datasheet": {
+            "doc": "SPC / SK68XX MINI-HS Rev. 04",
+            "at": "Section 8, Absolute Maximum Ratings: Logic input voltage VIN, -0.5 V to VDD + 0.5 V",
+            "basis": "absolute_max"
+          }
+        }
+      },
+      "supply_voltage": {
+        "value": 5.5,
+        "unit": "V",
+        "source": {
+          "datasheet": {
+            "doc": "SPC / SK68XX MINI-HS Rev. 04",
+            "at": "Section 8, Absolute Maximum Ratings: Power supply voltage VDD, +3.5 V to +5.5 V",
+            "basis": "absolute_max"
+          }
+        }
+      }
+    }
+  },
+  "readings": {
+    "color": { "of": "rgb" }
+  },
+  "view": {
+    "glow": [{ "node": "lens", "by": "color" }]
+  },
+  "not_simulated": [
+    {
+      "what": "data output",
+      "why": "DOUT follows DIN 500 ns later, rise and fall alike, once this LED holds its 24 bits, and is low before that and until the next reset. Section 11 gives that delay as a maximum and no typical, and gives no output widths, so DOUT passes each high as long as it came. The sheet gives no DOUT drive strength either; the output stage is 100 ohm to each rail. Bits a Pulses record carried, such as an ESP32-S3 RMT train, reach DIN only when the record ends. Past this LED's 24 bits they go on to the next LED as a record of their own, 500 ns later, and DOUT itself stays low."
+    },
+    {
+      "what": "light",
+      "why": "The reading `color` is the 8-bit red, green and blue the LED latched, not its luminous intensity. The sheet rates each colour's intensity separately, and the model does not weigh them. The drawing lights the lens in the latched colour, at full glow when its brightest channel is 255."
+    },
+    {
+      "what": "supply voltage",
+      "why": "Section 8 lists VDD from +3.7 V to +5.5 V and states no under-voltage floor. Below 3.0 V the pixel ignores DIN, clears to off (leaving only the faded idle draw, 0 A at 0 V) and releases DOUT, and recovers from the next full frame once VDD returns. The ESP32-S3-DevKitC-1 ties this LED to 3.3 V, above 3.0 V and below 3.7 V; the kind does not warn there, and its draw fades below 3.7 V, to 97% at 3.3 V. Section 9 also names SK6805MINI-HS at 5 mA, and the draw is the 12 mA SK6812MINI-HS."
+    },
+    {
+      "what": "bit times",
+      "why": "A 0 is a high of 220 ns to 400 ns and a 1 is a high of 580 ns to 1 us. Section 12 of this sheet gives T0H as 0.2 / 0.32 / 0.4 us and T1H as 0.62 / 0.64 / 1.0 us, and section 11 gives fDIN typical 800 kHz. The typical highs and the T0H maximum, 0.4 us, sit inside those windows. A high past 400 ns is dropped."
+    }
+  ]
+}

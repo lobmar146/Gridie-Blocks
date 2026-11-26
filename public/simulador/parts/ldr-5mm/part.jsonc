@@ -1,0 +1,43 @@
+// The curve is fitted to the GL5528 row of the page 2 table of Senba's GL55 manual, not to its
+// figures. The table gives 10 to 20 kohm at 10 lx and a gamma of 0.6 between 10 and 100 lx, so
+// the fit holds 3.77 kohm at 100 lx. Above 100 lx the sheet gives no value, and the fit is the
+// same line extended.
+{
+  "format": 5,
+  "part": "ldr-5mm",
+  "version": "0.2.2",
+  "title": "Photoresistor, 5 mm CdS (GL5528)",
+  "summary": "5 mm cadmium-sulphide light-dependent resistor. Its resistance falls as light rises, from 1 MΩ in the dark to 10 to 20 kΩ at 10 lx.",
+  "tags": ["ldr", "photoresistor", "light sensor", "light", "sensor", "voltage divider", "analog", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Senba GL55 Series CdS Photoresistor Manual": null },
+  "real": { "generic": true, "maker": "Senba", "number": "GL5528", "datasheet": "Senba GL55 Series CdS Photoresistor Manual" },
+  "buy": [
+    { "seller": "LCSC", "url": "https://www.lcsc.com/product-detail/Photoresistors_Senba-Sensing-Tech-GL5528_C125627.html", "checked": "2026-11-16" },
+  ],
+  "pins": { "a": [1], "b": [2] },
+  "model": {
+    "kind": "resistor",
+    "resistance": {
+      "kind": "world",
+      "quantity": "light",
+      "curve": {
+        "kind": "power",
+        "x": { "value": 10.0, "unit": "lx", "source": { "datasheet": { "doc": "Senba GL55 Series CdS Photoresistor Manual", "at": "p2 table, light resistance column header (10Lux), and Test Conditions, light resistance: 10 lx of standard light source A, 2856 K, after two hours at 400 to 600 lx", "basis": "nominal" } } },
+        "y": { "value": 15000.0, "unit": "ohm", "source": { "closed_form": { "note": "p2 table, GL5528 row, light resistance 10 to 20 kohm at 10 lx. The table has no typical, so the fit takes the center of the range" } } },
+        "exponent": { "value": -0.6, "unit": "1", "source": { "closed_form": { "note": "minus gamma. p2 table, GL5528 row, gamma 0.6, which Test Conditions defines as lg(R10 / R100) / lg(100 / 10). So R100 is R10 / 10^0.6, and the power law through both points falls 0.6 decades per decade of light" } } },
+        "max": { "value": 1000000.0, "unit": "ohm", "source": { "datasheet": { "doc": "Senba GL55 Series CdS Photoresistor Manual", "at": "p2 table, GL5528 row, dark resistance 1 Mohm, which Test Conditions defines as the resistance ten seconds after 10 lx is shut off. The table gives one value, with no minimum or typical", "basis": "nominal" } } },
+      },
+    },
+    "ratings": {
+      "power": { "value": 0.1, "unit": "W", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "Senba GL55 Series CdS Photoresistor Manual", "at": "p1 Types and Specifications, GL5528 max power 100 mW, at 25 C per p2 Test Conditions", "basis": "absolute_max" } } },
+    },
+  },
+  "not_simulated": [
+    { "what": "response time", "why": "The resistance follows the light at once. The sheet gives 20 ms to rise and 30 ms to fall, and longer in the dark: the dark resistance is the one ten seconds after the light goes off." },
+    { "what": "spread between cells", "why": "Every cell is the center of the sheet's 10 to 20 kΩ at 10 lx, so a real one can read up to a third higher or lower." },
+    { "what": "light history and color", "why": "The fit is the sheet's test: light source A at 2856 K, after two hours at 400 to 600 lx. The cell peaks at 540 nm, and the engine's `light` is lux with no color." },
+    { "what": "temperature", "why": "The fit is at 25 C. The sheet's p3 curve moves the resistance by about 20 % between -20 C and 40 C." },
+    { "what": "maximum voltage", "why": "The sheet allows 150 V in the dark. The engine checks only the power rating." },
+  ],
+}

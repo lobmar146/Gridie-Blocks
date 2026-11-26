@@ -1,0 +1,33 @@
+{
+  "format": 5,
+  "part": "nmos-irf520-to220",
+  "version": "0.2.2",
+  "title": "N-channel MOSFET, IRF520 (TO-220)",
+  "summary": "100 V, 9.2 A N-channel power MOSFET in TO-220. It is not logic-level: it turns fully on with a 10 V gate.",
+  "tags": ["transistor", "mosfet", "nmos", "switch", "power", "motor", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021": "https://www.vishay.com/docs/91017/irf520.pdf" },
+  "real": { "maker": "Vishay", "number": "IRF520", "datasheet": "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021" },
+  "pins": { "gate": [1], "drain": [2, 4], "source": [3] },
+  "model": {
+    "kind": "nmos",
+    "transconductance_parameter": { "value": 1.259, "unit": "A/V^2", "source": { "datasheet": { "doc": "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021", "at": "Fig. 3, Typical Transfer Characteristics, 25 C, VDS = 50 V, through (5.0 V, 2.24 A) and (6.0 V, 5.37 A), divided by 1 + 0.0014 * 50 for LAMBDA and rounded to 1.259 A/V^2. The model gives 1.17 A at a 4.5 V gate, where Fig. 3 reads 1.12 A, and 31 A at 10 V, where it reads about 20 A", "basis": "typical" } } },
+    "threshold_voltage": { "value": 3.18, "unit": "V", "source": { "datasheet": { "doc": "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021", "at": "Fig. 3, Typical Transfer Characteristics, 25 C, VDS = 50 V, through (5.0 V, 2.24 A) and (6.0 V, 5.37 A), rounded to 3.18 V, inside Static VGS(th) of 2.0 V to 4.0 V at ID = 250 uA", "basis": "typical" } } },
+    "channel_length_modulation": { "value": 0.0014, "unit": "1/V", "source": { "datasheet": { "doc": "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021", "at": "Fig. 1, Typical Output Characteristics, TC = 25 C, the VGS = 5.0 V line through (3.0 V, 2.04 A) and (45 V, 2.16 A), rounded to 0.0014 1/V", "basis": "typical" } } },
+    "gate_source_capacitance": { "value": 3.26e-10, "unit": "F", "source": { "datasheet": { "doc": "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021", "at": "Dynamic, Ciss typical minus Crss typical, 360 pF minus 34 pF, VGS = 0 V, VDS = 25 V, f = 1.0 MHz", "basis": "typical" } } },
+    "gate_drain_capacitance": { "value": 3.4e-11, "unit": "F", "source": { "datasheet": { "doc": "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021", "at": "Dynamic, Crss typical, VGS = 0 V, VDS = 25 V, f = 1.0 MHz", "basis": "typical" } } },
+    "drain_source_capacitance": { "value": 1.16e-10, "unit": "F", "source": { "datasheet": { "doc": "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021", "at": "Dynamic, Coss typical minus Crss typical, 150 pF minus 34 pF, VGS = 0 V, VDS = 25 V, f = 1.0 MHz", "basis": "typical" } } },
+    "ratings": {
+      "current": { "value": 9.2, "unit": "A", "basis": { "sustained": { "average": "rms", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "Vishay IRF520, Document Number 91017, S21-0819-Rev. C, 02-Aug-2021", "at": "ABSOLUTE MAXIMUM RATINGS, continuous drain current ID, VGS at 10 V, TC = 25 C", "basis": "absolute_max" } } },
+      "power": { "value": 2.419, "unit": "W", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "closed_form": { "note": "with no heat sink: (TJ maximum 175 C minus TA 25 C) over RthJA maximum 62 C/W, from the operating range and THERMAL RESISTANCE RATINGS of Vishay IRF520 Rev. C. The 60 W PD rating needs the case held at 25 C" } } },
+    },
+  },
+  "not_simulated": [
+    { "what": "body diode", "why": "The engine's nmos has none, so the part does not conduct from source to drain. Add a diode there if a circuit needs that path." },
+    { "what": "drain and source resistance", "why": "The square law folds them in. RDS(on) at a 10 V gate is 0.12 ohm here, against the table's 0.27 ohm maximum." },
+    { "what": "subthreshold conduction", "why": "Below 3.18 V on the gate the drain passes only the engine's 1e-12 S leakage." },
+    { "what": "voltage-dependent capacitances", "why": "The capacitances are the typical values at VDS = 25 V, held constant, so gate charge is approximate." },
+    { "what": "breakdown and avalanche", "why": "VDS above 100 V and VGS beyond 20 V are not checked." },
+    { "what": "temperature", "why": "The fit is at 25 C and the engine has no temperature." },
+  ],
+}

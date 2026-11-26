@@ -1,0 +1,13 @@
+{
+  "format": 1, "part": "capacitor-0603", "version": "0.2.0", "title": "Capacitor, 0603 ceramic chip", "license": "MIT OR Apache-2.0",
+  "summary": "Unpolarized 0603 ceramic chip capacitor, 1.6 x 0.8 mm. Set its capacitance. Lead 1 is one end cap and lead 2 the other.",
+  "tags": ["capacitor", "ceramic", "passive", "decoupling", "smd"],
+  "docs": { "Murata GRM18": null },
+  "real": { "generic": true, "maker": "Murata", "number": "GRM18", "datasheet": "Murata GRM18" },
+  "pins": { "a": [1], "b": [2] },
+  "params": {
+    "capacitance": { "unit": "F", "required": true, "example": 1e-7, "sets": "/capacitance" },
+    "initial": { "unit": "V", "default": null, "sets": "/initial" },
+  },
+  "model": { "kind": "capacitor" },
+}

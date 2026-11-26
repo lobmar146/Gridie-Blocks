@@ -1,0 +1,114 @@
+// SparkFun BOB-12009. Seated frame: z = 0 is the header plastic's underside, so the
+// board's underside is at z = 2.54 and its top at z = 4.14. The Eagle board is
+// 15.24 x 12.7 mm. The low-voltage header is the bottom row and the high-voltage
+// header the top row. From lead 1 the low row reads LV4, LV3, GND, LV, LV2, LV1,
+// and the high row reads HV1, HV2, HV, GND, HV3, HV4. Each BSS138 has its gate on
+// LV, its source on LVn and its drain on HVn.
+{
+  "format": 5,
+  "part": "bss138-level-shifter",
+  "version": "0.1.1",
+  "title": "BSS138 level shifter, 4 channel",
+  "summary": "Four-channel bidirectional logic level shifter built from BSS138 MOSFETs and 10 kohm pull-ups. HV takes the higher supply, such as 5 V, and LV the lower, such as 3.3 V.",
+  "tags": ["level-shifter", "i2c", "bss138", "module"],
+  "license": "MIT OR Apache-2.0",
+  "docs": {
+    "SparkFun Logic_Level_Bidirectional.sch, BOB-12009": "https://github.com/sparkfun/Logic_Level_Bidirectional/blob/master/Hardware/Logic_Level_Bidirectional.sch",
+    "SparkFun bi-directional logic level converter, BOB-12009": "https://www.sparkfun.com/sparkfun-logic-level-converter-bi-directional.html",
+  },
+  "real": {
+    "generic": true,
+    "maker": "SparkFun",
+    "number": "BOB-12009",
+    "datasheet": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009",
+  },
+  "buy": [
+    { "seller": "SparkFun", "url": "https://www.sparkfun.com/sparkfun-logic-level-converter-bi-directional.html", "checked": "2026-11-23" },
+  ],
+  "uses": {
+    "nmos-bss138-sot23": "0.1.1",
+    "pin-header-1x6": "0.1.0",
+    "resistor-0603": "0.2.0",
+  },
+  "parts": {
+    "lv": { "type": "pin-header-1x6" },
+    "hv": { "type": "pin-header-1x6" },
+    "q1": { "type": "nmos-bss138-sot23" },
+    "q2": { "type": "nmos-bss138-sot23" },
+    "q3": { "type": "nmos-bss138-sot23" },
+    "q4": { "type": "nmos-bss138-sot23" },
+    "rlv1": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009", "at": "R3, 10K", "basis": "nominal" } } } },
+    "rhv1": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009", "at": "R4, 10K", "basis": "nominal" } } } },
+    "rlv2": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009", "at": "R2, 10K", "basis": "nominal" } } } },
+    "rhv2": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009", "at": "R10, 10K", "basis": "nominal" } } } },
+    "rlv3": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009", "at": "R1, 10K", "basis": "nominal" } } } },
+    "rhv3": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009", "at": "R5, 10K", "basis": "nominal" } } } },
+    "rlv4": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009", "at": "R6, 10K", "basis": "nominal" } } } },
+    "rhv4": { "type": "resistor-0603", "resistance": { "value": 10000, "unit": "ohm", "source": { "datasheet": { "doc": "SparkFun Logic_Level_Bidirectional.sch, BOB-12009", "at": "R7, 10K", "basis": "nominal" } } } },
+  },
+  "wires": [
+    ["lv.3", "hv.4", { "kind": "trace" }],
+    ["lv.4", "q1.G", { "kind": "trace" }],
+    ["lv.4", "q2.G", { "kind": "trace" }],
+    ["lv.4", "q3.G", { "kind": "trace" }],
+    ["lv.4", "q4.G", { "kind": "trace" }],
+    ["lv.4", "rlv1.a", { "kind": "trace" }],
+    ["lv.4", "rlv2.a", { "kind": "trace" }],
+    ["lv.4", "rlv3.a", { "kind": "trace" }],
+    ["lv.4", "rlv4.a", { "kind": "trace" }],
+    ["hv.3", "rhv1.a", { "kind": "trace" }],
+    ["hv.3", "rhv2.a", { "kind": "trace" }],
+    ["hv.3", "rhv3.a", { "kind": "trace" }],
+    ["hv.3", "rhv4.a", { "kind": "trace" }],
+    ["lv.6", "q1.S", { "kind": "trace" }],
+    ["lv.6", "rlv1.b", { "kind": "trace" }],
+    ["hv.1", "q1.D", { "kind": "trace" }],
+    ["hv.1", "rhv1.b", { "kind": "trace" }],
+    ["lv.5", "q2.S", { "kind": "trace" }],
+    ["lv.5", "rlv2.b", { "kind": "trace" }],
+    ["hv.2", "q2.D", { "kind": "trace" }],
+    ["hv.2", "rhv2.b", { "kind": "trace" }],
+    ["lv.2", "q3.S", { "kind": "trace" }],
+    ["lv.2", "rlv3.b", { "kind": "trace" }],
+    ["hv.5", "q3.D", { "kind": "trace" }],
+    ["hv.5", "rhv3.b", { "kind": "trace" }],
+    ["lv.1", "q4.S", { "kind": "trace" }],
+    ["lv.1", "rlv4.b", { "kind": "trace" }],
+    ["hv.6", "q4.D", { "kind": "trace" }],
+    ["hv.6", "rhv4.b", { "kind": "trace" }],
+  ],
+  "layout": {
+    "lv": { "at": [0, -5.08, 0], "rotate": [0, 0, 180] },
+    "hv": { "at": [0, 5.08, 0] },
+    "q1": { "at": [-5.6642, 0.0762, 4.14] },
+    "q2": { "at": [-1.8034, 0.0762, 4.14] },
+    "q3": { "at": [1.9812, 0.0762, 4.14] },
+    "q4": { "at": [5.7404, 0.0762, 4.14] },
+    "rlv1": { "at": [-5.6642, -2.5908, 4.14] },
+    "rhv1": { "at": [-5.6134, 2.6162, 4.14], "rotate": [0, 0, 180] },
+    "rlv2": { "at": [-1.778, -2.6162, 4.14] },
+    "rhv2": { "at": [-1.905, 2.6416, 4.14], "rotate": [0, 0, 180] },
+    "rlv3": { "at": [1.9812, -2.6416, 4.14] },
+    "rhv3": { "at": [1.8034, 2.6416, 4.14] },
+    "rlv4": { "at": [5.6388, -2.6416, 4.14] },
+    "rhv4": { "at": [5.6134, 2.6416, 4.14] },
+  },
+  "pins": {
+    "LV4": "lv.1", "LV3": "lv.2", "GND": "lv.3", "LV": "lv.4", "LV2": "lv.5", "LV1": "lv.6",
+    "HV1": "hv.1", "HV2": "hv.2", "HV": "hv.3", "HV3": "hv.5", "HV4": "hv.6",
+  },
+  "not_simulated": [
+    {
+      "what": "the body diode",
+      "why": "Each BSS138 is the engine's nmos, which has no body diode. Pulling the high side low still pulls the low side low, because a negative drain-to-source voltage swaps the terminals and the gate is held at LV. The datasheet's diode, 0.8 V typical, is not a separate part."
+    },
+    {
+      "what": "the drawing's marks",
+      "why": "The Eagle board carries a logo, fiducials and silkscreen. This model is the 15.24 x 12.7 mm outline. The product page lists 16.05 x 13.33 mm overall, the board with the headers past that outline. The mask colour is not a maker's colour."
+    },
+    {
+      "what": "bus capacitance beyond the parts",
+      "why": "A rise is set by the 10 kohm pull-ups and the BSS138 capacitances. Wiring and a device's own pins add capacitance this module does not include."
+    }
+  ],
+}

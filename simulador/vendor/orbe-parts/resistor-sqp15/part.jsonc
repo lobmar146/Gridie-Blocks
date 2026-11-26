@@ -1,0 +1,29 @@
+{
+  "format": 5,
+  "part": "resistor-sqp15",
+  "version": "0.1.1",
+  "title": "Power resistor, 15 W cement",
+  "summary": "15 W cement wirewound power resistor, Yageo SQP15A, for a load such as an LED strip, a lamp or a heater. Set its resistance.",
+  "tags": ["resistor", "power resistor", "load", "strip", "lamp", "heater", "wirewound", "cement", "through-hole"],
+  "license": "MIT OR Apache-2.0",
+  "docs": { "Yageo SQP/NSP": "https://www.mouser.com/datasheet/3/508/1/YAGEO_SQP_NSP_DATASHEET.pdf" },
+  "real": { "generic": true, "maker": "Yageo", "number": "SQP15A", "datasheet": "Yageo SQP/NSP" },
+  "buy": [
+    { "seller": "DigiKey", "url": "https://www.digikey.com/en/products/detail/yageo/SQP15AJB-12R/9166940", "checked": "2026-11-22" },
+  ],
+  "pins": { "a": [1], "b": [2] },
+  "params": {
+    "resistance": { "unit": "ohm", "required": true, "example": 12, "min_exclusive": 0, "sets": "/resistance" },
+  },
+  "model": {
+    "kind": "resistor",
+    "ratings": {
+      "power": { "value": 15, "unit": "W", "basis": { "sustained": { "average": "mean", "tau": { "value": 0.0102, "unit": "s", "source": { "closed_form": { "note": "The sheet gives no pulse rating to fit, so this is the 10.2 ms default, five periods of a 490 Hz PWM." } } } } }, "source": { "datasheet": { "doc": "Yageo SQP/NSP", "at": "Electrical Characteristics, Normal Style, Power Rating at 25 C, SQP15A 15 W", "basis": "absolute_max" } } },
+    },
+  },
+  "not_simulated": [
+    { "what": "tolerance", "why": "The value is exact. The series is sold at ±5 %, and wirewound values also at ±1 %." },
+    { "what": "temperature coefficient", "why": "The engine has no temperature. The sheet gives ±300 ppm/°C, or ±100 ppm/°C for some wirewound values, and the 15 W rating is at 25 °C." },
+    { "what": "wirewound inductance", "why": "The model is a resistance. A wirewound body has inductance the engine leaves out." },
+  ],
+}

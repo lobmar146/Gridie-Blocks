@@ -1,0 +1,14 @@
+{
+  "part": "socket-strip-1x8",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "socket-1", "also": ["tail-1"], "at": [-8.89, 0.0, 8.5], "axis": [0.0, 0.0, 1.0], "kind": "socket"},
+    {"lead": 2, "node": "socket-2", "also": ["tail-2"], "at": [-6.35, 0.0, 8.5], "axis": [0.0, 0.0, 1.0], "kind": "socket"},
+    {"lead": 3, "node": "socket-3", "also": ["tail-3"], "at": [-3.81, 0.0, 8.5], "axis": [0.0, 0.0, 1.0], "kind": "socket"},
+    {"lead": 4, "node": "socket-4", "also": ["tail-4"], "at": [-1.27, 0.0, 8.5], "axis": [0.0, 0.0, 1.0], "kind": "socket"},
+    {"lead": 5, "node": "socket-5", "also": ["tail-5"], "at": [1.27, 0.0, 8.5], "axis": [0.0, 0.0, 1.0], "kind": "socket"},
+    {"lead": 6, "node": "socket-6", "also": ["tail-6"], "at": [3.81, 0.0, 8.5], "axis": [0.0, 0.0, 1.0], "kind": "socket"},
+    {"lead": 7, "node": "socket-7", "also": ["tail-7"], "at": [6.35, 0.0, 8.5], "axis": [0.0, 0.0, 1.0], "kind": "socket"},
+    {"lead": 8, "node": "socket-8", "also": ["tail-8"], "at": [8.89, 0.0, 8.5], "axis": [0.0, 0.0, 1.0], "kind": "socket"}
+  ]
+}

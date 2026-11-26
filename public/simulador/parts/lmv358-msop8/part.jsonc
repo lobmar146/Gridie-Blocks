@@ -1,0 +1,52 @@
+// One op_amp body per channel, both on the shared supply pins. The values are the typicals of
+// TI SLOS263Y p7 section 6.8 at VCC 5 V, and the swing and output resistance are lines fitted
+// through its VOH and VOL rows, as each field's source says. input_headroom is 5 V minus the
+// VICR typical upper end of 4.2 V. The stage keeps comparing above it, and the run warns.
+{
+  "format": 5, "part": "lmv358-msop8", "version": "0.2.1", "title": "LMV358 dual op-amp, MSOP-8", "license": "MIT OR Apache-2.0",
+  "summary": "TI LMV358 dual op-amp in VSSOP-8 (MSOP-8). The dot marks lead 1.",
+  "tags": ["op-amp", "amplifier", "smd"],
+  "docs": { "TI SLOS263Y": "https://www.ti.com/lit/ds/symlink/lmv358.pdf" },
+  "real": { "maker": "Texas Instruments", "number": "LMV358IDGKR", "datasheet": "TI SLOS263Y" },
+  "pins": { "OUT1": [1], "IN1_N": [2], "IN1_P": [3], "GND": [4], "IN2_P": [5], "IN2_N": [6], "OUT2": [7], "VCC": [8] },
+  "model": {
+    "a": {
+      "kind": "op_amp",
+      "gain_bandwidth": { "value": 1000000.0, "unit": "Hz", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, B1 unity-gain bandwidth at VCC 5 V, CL 200 pF", "basis": "typical" } } },
+      "slew_rate": { "value": 1000000.0, "unit": "V/s", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, SR slew rate at VCC 5 V", "basis": "typical" } } },
+      "open_loop_gain": { "value": 100000.0, "unit": "1", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, AVD 100 V/mV at VCC 5 V, RL 2 kohm", "basis": "typical" } } },
+      "input_bias_current": { "value": 1.5e-08, "unit": "A", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, IIB input bias current at VCC 5 V", "basis": "typical" } } },
+      "swing_high": { "value": 0.0025, "unit": "V", "source": { "closed_form": { "note": "p7 section 6.8 VOH typicals at VCC 5 V, VCC - 10 mV into 10 kohm and VCC - 40 mV into 2 kohm, both to 2.5 V. The line through them falls 30.6 ohm and starts 2.4 mV below VCC, rounded to 2.5 mV" } } },
+      "swing_low": { "value": 0.051, "unit": "V", "source": { "closed_form": { "note": "p7 section 6.8 VOL typicals at VCC 5 V, 65 mV into 10 kohm and 120 mV into 2 kohm, both to 2.5 V. The line through them starts at 50.9 mV, rounded to 51 mV. Its 58 ohm slope is not output_resistance, so the model reads VOL 58 mV and 87 mV at those loads" } } },
+      "output_resistance": { "value": 30.0, "unit": "ohm", "source": { "closed_form": { "note": "the slope of the swing_high line, 30 mV over 0.98 mA, rounded" } } },
+      "short_circuit_current": { "value": 0.04, "unit": "A", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, IOS 40 mA typical sourcing at VO 0 V and sinking at VO 5 V", "basis": "typical" } } },
+      "supply_current": { "value": 0.000105, "unit": "A", "source": { "closed_form": { "note": "p7 section 6.8 ICC 210 uA typical at VCC 5 V for both channels of the LMV358, halved" } } },
+      "input_headroom": { "value": 0.8, "unit": "V", "source": { "closed_form": { "note": "p7 section 6.8 VICR at VCC 5 V, CMRR at least 50 dB, TA 25 C. The typical upper end is 4.2 V and the guaranteed upper end is 4 V. The field is 5 - 4.2" } } },
+      "ratings": {
+        "supply_voltage": { "value": 5.5, "unit": "V", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p5 section 6.1 Absolute Maximum Ratings, supply voltage VCC, 5.5 V. Only this amplifier carries it, since both share the supply pins.", "basis": "absolute_max" } } },
+        "input_below_gnd": { "value": 0.2, "unit": "V", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p5 section 6.1 Absolute Maximum Ratings, input voltage VI on either input, -0.2 V", "basis": "absolute_max" } } },
+      },
+      "pins": { "in_p": "IN1_P", "in_n": "IN1_N", "out": "OUT1", "vcc": "VCC", "gnd": "GND" },
+    },
+    "b": {
+      "kind": "op_amp",
+      "gain_bandwidth": { "value": 1000000.0, "unit": "Hz", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, B1 unity-gain bandwidth at VCC 5 V, CL 200 pF", "basis": "typical" } } },
+      "slew_rate": { "value": 1000000.0, "unit": "V/s", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, SR slew rate at VCC 5 V", "basis": "typical" } } },
+      "open_loop_gain": { "value": 100000.0, "unit": "1", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, AVD 100 V/mV at VCC 5 V, RL 2 kohm", "basis": "typical" } } },
+      "input_bias_current": { "value": 1.5e-08, "unit": "A", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, IIB input bias current at VCC 5 V", "basis": "typical" } } },
+      "swing_high": { "value": 0.0025, "unit": "V", "source": { "closed_form": { "note": "p7 section 6.8 VOH typicals at VCC 5 V, VCC - 10 mV into 10 kohm and VCC - 40 mV into 2 kohm, both to 2.5 V. The line through them falls 30.6 ohm and starts 2.4 mV below VCC, rounded to 2.5 mV" } } },
+      "swing_low": { "value": 0.051, "unit": "V", "source": { "closed_form": { "note": "p7 section 6.8 VOL typicals at VCC 5 V, 65 mV into 10 kohm and 120 mV into 2 kohm, both to 2.5 V. The line through them starts at 50.9 mV, rounded to 51 mV. Its 58 ohm slope is not output_resistance, so the model reads VOL 58 mV and 87 mV at those loads" } } },
+      "output_resistance": { "value": 30.0, "unit": "ohm", "source": { "closed_form": { "note": "the slope of the swing_high line, 30 mV over 0.98 mA, rounded" } } },
+      "short_circuit_current": { "value": 0.04, "unit": "A", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p7 section 6.8, IOS 40 mA typical sourcing at VO 0 V and sinking at VO 5 V", "basis": "typical" } } },
+      "supply_current": { "value": 0.000105, "unit": "A", "source": { "closed_form": { "note": "p7 section 6.8 ICC 210 uA typical at VCC 5 V for both channels of the LMV358, halved" } } },
+      "input_headroom": { "value": 0.8, "unit": "V", "source": { "closed_form": { "note": "p7 section 6.8 VICR at VCC 5 V, CMRR at least 50 dB, TA 25 C. The typical upper end is 4.2 V and the guaranteed upper end is 4 V. The field is 5 - 4.2" } } },
+      "ratings": {
+        "input_below_gnd": { "value": 0.2, "unit": "V", "source": { "datasheet": { "doc": "TI SLOS263Y", "at": "p5 section 6.1 Absolute Maximum Ratings, input voltage VI on either input, -0.2 V", "basis": "absolute_max" } } },
+      },
+      "pins": { "in_p": "IN2_P", "in_n": "IN2_N", "out": "OUT2", "vcc": "VCC", "gnd": "GND" },
+    },
+  },
+  "not_simulated": [
+    { "what": "common-mode failure", "why": "The input stage keeps comparing above input_headroom, and the run warns rating.voltage. TI SLOS263Y section 6.8 states the common-mode range at VCC 5 V, a typical upper end of 4.2 V and a guaranteed upper end of 4 V, and states no law for the output once an input leaves it." },
+  ],
+}

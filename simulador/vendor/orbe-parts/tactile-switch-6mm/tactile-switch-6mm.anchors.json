@@ -1,0 +1,10 @@
+{
+  "part": "tactile-switch-6mm",
+  "units": "mm",
+  "anchors": [
+    {"lead": 1, "node": "leg-1", "also": [], "at": [3.25, -2.25, -3.5], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 2, "node": "leg-2", "also": [], "at": [-3.25, -2.25, -3.5], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 3, "node": "leg-3", "also": [], "at": [3.25, 2.25, -3.5], "axis": [0.0, 0.0, -1.0], "kind": "leg"},
+    {"lead": 4, "node": "leg-4", "also": [], "at": [-3.25, 2.25, -3.5], "axis": [0.0, 0.0, -1.0], "kind": "leg"}
+  ]
+}

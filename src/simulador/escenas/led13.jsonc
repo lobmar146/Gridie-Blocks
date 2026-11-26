@@ -1,0 +1,22 @@
+// Clase 1: un LED en el pin 13 del Arduino Uno, con su resistencia de 220 ohm.
+{
+  "format": 1,
+  "parts": {
+    "uno": { "type": "uno-board", "firmware": "build/sketch.hex" },
+    "bb": { "type": "breadboard-400" },
+    "r1": { "type": "resistor-axial", "resistance": "220" },
+    "led1": { "type": "led-5mm" },
+  },
+  "layout": {
+    "uno": { "at": [-90, 0, 0] },
+    "bb": { "at": [0, 0, 0] },
+    "r1": { "on": { "a": "bb.d22" } },
+    "led1": { "on": { "anode": "bb.c26" } },
+  },
+  "nets": { "GND": "uno.GND" },
+  "wires": [
+    ["uno.GND", "bb.X3", { "color": "#161616" }],
+    ["uno.D13", "bb.c22"],
+    ["bb.a27", "bb.X27", { "color": "#161616" }],
+  ],
+}
