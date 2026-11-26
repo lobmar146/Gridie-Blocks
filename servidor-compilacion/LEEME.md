@@ -88,8 +88,16 @@ Render construye la imagen con el `Dockerfile` de la raíz del repo (instala `ar
 Límites del plan gratis:
 
 - **Se duerme a los 15 minutos sin uso.** El primer alumno que entra después espera
-  alrededor de un minuto mientras despierta; después anda normal. Para una clase, conviene
-  que el docente lo abra unos minutos antes.
+  alrededor de un minuto mientras despierta. Para que no se duerma, algo tiene que pedirle
+  `/salud` cada menos de 15 minutos (las 750 horas gratis alcanzan para tenerlo prendido
+  todo el mes). Dos formas:
+  - **UptimeRobot** (<https://uptimerobot.com>, gratis): *Add New Monitor* > *HTTP(s)*,
+    URL `https://TU-SERVICIO.onrender.com/salud`, cada 5 minutos. Anda al instante.
+  - **GitHub Actions**: el workflow `.github/workflows/mantener-despierto.yml` hace lo mismo
+    cada 10 minutos. Creá la variable del repositorio `GRIDIE_URL` (Settings > Secrets and
+    variables > Actions > Variables) con tu dirección de Render. GitHub solo corre los
+    workflows programados que están en `main`, así que empieza a andar cuando ese archivo
+    llegue a `main`, y a veces se atrasa algunos minutos.
 - 512 MB de memoria y poca CPU: compila de a uno (`CONCURRENCIA=1`). Cada programa nuevo
   tarda unos segundos; los repetidos salen de la caché al instante.
 - La caché se borra cuando el servicio se reinicia o se duerme. No pasa nada, solo vuelve a
