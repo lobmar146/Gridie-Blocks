@@ -49,6 +49,12 @@ import PanelSimulador, {
 import { precargarSimuladorDesafio } from '../simulador/precarga'
 import { abrirVentanaSimulador, publicarCodigo } from '../simulador/ventana'
 
+// Todo el texto de un nodo de markdown, para reconocer el párrafo del objetivo.
+const textoPlano = nodo =>
+  nodo?.type === 'text'
+    ? nodo.value
+    : (nodo?.children || []).map(textoPlano).join('')
+
 // En la app de escritorio hay arduino-cli para subir a una placa real.
 // En el navegador (modalidad a distancia por web) solo está el simulador.
 const hayPlaca = typeof window !== 'undefined' && Boolean(window.electronAPI)
@@ -433,28 +439,44 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   }
 
   const textoConsigna = (
-    <ReactMarkdown
-      components={{
-        ul: ({ children }) => (
-          <ul className="list-inside list-disc">{children}</ul>
-        ),
-        ol: ({ children }) => (
-          <ol className="list-inside list-decimal">{children}</ol>
-        ),
-        li: ({ children }) => <li className="mb-1">{children}</li>,
-        h3: ({ node, children }) => {
-          // Detectamos si es el primer nodo del árbol
-          const isFirst = node?.position?.start?.line === 1
-          const className = isFirst
-            ? 'text-lg font-bold mb-2'
-            : 'text-lg font-bold mt-5 mb-2'
-          return <h3 className={className}>{children}</h3>
-        },
-        p: ({ children }) => <p className="mb-3">{children}</p>
-      }}
-    >
-      {consigna}
-    </ReactMarkdown>
+    <div className="consigna max-w-3xl">
+      <ReactMarkdown
+        components={{
+          h3: ({ node, children }) => {
+            // El primer título es el del desafío; los siguientes (p. ej. "Extra") van
+            // separados con una línea.
+            const esPrimero = node?.position?.start?.line === 1
+            return (
+              <h3
+                className={
+                  esPrimero
+                    ? 'mb-2 text-lg font-bold text-white'
+                    : 'mb-2 mt-5 border-t border-gray-700 pt-4 text-lg font-bold text-white'
+                }
+              >
+                {children}
+              </h3>
+            )
+          },
+          p: ({ node, children }) =>
+            textoPlano(node).includes('Objetivo:') ? (
+              <p className="my-3 rounded-lg border-l-4 border-arduino-claro bg-arduino-profundo/40 px-3 py-2">
+                {children}
+              </p>
+            ) : (
+              <p className="mb-3">{children}</p>
+            ),
+          strong: ({ children }) => (
+            <strong className="font-semibold text-arduino-suave">
+              {children}
+            </strong>
+          ),
+          em: ({ children }) => <em className="text-gray-300">{children}</em>
+        }}
+      >
+        {consigna}
+      </ReactMarkdown>
+    </div>
   )
 
   return (
