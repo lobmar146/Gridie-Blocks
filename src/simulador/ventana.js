@@ -31,10 +31,11 @@ export function escucharCodigo(toolBox, alCambiar) {
 }
 
 /** La dirección de la ventana del simulador (HashRouter en producción). */
-function urlDeLaVentana(toolBox, { titulo, esquema }) {
+function urlDeLaVentana(toolBox, { titulo, esquema, etapa }) {
   const consulta = new URLSearchParams()
   if (titulo) consulta.set('titulo', titulo)
   if (esquema) consulta.set('esquema', esquema)
+  if (etapa) consulta.set('etapa', etapa)
   const ruta = `/ventana-simulador/${toolBox}?${consulta}`
   if (import.meta.env.MODE === 'development')
     return new URL(ruta, window.location.origin).href
@@ -44,8 +45,8 @@ function urlDeLaVentana(toolBox, { titulo, esquema }) {
 }
 
 /**
- * Abre (o trae al frente) la ventana del simulador del desafío. Devuelve false si el
- * navegador bloqueó la ventana emergente.
+ * Abre (o trae al frente) la ventana del simulador del desafío. Devuelve la ventana, o null
+ * si el navegador bloqueó la ventana emergente.
  */
 export function abrirVentanaSimulador(toolBox, datos = {}) {
   const ancho = Math.min(1280, window.screen.availWidth - 40)
@@ -55,7 +56,7 @@ export function abrirVentanaSimulador(toolBox, datos = {}) {
     `gridie-simulador-${toolBox}`,
     `popup,width=${ancho},height=${alto}`
   )
-  if (!ventana) return false
+  if (!ventana) return null
   ventana.focus()
-  return true
+  return ventana
 }

@@ -7,7 +7,6 @@ import {
   HomeIcon,
   InfoCircledIcon,
   MinusIcon,
-  PlayIcon,
   PlusIcon,
   UpdateIcon,
   UploadIcon
@@ -33,7 +32,9 @@ import {
 import { Spinner } from '@/components/ui/spinner'
 import BlocklyComponent from '../components/BocklyComponent'
 import { TOOLBOXES_CON_SIMULADOR } from '../simulador/escenas'
-import PanelSimulador from '../simulador/PanelSimulador'
+import PanelSimulador, {
+  conexionCompletaGuardada
+} from '../simulador/PanelSimulador'
 import { precargarSimuladorDesafio } from '../simulador/precarga'
 import { abrirVentanaSimulador, publicarCodigo } from '../simulador/ventana'
 
@@ -203,8 +204,17 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   const [placaSeleccionada, setPlacaSeleccionada] = useState('')
   const [generatedCode, setGeneratedCode] = useState('')
   const [isUploading, setIsUploading] = useState(false)
-  const [mostrarSimulador, setMostrarSimulador] = useState(false)
   const tieneSimulador = TOOLBOXES_CON_SIMULADOR.includes(Number(toolBox))
+  // Los pasos del desafío: 1. Programá, 2. Conectá, 3. Probá (los dos últimos, con el
+  // simulador al lado de los bloques o en una ventana aparte).
+  const [paso, setPaso] = useState('programar')
+  const [conexionLista, setConexionLista] = useState(() =>
+    conexionCompletaGuardada(toolBox)
+  )
+  const [ventanaAparte, setVentanaAparte] = useState(null)
+  // Cambia cada vez que el simulador vuelve de la ventana aparte, para que el panel relea lo
+  // que el alumno conectó allá.
+  const [vueltaDeLaVentana, setVueltaDeLaVentana] = useState(0)
 
   const consignaRef = useRef(null) // Referencia al div de la consigna
   const [blocklyHeight, setBlocklyHeight] = useState('82vh') // Altura dinámica de Blockly
@@ -280,20 +290,53 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
     return () => window.clearTimeout(timer)
   }, [toolBox, tieneSimulador])
 
-  // El simulador se abre en una ventana aparte. Si el navegador la bloquea, se muestra al
-  // costado de los bloques.
-  const probarEnSimulador = () => {
-    if (mostrarSimulador) {
-      setMostrarSimulador(false)
-      return
-    }
-    publicarCodigo(toolBox, generatedCode)
-    const abierta = abrirVentanaSimulador(toolBox, {
-      titulo,
-      esquema: conexion ? new URL(conexion, document.baseURI).href : null
+  // Blockly mide su contenedor sólo cuando cambia el tamaño de la ventana.
+  useEffect(() => {
+    window.dispatchEvent(new Event('resize'))
+  }, [paso, ventanaAparte])
+
+  const traerDeVuelta = () => {
+    setVentanaAparte(ventana => {
+      if (ventana && !ventana.closed) ventana.close()
+      return null
     })
-    if (!abierta) setMostrarSimulador(true)
+    setConexionLista(conexionCompletaGuardada(toolBox))
+    setVueltaDeLaVentana(n => n + 1)
   }
+
+  // Cuando el alumno cierra la ventana aparte, el simulador vuelve al costado de los bloques.
+  useEffect(() => {
+    if (!ventanaAparte) return undefined
+    const timer = window.setInterval(() => {
+      if (ventanaAparte.closed) traerDeVuelta()
+    }, 500)
+    return () => window.clearInterval(timer)
+  }, [ventanaAparte])
+
+  const desacoplar = () => {
+    publicarCodigo(toolBox, generatedCode)
+    const ventana = abrirVentanaSimulador(toolBox, {
+      titulo,
+      esquema: conexion ? new URL(conexion, document.baseURI).href : null,
+      etapa: paso === 'probar' ? 'probar' : 'conectar'
+    })
+    if (ventana) setVentanaAparte(ventana)
+    else
+      toast.error(
+        'El navegador bloqueó la ventana emergente. Permitila para usar el simulador aparte.'
+      )
+  }
+
+  const pestanas = [
+    { id: 'programar', nombre: '1. Programá' },
+    { id: 'conectar', nombre: '2. Conectá' },
+    {
+      id: 'probar',
+      nombre: '3. Probá',
+      bloqueada: !conexionLista,
+      ayuda: 'Primero conectá bien todos los cables'
+    }
+  ]
 
   const subirCodigo = async () => {
     if (!placaSeleccionada) {
@@ -358,19 +401,33 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
               <span className="text-sm">Blocks - {titulo}</span>
             </div>
           </div>
+          {tieneSimulador && (
+            <nav
+              className="flex items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
+              aria-label="Pasos del desafío"
+            >
+              {pestanas.map(pestana => (
+                <button
+                  key={pestana.id}
+                  type="button"
+                  disabled={pestana.bloqueada}
+                  title={pestana.bloqueada ? pestana.ayuda : undefined}
+                  onClick={() => setPaso(pestana.id)}
+                  className={`rounded-md px-3 py-1 text-sm transition-colors ${
+                    paso === pestana.id
+                      ? 'bg-violet-600 font-semibold text-white'
+                      : pestana.bloqueada
+                        ? 'cursor-not-allowed text-gray-600'
+                        : 'text-gray-300 hover:bg-[#3a3a3a]'
+                  }`}
+                >
+                  {pestana.nombre}
+                </button>
+              ))}
+            </nav>
+          )}
           {/* Right section: Board selection and upload */}
           <div className="flex items-center space-x-4">
-            {tieneSimulador && (
-              <Button
-                variant="default"
-                size="sm"
-                className="bg-violet-600 text-white hover:bg-violet-700"
-                onClick={probarEnSimulador}
-              >
-                <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
-                {mostrarSimulador ? 'Ocultar simulador' : 'Probar en simulador'}
-              </Button>
-            )}
             {hayPlaca && (
               <>
                 <div className="flex items-center">
@@ -539,21 +596,62 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
       </div>
 
       <div className="flex" style={{ height: blocklyHeight }}>
-        <div className="min-w-0 flex-1">
+        <div className="relative min-w-0 flex-1">
           <BlocklyComponent
             toolBoxDesafio={toolBox}
             altura="100%"
             onCodeChange={handleCodeChange}
           />
+          {tieneSimulador && paso === 'programar' && (
+            <div className="absolute bottom-5 left-1/2 z-10 -translate-x-1/2">
+              <Button
+                size="sm"
+                className="bg-violet-600 text-white hover:bg-violet-700"
+                onClick={() => setPaso('conectar')}
+              >
+                Siguiente: Conectá
+                <ChevronRightIcon className="ml-1 h-3.5 w-3.5" />
+              </Button>
+            </div>
+          )}
         </div>
-        {mostrarSimulador && (
-          <PanelSimulador
-            toolBox={toolBox}
-            codigo={generatedCode}
-            titulo={titulo}
-            esquema={conexion}
-            onCerrar={() => setMostrarSimulador(false)}
-          />
+        {tieneSimulador && paso !== 'programar' && (
+          <div className="ml-2 mr-2 w-[50%] min-w-[380px]">
+            {ventanaAparte ? (
+              <div className="flex h-full flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-gray-700 bg-[#1e1e1e] p-6 text-center text-sm text-gray-300">
+                <p>El simulador está abierto en una ventana aparte.</p>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => ventanaAparte.focus()}
+                  >
+                    Ir a la ventana
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-violet-600 text-white hover:bg-violet-700"
+                    onClick={traerDeVuelta}
+                  >
+                    Traer de vuelta acá
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <PanelSimulador
+                key={vueltaDeLaVentana}
+                embebido
+                toolBox={toolBox}
+                codigo={generatedCode}
+                titulo={titulo}
+                esquema={conexion}
+                etapa={paso === 'probar' ? 'probar' : 'conectar'}
+                onEtapa={setPaso}
+                onConexion={setConexionLista}
+                onDesacoplar={desacoplar}
+              />
+            )}
+          </div>
         )}
       </div>
     </>

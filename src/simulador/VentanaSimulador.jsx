@@ -9,6 +9,7 @@ const VentanaSimulador = () => {
   const [consulta] = useSearchParams()
   const titulo = consulta.get('titulo')
   const esquema = consulta.get('esquema')
+  const etapaInicial = consulta.get('etapa')
   const [codigo, setCodigo] = useState(() => leerCodigo(toolBox))
 
   useEffect(() => escucharCodigo(toolBox, setCodigo), [toolBox])
@@ -25,6 +26,7 @@ const VentanaSimulador = () => {
         codigo={codigo}
         titulo={titulo}
         esquema={esquema}
+        etapaInicial={etapaInicial}
         enVentana
         onCerrar={() => window.close()}
       />

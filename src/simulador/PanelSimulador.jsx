@@ -3,6 +3,7 @@ import {
   ArrowLeftIcon,
   CheckCircledIcon,
   Cross2Icon,
+  ExternalLinkIcon,
   ImageIcon,
   ReloadIcon,
   ResetIcon
@@ -78,6 +79,13 @@ async function montar(contenedor, { escena, hex, reproducir, alMensaje }) {
   })
 }
 
+/** Si el alumno ya conectó bien todos los cables del desafío (lo que guardó el navegador). */
+export function conexionCompletaGuardada(toolBox) {
+  const { conexiones = {} } = leerGuardado(toolBox)
+  const cables = cablesDelDesafio(toolBox)
+  return cables.length > 0 && cables.every(c => conexiones[c.id] === c.esperado)
+}
+
 // Los cables del desafío que ya están bien conectados, en orden. El primero que falta es el
 // paso actual de la conexión guiada.
 const conectadosBien = (cables, conexiones) =>
@@ -89,6 +97,9 @@ const conectadosBien = (cables, conexiones) =>
  * 2. Probar: compila el programa, lo corre en el circuito y muestra los controles de los
  *    sensores.
  * `enVentana` es para la ventana emergente: el panel ocupa todo el ancho.
+ * `embebido` es para la vista partida de la pantalla del desafío, donde las pestañas
+ * Programá / Conectá / Probá están afuera: la etapa la manejan `etapa` y `onEtapa`, y
+ * `onDesacoplar` pasa el simulador a una ventana aparte.
  */
 const PanelSimulador = ({
   toolBox,
@@ -96,16 +107,34 @@ const PanelSimulador = ({
   titulo,
   esquema,
   enVentana = false,
+  embebido = false,
+  etapa: etapaControlada,
+  etapaInicial,
+  onEtapa,
+  onConexion,
+  onDesacoplar,
   onCerrar
 }) => {
   const cables = cablesDelDesafio(toolBox)
   const guardado = leerGuardado(toolBox)
   const [conexiones, setConexiones] = useState(guardado.conexiones || {})
   const completo = cables.every(c => conexiones[c.id] === c.esperado)
-  const [etapa, setEtapa] = useState(
-    guardado.verificado && completo ? 'probar' : 'conectar'
+  const [etapaPropia, setEtapaPropia] = useState(
+    etapaInicial === 'probar' || etapaInicial === 'conectar'
+      ? etapaInicial === 'probar' && !completo
+        ? 'conectar'
+        : etapaInicial
+      : guardado.verificado && completo
+        ? 'probar'
+        : 'conectar'
   )
+  const etapa = etapaControlada ?? etapaPropia
+  const setEtapa = nueva => (onEtapa ? onEtapa(nueva) : setEtapaPropia(nueva))
   const [verEsquema, setVerEsquema] = useState(false)
+
+  useEffect(() => {
+    onConexion?.(completo)
+  }, [completo])
 
   useEffect(() => {
     precargarSimuladorDesafio(toolBox)
@@ -123,20 +152,22 @@ const PanelSimulador = ({
   const encabezado = {
     titulo: enVentana ? titulo : null,
     esquema,
+    embebido,
     onVerEsquema: () => setVerEsquema(true),
+    onDesacoplar,
     onCerrar
   }
 
   return (
     <div
-      className={`relative flex h-full flex-col overflow-hidden rounded-[10px] border border-gray-700 bg-[#1e1e1e] ${enVentana ? 'w-full' : 'ml-2 mr-2 w-[45%] min-w-[380px]'}`}
+      className={`relative flex h-full flex-col overflow-hidden rounded-[10px] border border-gray-700 bg-[#1e1e1e] ${enVentana || embebido ? 'h-full w-full' : 'ml-2 mr-2 w-[45%] min-w-[380px]'}`}
     >
       {etapa === 'conectar' ? (
         <EtapaConectar
           toolBox={toolBox}
           cables={cables}
           conexiones={conexiones}
-          enVentana={enVentana}
+          enVentana={enVentana || embebido}
           encabezado={encabezado}
           onCambiar={cambiarConexiones}
           onAprobar={aprobar}
@@ -187,17 +218,29 @@ const Encabezado = ({ paso, encabezado, children }) => (
           {encabezado.titulo}
         </span>
       )}
-      <span
-        className={paso === 1 ? 'font-semibold text-white' : 'text-gray-400'}
-      >
-        1. Conectar
-      </span>
-      <span className="text-gray-600">›</span>
-      <span
-        className={paso === 2 ? 'font-semibold text-white' : 'text-gray-400'}
-      >
-        2. Probar
-      </span>
+      {encabezado.embebido ? (
+        <span className="font-semibold text-white">
+          {paso === 1 ? 'Conectá el circuito' : 'Probá tu programa'}
+        </span>
+      ) : (
+        <>
+          <span
+            className={
+              paso === 1 ? 'font-semibold text-white' : 'text-gray-400'
+            }
+          >
+            1. Conectar
+          </span>
+          <span className="text-gray-600">›</span>
+          <span
+            className={
+              paso === 2 ? 'font-semibold text-white' : 'text-gray-400'
+            }
+          >
+            2. Probar
+          </span>
+        </>
+      )}
     </div>
     <div className="flex items-center gap-2">
       {children}
@@ -213,15 +256,29 @@ const Encabezado = ({ paso, encabezado, children }) => (
           Esquema
         </Button>
       )}
-      <Button
-        size="icon"
-        variant="ghost"
-        className="h-8 w-8 text-gray-300"
-        onClick={encabezado.onCerrar}
-        aria-label="Cerrar simulador"
-      >
-        <Cross2Icon className="h-4 w-4" />
-      </Button>
+      {encabezado.onDesacoplar && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-8 text-gray-300"
+          onClick={encabezado.onDesacoplar}
+          title="Abrir el simulador en una ventana aparte"
+        >
+          <ExternalLinkIcon className="mr-1 h-3.5 w-3.5" />
+          Ventana aparte
+        </Button>
+      )}
+      {encabezado.onCerrar && (
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 text-gray-300"
+          onClick={encabezado.onCerrar}
+          aria-label="Cerrar simulador"
+        >
+          <Cross2Icon className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   </div>
 )
@@ -488,10 +545,7 @@ const EtapaConectar = ({
         <div className="relative min-h-0 min-w-0 flex-1">
           <div ref={contenedorRef} className="absolute inset-0" />
           {carga && !errorVista && (
-            <CargaSimulador
-              progreso={carga.progreso}
-              mensaje={carga.mensaje}
-            />
+            <CargaSimulador progreso={carga.progreso} mensaje={carga.mensaje} />
           )}
           {errorVista && (
             <pre className="absolute inset-x-0 bottom-0 z-10 max-h-[50%] overflow-auto bg-[#1e1e1e]/90 p-3 text-xs text-red-300">
