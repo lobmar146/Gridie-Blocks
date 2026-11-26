@@ -11,24 +11,29 @@ export interface OpenMessage {
   readonly files: readonly (readonly [string, Uint8Array])[];
 }
 
+export interface ReusableSessionSource extends SessionSource {
+  reload(load: () => Promise<BlockFiles>): void;
+}
+
 /** A Block's live session, in a Worker running orbe-wasm's `worker.js`. `load` gives the Block's
  * files, and commands sent before they reach the Worker wait for them. The Worker has no server,
  * so each part model the scene names, a path in the Block's files such as
- * `/parts/led-5mm/led-5mm.glb`, is served from those files as an object URL. A Block that does
- * not load or open, a Worker that fails, or a message that is not a JSON message ends the session
- * with why, and frees it as `close` does. `close` terminates the Worker and revokes the object
- * URLs, and a message the Worker sent before it ended is dropped unread. */
-export function workerSource(open: () => Worker, load: () => Promise<BlockFiles>): SessionSource {
+ * `/parts/led-5mm/led-5mm.glb`, is served from those files as an object URL. `reload` reopens
+ * a new scene in the same Worker and viewer without re-instantiating WASM or WebGL. */
+export function workerSource(open: () => Worker, load: () => Promise<BlockFiles>): ReusableSessionSource {
   return channelSource((inbox) => {
     const worker = open();
     const queued: string[] = [];
-    let files: BlockFiles | null = null;
+    const allFiles = new Map<string, Uint8Array>();
+    const sentParts = new Set<string>();
+    let ready = false;
+    let loadEpoch = 0;
     let closed = false;
     const models = new Map<string, string>();
     const served = (scene: SceneMessage): SceneMessage => {
       const parts = Object.fromEntries(
         Object.entries(scene.parts).map(([id, part]) => {
-          const bytes = part.model === null ? undefined : files?.files.get(part.model.replace(/^\//, ""));
+          const bytes = part.model === null ? undefined : allFiles.get(part.model.replace(/^\//, ""));
           if (part.model === null || bytes === undefined) return [id, part];
           let url = models.get(part.model);
           if (url === undefined) {
@@ -39,6 +44,36 @@ export function workerSource(open: () => Worker, load: () => Promise<BlockFiles>
         })
       );
       return { ...scene, parts };
+    };
+
+    const runLoad = (loader: () => Promise<BlockFiles>) => {
+      const epoch = ++loadEpoch;
+      loader().then(
+        (block) => {
+          if (closed || epoch !== loadEpoch) return;
+          const delta: [string, Uint8Array][] = [];
+          for (const [path, bytes] of block.files) {
+            allFiles.set(path, bytes);
+            if (path.startsWith("parts/")) {
+              if (!sentParts.has(path)) {
+                sentParts.add(path);
+                delta.push([path, bytes]);
+              }
+            } else {
+              delta.push([path, bytes]);
+            }
+          }
+          ready = true;
+          const opening: OpenMessage = { type: "open", name: block.name, files: delta };
+          worker.postMessage(opening);
+          for (const text of queued) worker.postMessage(text);
+          queued.length = 0;
+        },
+        (error: unknown) => {
+          if (closed || epoch !== loadEpoch) return;
+          inbox.drop(`the Block did not load: ${error instanceof Error ? error.message : String(error)}`);
+        }
+      );
     };
 
     worker.onmessage = (event: MessageEvent<string>) => {
@@ -53,21 +88,17 @@ export function workerSource(open: () => Worker, load: () => Promise<BlockFiles>
       event.preventDefault();
       inbox.drop(`the session's Worker failed: ${event.message}`);
     };
-    load().then(
-      (block) => {
-        if (closed) return;
-        files = block;
-        const opening: OpenMessage = { type: "open", name: block.name, files: [...block.files] };
-        worker.postMessage(opening);
-        for (const text of queued) worker.postMessage(text);
-        queued.length = 0;
-      },
-      (error: unknown) => inbox.drop(`the Block did not load: ${error instanceof Error ? error.message : String(error)}`)
-    );
+    runLoad(load);
     return {
       send(text) {
-        if (files === null) queued.push(text);
+        if (!ready) queued.push(text);
         else worker.postMessage(text);
+      },
+      reload(nextLoad: () => Promise<BlockFiles>) {
+        if (closed) return;
+        ready = false;
+        queued.length = 0;
+        runLoad(nextLoad);
       },
       close() {
         closed = true;
@@ -76,5 +107,5 @@ export function workerSource(open: () => Worker, load: () => Promise<BlockFiles>
         models.clear();
       },
     };
-  });
+  }) as ReusableSessionSource;
 }

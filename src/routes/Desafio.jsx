@@ -34,6 +34,7 @@ import { Spinner } from '@/components/ui/spinner'
 import BlocklyComponent from '../components/BocklyComponent'
 import { TOOLBOXES_CON_SIMULADOR } from '../simulador/escenas'
 import PanelSimulador from '../simulador/PanelSimulador'
+import { precargarSimuladorDesafio } from '../simulador/precarga'
 import { abrirVentanaSimulador, publicarCodigo } from '../simulador/ventana'
 
 // En la app de escritorio hay arduino-cli para subir a una placa real.
@@ -269,6 +270,15 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   useEffect(() => {
     if (tieneSimulador) publicarCodigo(toolBox, generatedCode)
   }, [toolBox, generatedCode, tieneSimulador])
+
+  // Precarga el motor 3D, WASM y las piezas del desafío en segundo plano sin bloquear el arranque.
+  useEffect(() => {
+    if (!tieneSimulador) return undefined
+    const timer = window.setTimeout(() => {
+      precargarSimuladorDesafio(toolBox)
+    }, 800)
+    return () => window.clearTimeout(timer)
+  }, [toolBox, tieneSimulador])
 
   // El simulador se abre en una ventana aparte. Si el navegador la bloquea, se muestra al
   // costado de los bloques.

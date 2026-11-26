@@ -16,6 +16,207 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 	value: n,
 	enumerable: !0
 }) : o, n)), u = /* @__PURE__ */ o(((e) => {
+	function t(e, t) {
+		var n = e.length;
+		e.push(t);
+		a: for (; 0 < n;) {
+			var r = n - 1 >>> 1, a = e[r];
+			if (0 < i(a, t)) e[r] = t, e[n] = a, n = r;
+			else break a;
+		}
+	}
+	function n(e) {
+		return e.length === 0 ? null : e[0];
+	}
+	function r(e) {
+		if (e.length === 0) return null;
+		var t = e[0], n = e.pop();
+		if (n !== t) {
+			e[0] = n;
+			a: for (var r = 0, a = e.length, o = a >>> 1; r < o;) {
+				var s = 2 * (r + 1) - 1, c = e[s], l = s + 1, u = e[l];
+				if (0 > i(c, n)) l < a && 0 > i(u, c) ? (e[r] = u, e[l] = n, r = l) : (e[r] = c, e[s] = n, r = s);
+				else if (l < a && 0 > i(u, n)) e[r] = u, e[l] = n, r = l;
+				else break a;
+			}
+		}
+		return t;
+	}
+	function i(e, t) {
+		var n = e.sortIndex - t.sortIndex;
+		return n === 0 ? e.id - t.id : n;
+	}
+	if (e.unstable_now = void 0, typeof performance == "object" && typeof performance.now == "function") {
+		var a = performance;
+		e.unstable_now = function() {
+			return a.now();
+		};
+	} else {
+		var o = Date, s = o.now();
+		e.unstable_now = function() {
+			return o.now() - s;
+		};
+	}
+	var c = [], l = [], u = 1, d = null, f = 3, p = !1, m = !1, h = !1, g = !1, _ = typeof setTimeout == "function" ? setTimeout : null, v = typeof clearTimeout == "function" ? clearTimeout : null, y = typeof setImmediate < "u" ? setImmediate : null;
+	function b(e) {
+		for (var i = n(l); i !== null;) {
+			if (i.callback === null) r(l);
+			else if (i.startTime <= e) r(l), i.sortIndex = i.expirationTime, t(c, i);
+			else break;
+			i = n(l);
+		}
+	}
+	function x(e) {
+		if (h = !1, b(e), !m) {
+			if (n(c) !== null) m = !0, S || (S = !0, O());
+			else {
+				var t = n(l);
+				t !== null && j(x, t.startTime - e);
+			}
+		}
+	}
+	var S = !1, C = -1, w = 5, T = -1;
+	function E() {
+		return g ? !0 : !(e.unstable_now() - T < w);
+	}
+	function D() {
+		if (g = !1, S) {
+			var t = e.unstable_now();
+			T = t;
+			var i = !0;
+			try {
+				a: {
+					m = !1, h && (h = !1, v(C), C = -1), p = !0;
+					var a = f;
+					try {
+						b: {
+							for (b(t), d = n(c); d !== null && !(d.expirationTime > t && E());) {
+								var o = d.callback;
+								if (typeof o == "function") {
+									d.callback = null, f = d.priorityLevel;
+									var s = o(d.expirationTime <= t);
+									if (t = e.unstable_now(), typeof s == "function") {
+										d.callback = s, b(t), i = !0;
+										break b;
+									}
+									d === n(c) && r(c), b(t);
+								} else r(c);
+								d = n(c);
+							}
+							if (d !== null) i = !0;
+							else {
+								var u = n(l);
+								u !== null && j(x, u.startTime - t), i = !1;
+							}
+						}
+						break a;
+					} finally {
+						d = null, f = a, p = !1;
+					}
+					i = void 0;
+				}
+			} finally {
+				i ? O() : S = !1;
+			}
+		}
+	}
+	var O;
+	if (typeof y == "function") O = function() {
+		y(D);
+	};
+	else if (typeof MessageChannel < "u") {
+		var k = new MessageChannel(), A = k.port2;
+		k.port1.onmessage = D, O = function() {
+			A.postMessage(null);
+		};
+	} else O = function() {
+		_(D, 0);
+	};
+	function j(t, n) {
+		C = _(function() {
+			t(e.unstable_now());
+		}, n);
+	}
+	e.unstable_IdlePriority = 5, e.unstable_ImmediatePriority = 1, e.unstable_LowPriority = 4, e.unstable_NormalPriority = 3, e.unstable_Profiling = null, e.unstable_UserBlockingPriority = 2, e.unstable_cancelCallback = function(e) {
+		e.callback = null;
+	}, e.unstable_forceFrameRate = function(e) {
+		0 > e || 125 < e ? console.error("forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported") : w = 0 < e ? Math.floor(1e3 / e) : 5;
+	}, e.unstable_getCurrentPriorityLevel = function() {
+		return f;
+	}, e.unstable_next = function(e) {
+		switch (f) {
+			case 1:
+			case 2:
+			case 3:
+				var t = 3;
+				break;
+			default: t = f;
+		}
+		var n = f;
+		f = t;
+		try {
+			return e();
+		} finally {
+			f = n;
+		}
+	}, e.unstable_requestPaint = function() {
+		g = !0;
+	}, e.unstable_runWithPriority = function(e, t) {
+		switch (e) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5: break;
+			default: e = 3;
+		}
+		var n = f;
+		f = e;
+		try {
+			return t();
+		} finally {
+			f = n;
+		}
+	}, e.unstable_scheduleCallback = function(r, i, a) {
+		var o = e.unstable_now();
+		switch (typeof a == "object" && a ? (a = a.delay, a = typeof a == "number" && 0 < a ? o + a : o) : a = o, r) {
+			case 1:
+				var s = -1;
+				break;
+			case 2:
+				s = 250;
+				break;
+			case 5:
+				s = 1073741823;
+				break;
+			case 4:
+				s = 1e4;
+				break;
+			default: s = 5e3;
+		}
+		return s = a + s, r = {
+			id: u++,
+			callback: i,
+			priorityLevel: r,
+			startTime: a,
+			expirationTime: s,
+			sortIndex: -1
+		}, a > o ? (r.sortIndex = a, t(l, r), n(c) === null && r === n(l) && (h ? (v(C), C = -1) : h = !0, j(x, a - o))) : (r.sortIndex = s, t(c, r), m || p || (m = !0, S || (S = !0, O()))), r;
+	}, e.unstable_shouldYield = E, e.unstable_wrapCallback = function(e) {
+		var t = f;
+		return function() {
+			var n = f;
+			f = t;
+			try {
+				return e.apply(this, arguments);
+			} finally {
+				f = n;
+			}
+		};
+	};
+})), d = /* @__PURE__ */ o(((e, t) => {
+	t.exports = u();
+})), f = /* @__PURE__ */ o(((e) => {
 	var t = Symbol.for("react.transitional.element"), n = Symbol.for("react.portal"), r = Symbol.for("react.fragment"), i = Symbol.for("react.strict_mode"), a = Symbol.for("react.profiler"), o = Symbol.for("react.consumer"), s = Symbol.for("react.context"), c = Symbol.for("react.forward_ref"), l = Symbol.for("react.suspense"), u = Symbol.for("react.memo"), d = Symbol.for("react.lazy"), f = Symbol.for("react.activity"), p = Symbol.iterator;
 	function m(e) {
 		return typeof e != "object" || !e ? null : (e = p && e[p] || e["@@iterator"], typeof e == "function" ? e : null);
@@ -301,211 +502,10 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 	}, e.useTransition = function() {
 		return w.H.useTransition();
 	}, e.version = "19.2.7";
-})), d = /* @__PURE__ */ o(((e, t) => {
-	t.exports = u();
-})), f = /* @__PURE__ */ o(((e) => {
-	function t(e, t) {
-		var n = e.length;
-		e.push(t);
-		a: for (; 0 < n;) {
-			var r = n - 1 >>> 1, a = e[r];
-			if (0 < i(a, t)) e[r] = t, e[n] = a, n = r;
-			else break a;
-		}
-	}
-	function n(e) {
-		return e.length === 0 ? null : e[0];
-	}
-	function r(e) {
-		if (e.length === 0) return null;
-		var t = e[0], n = e.pop();
-		if (n !== t) {
-			e[0] = n;
-			a: for (var r = 0, a = e.length, o = a >>> 1; r < o;) {
-				var s = 2 * (r + 1) - 1, c = e[s], l = s + 1, u = e[l];
-				if (0 > i(c, n)) l < a && 0 > i(u, c) ? (e[r] = u, e[l] = n, r = l) : (e[r] = c, e[s] = n, r = s);
-				else if (l < a && 0 > i(u, n)) e[r] = u, e[l] = n, r = l;
-				else break a;
-			}
-		}
-		return t;
-	}
-	function i(e, t) {
-		var n = e.sortIndex - t.sortIndex;
-		return n === 0 ? e.id - t.id : n;
-	}
-	if (e.unstable_now = void 0, typeof performance == "object" && typeof performance.now == "function") {
-		var a = performance;
-		e.unstable_now = function() {
-			return a.now();
-		};
-	} else {
-		var o = Date, s = o.now();
-		e.unstable_now = function() {
-			return o.now() - s;
-		};
-	}
-	var c = [], l = [], u = 1, d = null, f = 3, p = !1, m = !1, h = !1, g = !1, _ = typeof setTimeout == "function" ? setTimeout : null, v = typeof clearTimeout == "function" ? clearTimeout : null, y = typeof setImmediate < "u" ? setImmediate : null;
-	function b(e) {
-		for (var i = n(l); i !== null;) {
-			if (i.callback === null) r(l);
-			else if (i.startTime <= e) r(l), i.sortIndex = i.expirationTime, t(c, i);
-			else break;
-			i = n(l);
-		}
-	}
-	function x(e) {
-		if (h = !1, b(e), !m) {
-			if (n(c) !== null) m = !0, S || (S = !0, O());
-			else {
-				var t = n(l);
-				t !== null && j(x, t.startTime - e);
-			}
-		}
-	}
-	var S = !1, C = -1, w = 5, T = -1;
-	function E() {
-		return g ? !0 : !(e.unstable_now() - T < w);
-	}
-	function D() {
-		if (g = !1, S) {
-			var t = e.unstable_now();
-			T = t;
-			var i = !0;
-			try {
-				a: {
-					m = !1, h && (h = !1, v(C), C = -1), p = !0;
-					var a = f;
-					try {
-						b: {
-							for (b(t), d = n(c); d !== null && !(d.expirationTime > t && E());) {
-								var o = d.callback;
-								if (typeof o == "function") {
-									d.callback = null, f = d.priorityLevel;
-									var s = o(d.expirationTime <= t);
-									if (t = e.unstable_now(), typeof s == "function") {
-										d.callback = s, b(t), i = !0;
-										break b;
-									}
-									d === n(c) && r(c), b(t);
-								} else r(c);
-								d = n(c);
-							}
-							if (d !== null) i = !0;
-							else {
-								var u = n(l);
-								u !== null && j(x, u.startTime - t), i = !1;
-							}
-						}
-						break a;
-					} finally {
-						d = null, f = a, p = !1;
-					}
-					i = void 0;
-				}
-			} finally {
-				i ? O() : S = !1;
-			}
-		}
-	}
-	var O;
-	if (typeof y == "function") O = function() {
-		y(D);
-	};
-	else if (typeof MessageChannel < "u") {
-		var k = new MessageChannel(), A = k.port2;
-		k.port1.onmessage = D, O = function() {
-			A.postMessage(null);
-		};
-	} else O = function() {
-		_(D, 0);
-	};
-	function j(t, n) {
-		C = _(function() {
-			t(e.unstable_now());
-		}, n);
-	}
-	e.unstable_IdlePriority = 5, e.unstable_ImmediatePriority = 1, e.unstable_LowPriority = 4, e.unstable_NormalPriority = 3, e.unstable_Profiling = null, e.unstable_UserBlockingPriority = 2, e.unstable_cancelCallback = function(e) {
-		e.callback = null;
-	}, e.unstable_forceFrameRate = function(e) {
-		0 > e || 125 < e ? console.error("forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported") : w = 0 < e ? Math.floor(1e3 / e) : 5;
-	}, e.unstable_getCurrentPriorityLevel = function() {
-		return f;
-	}, e.unstable_next = function(e) {
-		switch (f) {
-			case 1:
-			case 2:
-			case 3:
-				var t = 3;
-				break;
-			default: t = f;
-		}
-		var n = f;
-		f = t;
-		try {
-			return e();
-		} finally {
-			f = n;
-		}
-	}, e.unstable_requestPaint = function() {
-		g = !0;
-	}, e.unstable_runWithPriority = function(e, t) {
-		switch (e) {
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5: break;
-			default: e = 3;
-		}
-		var n = f;
-		f = e;
-		try {
-			return t();
-		} finally {
-			f = n;
-		}
-	}, e.unstable_scheduleCallback = function(r, i, a) {
-		var o = e.unstable_now();
-		switch (typeof a == "object" && a ? (a = a.delay, a = typeof a == "number" && 0 < a ? o + a : o) : a = o, r) {
-			case 1:
-				var s = -1;
-				break;
-			case 2:
-				s = 250;
-				break;
-			case 5:
-				s = 1073741823;
-				break;
-			case 4:
-				s = 1e4;
-				break;
-			default: s = 5e3;
-		}
-		return s = a + s, r = {
-			id: u++,
-			callback: i,
-			priorityLevel: r,
-			startTime: a,
-			expirationTime: s,
-			sortIndex: -1
-		}, a > o ? (r.sortIndex = a, t(l, r), n(c) === null && r === n(l) && (h ? (v(C), C = -1) : h = !0, j(x, a - o))) : (r.sortIndex = s, t(c, r), m || p || (m = !0, S || (S = !0, O()))), r;
-	}, e.unstable_shouldYield = E, e.unstable_wrapCallback = function(e) {
-		var t = f;
-		return function() {
-			var n = f;
-			f = t;
-			try {
-				return e.apply(this, arguments);
-			} finally {
-				f = n;
-			}
-		};
-	};
 })), p = /* @__PURE__ */ o(((e, t) => {
 	t.exports = f();
 })), m = /* @__PURE__ */ o(((e) => {
-	var t = d();
+	var t = p();
 	function n(e) {
 		var t = "https://react.dev/errors/" + e;
 		if (1 < arguments.length) {
@@ -634,7 +634,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 	}
 	n(), t.exports = m();
 })), g = /* @__PURE__ */ o(((e) => {
-	var t = p(), n = d(), r = h();
+	var t = d(), n = p(), r = h();
 	function i(e) {
 		var t = "https://react.dev/errors/" + e;
 		if (1 < arguments.length) {
@@ -8033,7 +8033,7 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		}
 	}
 	n(), t.exports = g();
-})), v = /* @__PURE__ */ l(d(), 1), y = _(), b = {
+})), v = /* @__PURE__ */ l(p(), 1), y = _(), b = {
 	LEFT: 0,
 	MIDDLE: 1,
 	RIGHT: 2,
@@ -26116,7 +26116,7 @@ var gg = class {
 })), vg = /* @__PURE__ */ o(((e, t) => {
 	t.exports = _g();
 })), yg = /* @__PURE__ */ o(((e) => {
-	var t = d();
+	var t = p();
 	function n(e, t) {
 		return e === t && (e !== 0 || 1 / e == 1 / t) || e !== e && t !== t;
 	}
@@ -26151,12 +26151,12 @@ var gg = class {
 	function u(e, t) {
 		return t();
 	}
-	var f = typeof window > "u" || window.document === void 0 || window.document.createElement === void 0 ? u : c;
-	e.useSyncExternalStore = t.useSyncExternalStore === void 0 ? f : t.useSyncExternalStore;
+	var d = typeof window > "u" || window.document === void 0 || window.document.createElement === void 0 ? u : c;
+	e.useSyncExternalStore = t.useSyncExternalStore === void 0 ? d : t.useSyncExternalStore;
 })), bg = /* @__PURE__ */ o(((e, t) => {
 	t.exports = yg();
 })), xg = /* @__PURE__ */ o(((e) => {
-	var t = d(), n = bg();
+	var t = p(), n = bg();
 	function r(e, t) {
 		return e === t && (e !== 0 || 1 / e == 1 / t) || e !== e && t !== t;
 	}
@@ -40622,12 +40622,12 @@ function IE(e) {
 // vendor/orbe-viewer/worker-source.ts
 function LE(e, t) {
 	return IE((n) => {
-		let r = e(), i = [], a = null, o = !1, s = /* @__PURE__ */ new Map(), c = (e) => {
+		let r = e(), i = [], a = /* @__PURE__ */ new Map(), o = /* @__PURE__ */ new Set(), s = !1, c = 0, l = !1, u = /* @__PURE__ */ new Map(), d = (e) => {
 			let t = Object.fromEntries(Object.entries(e.parts).map(([e, t]) => {
-				let n = t.model === null ? void 0 : a?.files.get(t.model.replace(/^\//, ""));
+				let n = t.model === null ? void 0 : a.get(t.model.replace(/^\//, ""));
 				if (t.model === null || n === void 0) return [e, t];
-				let r = s.get(t.model);
-				return r === void 0 && (r = URL.createObjectURL(new Blob([n], { type: "model/gltf-binary" })), s.set(t.model, r)), [e, {
+				let r = u.get(t.model);
+				return r === void 0 && (r = URL.createObjectURL(new Blob([n], { type: "model/gltf-binary" })), u.set(t.model, r)), [e, {
 					...t,
 					model: r
 				}];
@@ -40636,33 +40636,43 @@ function LE(e, t) {
 				...e,
 				parts: t
 			};
+		}, f = (e) => {
+			let t = ++c;
+			e().then((e) => {
+				if (l || t !== c) return;
+				let n = [];
+				for (let [t, r] of e.files) a.set(t, r), t.startsWith("parts/") ? o.has(t) || (o.add(t), n.push([t, r])) : n.push([t, r]);
+				s = !0;
+				let u = {
+					type: "open",
+					name: e.name,
+					files: n
+				};
+				r.postMessage(u);
+				for (let e of i) r.postMessage(e);
+				i.length = 0;
+			}, (e) => {
+				l || t !== c || n.drop(`the Block did not load: ${e instanceof Error ? e.message : String(e)}`);
+			});
 		};
 		return r.onmessage = (e) => {
-			o || NE({
-				message: (e) => n.message(e.type === "scene" ? c(e) : e),
+			l || NE({
+				message: (e) => n.message(e.type === "scene" ? d(e) : e),
 				drop: n.drop
 			}, e.data, "the session's Worker");
 		}, r.onerror = (e) => {
 			e.preventDefault(), n.drop(`the session's Worker failed: ${e.message}`);
-		}, t().then((e) => {
-			if (o) return;
-			a = e;
-			let t = {
-				type: "open",
-				name: e.name,
-				files: [...e.files]
-			};
-			r.postMessage(t);
-			for (let e of i) r.postMessage(e);
-			i.length = 0;
-		}, (e) => n.drop(`the Block did not load: ${e instanceof Error ? e.message : String(e)}`)), {
+		}, f(t), {
 			send(e) {
-				a === null ? i.push(e) : r.postMessage(e);
+				s ? r.postMessage(e) : i.push(e);
+			},
+			reload(e) {
+				l || (s = !1, i.length = 0, f(e));
 			},
 			close() {
-				o = !0, r.terminate();
-				for (let e of s.values()) URL.revokeObjectURL(e);
-				s.clear();
+				l = !0, r.terminate();
+				for (let e of u.values()) URL.revokeObjectURL(e);
+				u.clear();
 			}
 		};
 	});
@@ -40677,9 +40687,43 @@ var RE = new TextEncoder(), zE = JSON.stringify({
 	board: "uno-board",
 	tags: ["gridie"],
 	license: "MIT"
-}), BE = null;
-function VE(e) {
-	return BE === null && (BE = (async () => {
+}), BE = null, VE = null, HE = /* @__PURE__ */ new Map();
+function UE(e) {
+	return BE === null && (BE = fetch(new URL("parts/deps.json", e)).then((e) => e.ok ? e.json() : null).catch(() => null)), BE;
+}
+function WE(e) {
+	let t = /* @__PURE__ */ new Set();
+	for (let n of e.matchAll(/"type"\s*:\s*"([^"]+)"/g)) t.add(n[1]);
+	return [...t];
+}
+function GE(e, t) {
+	let n = /* @__PURE__ */ new Set(), r = [...t];
+	for (; r.length > 0;) {
+		let t = r.shift();
+		if (!n.has(t) && e[t]) {
+			n.add(t);
+			for (let i of e[t].deps) n.has(i) || r.push(i);
+		}
+	}
+	return [...n];
+}
+function KE(e, t, n) {
+	let r = HE.get(t);
+	if (r) return r;
+	let i = (async () => {
+		let r = /* @__PURE__ */ new Map();
+		return await Promise.all(n.map(async (n) => {
+			let i = `${t}/${n}`, a = await fetch(new URL(`parts/${i}`, e));
+			if (!a.ok) throw Error(`No se pudo cargar la pieza ${i} (${a.status})`);
+			r.set(`parts/${i}`, new Uint8Array(await a.arrayBuffer()));
+		})), r;
+	})();
+	return i.catch(() => {
+		HE.delete(t);
+	}), HE.set(t, i), i;
+}
+function qE(e) {
+	return VE === null && (VE = (async () => {
 		let t = await fetch(new URL("parts/manifest.json", e));
 		if (!t.ok) throw Error(`No se encontró parts/manifest.json (${t.status})`);
 		let n = await t.json(), r = /* @__PURE__ */ new Map();
@@ -40688,27 +40732,41 @@ function VE(e) {
 			if (!n.ok) throw Error(`No se pudo cargar la pieza ${t} (${n.status})`);
 			r.set(`parts/${t}`, new Uint8Array(await n.arrayBuffer()));
 		})), r;
-	})(), BE.catch(() => {
-		BE = null;
-	})), BE;
+	})(), VE.catch(() => {
+		VE = null;
+	})), VE;
 }
-function HE(e, t) {
-	let n = new URL(t.base ?? "./", import.meta.url), r = LE(() => new Worker(new URL("orbe-wasm/worker.js", n), { type: "module" }), async () => {
-		let e = await VE(n), r = new Map(e);
-		return r.set("block.jsonc", RE.encode(zE)), r.set("scene.jsonc", RE.encode(t.escena)), r.set("build/sketch.hex", t.hex), {
+async function JE(e, t) {
+	let n = await UE(e);
+	if (!n) return qE(e);
+	let r = GE(n, WE(t)), i = await Promise.all(r.map((t) => KE(e, t, n[t].files))), a = /* @__PURE__ */ new Map();
+	for (let e of i) for (let [t, n] of e) a.set(t, n);
+	return a;
+}
+async function YE(e = {}) {
+	let t = new URL(e.base ?? "./", import.meta.url), n = [fetch(new URL("orbe-wasm/orbe_wasm_bg.wasm", t)).catch(() => {}), UE(t)];
+	e.escena && n.push(JE(t, e.escena).catch(() => {})), await Promise.all(n);
+}
+function XE(e, t) {
+	let n = new URL(t.base ?? "./", import.meta.url), r = t.escena, i = t.hex, a = !!t.reproducir, o = t.alMensaje, s = !1, c = async () => {
+		let e = await JE(n, r);
+		return e.set("block.jsonc", RE.encode(zE)), e.set("scene.jsonc", RE.encode(r)), e.set("build/sketch.hex", i), {
 			name: "gridie",
-			files: r
+			files: e
 		};
-	}), i = null, a = !1;
-	i = r.subscribe((e) => {
-		t.alMensaje?.(e), t.reproducir && !a && e.type === "scene" && (a = !0, r.send({ cmd: "play" }).catch(() => {}));
+	}, l = LE(() => new Worker(new URL("orbe-wasm/worker.js", n), { type: "module" }), c), u = null;
+	u = l.subscribe((e) => {
+		o?.(e), a && !s && e.type === "scene" && (s = !0, l.send({ cmd: "play" }).catch(() => {}));
 	});
-	let o = (0, y.createRoot)(e);
-	return o.render(/* @__PURE__ */ (0, $.jsx)(v.StrictMode, { children: /* @__PURE__ */ (0, $.jsx)(ME, { source: r }) })), {
-		enviar: (e) => r.send(e),
+	let d = (0, y.createRoot)(e);
+	return d.render(/* @__PURE__ */ (0, $.jsx)(ME, { source: l })), {
+		enviar: (e) => l.send(e),
+		actualizar(e) {
+			e.escena !== void 0 && (r = e.escena), e.hex !== void 0 && (i = e.hex), e.reproducir !== void 0 && (a = e.reproducir), e.alMensaje !== void 0 && (o = e.alMensaje), s = !1, l.reload(c);
+		},
 		cerrar() {
-			i?.(), o.unmount(), r.close();
+			u?.(), d.unmount(), l.close();
 		}
 	};
 }
-export { HE as montarSimulador };
+export { XE as montarSimulador, YE as precargarSimulador };

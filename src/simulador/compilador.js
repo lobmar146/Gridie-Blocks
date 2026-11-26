@@ -9,11 +9,21 @@ const URL_COMPILADOR = import.meta.env.VITE_COMPILADOR_URL || '/api/compilar'
 
 export class ErrorDeCompilacion extends Error {}
 
+const MAXIMO_CACHE_HEX = 30
+const cacheHexCliente = new Map()
+
 /** Devuelve los bytes del .hex, o lanza ErrorDeCompilacion con el mensaje del compilador. */
 export async function compilar(codigo) {
+  const cacheado = cacheHexCliente.get(codigo)
+  if (cacheado !== undefined) return new TextEncoder().encode(cacheado)
+
   if (window.electronAPI?.compilarCodigo) {
     try {
       const hex = await window.electronAPI.compilarCodigo(codigo)
+      if (cacheHexCliente.size >= MAXIMO_CACHE_HEX) {
+        cacheHexCliente.delete(cacheHexCliente.keys().next().value)
+      }
+      cacheHexCliente.set(codigo, hex)
       return new TextEncoder().encode(hex)
     } catch (error) {
       throw new ErrorDeCompilacion(
@@ -43,6 +53,10 @@ export async function compilar(codigo) {
       )
     )
   }
+  if (cacheHexCliente.size >= MAXIMO_CACHE_HEX) {
+    cacheHexCliente.delete(cacheHexCliente.keys().next().value)
+  }
+  cacheHexCliente.set(codigo, cuerpo.hex)
   return new TextEncoder().encode(cuerpo.hex)
 }
 

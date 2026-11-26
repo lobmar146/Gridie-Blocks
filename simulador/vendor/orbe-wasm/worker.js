@@ -25,6 +25,7 @@ const tick = tickMs();
 let session = null;
 let timer = null;
 let last = 0;
+const cachedParts = new Map();
 
 const flush = () => {
   for (const text of session.messages()) post(text);
@@ -39,8 +40,20 @@ function play() {
 }
 
 function open({ name, files }) {
+  if (timer !== null) {
+    clearTimeout(timer);
+    timer = null;
+  }
+  if (session !== null) {
+    session.free();
+    session = null;
+  }
   const block = new Block();
-  for (const [path, bytes] of files) block.add(path, bytes);
+  for (const [path, bytes] of files) {
+    if (path.startsWith("parts/")) cachedParts.set(path, bytes);
+    else block.add(path, bytes);
+  }
+  for (const [path, bytes] of cachedParts) block.add(path, bytes);
   try {
     session = Session.open(name, block);
   } catch (error) {
@@ -51,10 +64,11 @@ function open({ name, files }) {
 }
 
 receive = (data) => {
-  if (session === null) {
-    if (data?.type === "open") open(data);
+  if (data?.type === "open") {
+    open(data);
     return;
   }
+  if (session === null) return;
   session.command(data);
   flush();
   if (session.playing() && timer === null) {

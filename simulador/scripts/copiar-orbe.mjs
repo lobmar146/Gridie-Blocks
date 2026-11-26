@@ -19,15 +19,43 @@ if (fs.existsSync(path.join(raiz, 'piezas'))) {
   fs.cpSync(path.join(raiz, 'piezas'), path.join(destino, 'parts'), { recursive: true })
 }
 
+const destinoParts = path.join(destino, 'parts')
 const rutas = []
 const recorrer = (dir, rel) => {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const r = rel ? `${rel}/${e.name}` : e.name
     if (e.isDirectory()) recorrer(path.join(dir, e.name), r)
-    else if (r !== 'manifest.json' && !/^LICENSE|NOTICE/.test(e.name)) rutas.push(r)
+    else if (r !== 'manifest.json' && r !== 'deps.json' && !/^LICENSE|NOTICE/.test(e.name)) rutas.push(r)
   }
 }
-recorrer(path.join(destino, 'parts'), '')
+recorrer(destinoParts, '')
 rutas.sort()
-fs.writeFileSync(path.join(destino, 'parts', 'manifest.json'), JSON.stringify(rutas))
-console.log(`simulador: ${rutas.length} archivos de piezas en public/simulador/parts`)
+fs.writeFileSync(path.join(destinoParts, 'manifest.json'), JSON.stringify(rutas))
+
+// Índice por pieza con sus archivos y sub-piezas ("type") para descargar solo lo que usa cada escena.
+const ids = new Set(
+  fs
+    .readdirSync(destinoParts, { withFileTypes: true })
+    .filter(e => e.isDirectory())
+    .map(e => e.name)
+)
+const deps = {}
+for (const id of [...ids].sort()) {
+  const dir = path.join(destinoParts, id)
+  const files = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter(e => e.isFile() && !/^LICENSE|NOTICE/.test(e.name))
+    .map(e => e.name)
+    .sort()
+  const sub = new Set()
+  const partJson = path.join(dir, 'part.jsonc')
+  if (fs.existsSync(partJson)) {
+    const txt = fs.readFileSync(partJson, 'utf8')
+    for (const m of txt.matchAll(/"type"\s*:\s*"([^"]+)"/g)) {
+      if (ids.has(m[1]) && m[1] !== id) sub.add(m[1])
+    }
+  }
+  deps[id] = { files, deps: [...sub].sort() }
+}
+fs.writeFileSync(path.join(destinoParts, 'deps.json'), JSON.stringify(deps))
+console.log(`simulador: ${rutas.length} archivos de piezas (${ids.size} piezas) en public/simulador/parts`)

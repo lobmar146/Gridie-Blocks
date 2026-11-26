@@ -1,5 +1,5 @@
 build_cache:
-    compilation_count_since_last_purge: 6
+    compilation_count_since_last_purge: 4
 cache:
     builder-api:
         v3/boards/byvid/pid/0x2341/0x0043:

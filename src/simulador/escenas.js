@@ -316,6 +316,7 @@ export function cablesDelDesafio(toolBox) {
     COMPONENTES[id].cables.map(c => ({
       id: idDelCable(id, c),
       componente: id,
+      pin: c.pin,
       nombreComponente: COMPONENTES[id].nombre,
       etiqueta: c.etiqueta,
       esperado: c.esperado,

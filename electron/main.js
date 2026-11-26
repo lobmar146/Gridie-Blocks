@@ -175,42 +175,46 @@ function prepararLibrerias(buildPath) {
     const localLibsDir = unpacked.length ? unpacked[0] : existing[0] || null
     const destLibsDir = path.join(buildPath, 'libraries')
 
-    // Copiar a build/libraries si es posible; si falla, usar la ruta original en resources.
+    // Usar directamente la carpeta fuera de app.asar para evitar borrar y copiar librerías en cada compilación.
     if (localLibsDir) {
-      if (fs.existsSync(destLibsDir)) {
-        fs.rmSync(destLibsDir, { recursive: true, force: true })
-      }
-      if (fs.cpSync) {
-        try {
-          fs.cpSync(localLibsDir, destLibsDir, { recursive: true })
-          finalLibrariesPath = destLibsDir
-        } catch (copyErr) {
-          console.warn(
-            'fs.cpSync falló, usaremos la ruta original en resources:',
-            copyErr
-          )
-          finalLibrariesPath = localLibsDir
-        }
+      if (!localLibsDir.split(path.sep).some(part => part.includes('app.asar'))) {
+        finalLibrariesPath = localLibsDir
       } else {
-        // fallback simple si no existe cpSync
-        const copyRecursive = (src, dest) => {
-          if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true })
-          for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-            const srcPath = path.join(src, entry.name)
-            const destPath = path.join(dest, entry.name)
-            if (entry.isDirectory()) copyRecursive(srcPath, destPath)
-            else fs.copyFileSync(srcPath, destPath)
+        if (!fs.existsSync(destLibsDir)) {
+          if (fs.cpSync) {
+            try {
+              fs.cpSync(localLibsDir, destLibsDir, { recursive: true })
+              finalLibrariesPath = destLibsDir
+            } catch (copyErr) {
+              console.warn(
+                'fs.cpSync falló, usaremos la ruta original en resources:',
+                copyErr
+              )
+              finalLibrariesPath = localLibsDir
+            }
+          } else {
+            const copyRecursive = (src, dest) => {
+              if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true })
+              for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+                const srcPath = path.join(src, entry.name)
+                const destPath = path.join(dest, entry.name)
+                if (entry.isDirectory()) copyRecursive(srcPath, destPath)
+                else fs.copyFileSync(srcPath, destPath)
+              }
+            }
+            try {
+              copyRecursive(localLibsDir, destLibsDir)
+              finalLibrariesPath = destLibsDir
+            } catch (copyErr) {
+              console.warn(
+                'Copia recursiva falló, usaremos la ruta original en resources:',
+                copyErr
+              )
+              finalLibrariesPath = localLibsDir
+            }
           }
-        }
-        try {
-          copyRecursive(localLibsDir, destLibsDir)
+        } else {
           finalLibrariesPath = destLibsDir
-        } catch (copyErr) {
-          console.warn(
-            'Copia recursiva falló, usaremos la ruta original en resources:',
-            copyErr
-          )
-          finalLibrariesPath = localLibsDir
         }
       }
       console.log(
@@ -283,15 +287,31 @@ function ejecutarArduinoCli(comando, { stderrEsError = false } = {}) {
   })
 }
 
-// Asegura que el core arduino:avr esté disponible.
-// - En desarrollo lo instala si hace falta.
+// Asegura que el core arduino:avr esté disponible una sola vez por sesión.
+// - En desarrollo usa el core empaquetado si existe; si no, lo instala una vez.
 // - En producción tiene que venir preempaquetado (evita descargas/timeouts).
+let coreAvrVerificado = false
 async function asegurarCoreAvr() {
+  if (coreAvrVerificado) return
   const isDev = process.defaultApp || process.env.NODE_ENV === 'development'
   if (isDev) {
+    const avrEmpaquetado = path.join(
+      __dirname,
+      'arduino-data',
+      'arduino15',
+      'packages',
+      'arduino',
+      'hardware',
+      'avr'
+    )
+    if (fs.existsSync(avrEmpaquetado)) {
+      coreAvrVerificado = true
+      return
+    }
     try {
       const salida = await ejecutarArduinoCli('core install arduino:avr')
       console.log('Core arduino:avr disponible:', salida || 'ya instalado')
+      coreAvrVerificado = true
     } catch (coreErr) {
       throw new Error(
         `No se pudo instalar el core arduino:avr: ${coreErr.message}`
@@ -310,6 +330,7 @@ async function asegurarCoreAvr() {
         'o incluye el core en extraResources. Ver README / electron-builder.json.'
     )
   }
+  coreAvrVerificado = true
   console.log('Producción: usando core preempaquetado en', packagedArduino15)
 }
 
@@ -352,10 +373,18 @@ ipcMain.handle('arduino:uploadCode', async (event, { placa, codigo }) => {
   }
 })
 
-// Compilar para el simulador: devuelve el texto del .hex
+// Compilar para el simulador: devuelve el texto del .hex (con caché en memoria)
+const cacheSimuladorHex = new Map()
 ipcMain.handle('arduino:compile', async (event, { codigo }) => {
+  const cacheado = cacheSimuladorHex.get(codigo)
+  if (cacheado !== undefined) return cacheado
   const hexFilePath = await compilarCodigo(codigo)
-  return fs.readFileSync(hexFilePath, 'utf8')
+  const hex = fs.readFileSync(hexFilePath, 'utf8')
+  if (cacheSimuladorHex.size >= 30) {
+    cacheSimuladorHex.delete(cacheSimuladorHex.keys().next().value)
+  }
+  cacheSimuladorHex.set(codigo, hex)
+  return hex
 })
 
 // Reemplaza la función getArduinoConfigFile por esta implementación

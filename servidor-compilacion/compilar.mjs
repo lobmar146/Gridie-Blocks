@@ -39,6 +39,17 @@ function libreriasPorDefecto() {
 
 const MAXIMO_CODIGO = 200_000 // bytes
 const TIEMPO_MAXIMO = 60_000 // ms
+const MAXIMO_CACHE_HEX = 50
+const cacheHex = new Map()
+const RUTA_BUILD_COMPARTIDA = path.join(os.tmpdir(), 'gridie-avr-build')
+
+function guardarEnCache(clave, hex) {
+  if (cacheHex.size >= MAXIMO_CACHE_HEX) {
+    const primera = cacheHex.keys().next().value
+    cacheHex.delete(primera)
+  }
+  cacheHex.set(clave, hex)
+}
 
 /**
  * @param {string} codigo  El .ino generado por GrIDIE.
@@ -61,6 +72,11 @@ export async function compilarSketch(codigo, opciones = {}) {
     process.env.ARDUINO_LIBRERIAS ??
     libreriasPorDefecto()
 
+  const claveCache = `${cli}\0${config ?? ''}\0${librerias ?? ''}\0${codigo}`
+  const hexCacheado = cacheHex.get(claveCache)
+  if (hexCacheado !== undefined) return hexCacheado
+
+  await fs.mkdir(RUTA_BUILD_COMPARTIDA, { recursive: true })
   const carpeta = await fs.mkdtemp(path.join(os.tmpdir(), 'gridie-'))
   try {
     const sketch = path.join(carpeta, 'sketch')
@@ -69,7 +85,15 @@ export async function compilarSketch(codigo, opciones = {}) {
     await fs.writeFile(path.join(sketch, 'sketch.ino'), codigo)
     const args = []
     if (config) args.push('--config-file', config)
-    args.push('compile', '--fqbn', 'arduino:avr:uno', '--output-dir', salida)
+    args.push(
+      'compile',
+      '--fqbn',
+      'arduino:avr:uno',
+      '--build-path',
+      RUTA_BUILD_COMPARTIDA,
+      '--output-dir',
+      salida
+    )
     if (librerias) args.push('--libraries', librerias)
     args.push(sketch)
     await new Promise((resolve, reject) => {
@@ -90,7 +114,9 @@ export async function compilarSketch(codigo, opciones = {}) {
         }
       )
     })
-    return await fs.readFile(path.join(salida, 'sketch.ino.hex'), 'utf8')
+    const hex = await fs.readFile(path.join(salida, 'sketch.ino.hex'), 'utf8')
+    guardarEnCache(claveCache, hex)
+    return hex
   } finally {
     await fs.rm(carpeta, { recursive: true, force: true })
   }

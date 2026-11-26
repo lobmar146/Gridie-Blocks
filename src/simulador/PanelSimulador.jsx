@@ -8,7 +8,7 @@ import {
   ResetIcon
 } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
+import { Progress } from '@/components/ui/progress'
 import {
   frecuenciaDelParlante,
   prepararCodigoParaSimulador,
@@ -17,24 +17,27 @@ import {
 import { compilar } from './compilador'
 import { cablesDelDesafio, escenaDelDesafio, nombreDelPin } from './escenas'
 import { Parlante } from './parlante'
+import {
+  cargarHexVacio,
+  cargarPuente,
+  precargarSimuladorDesafio,
+  urlSimulador
+} from './precarga'
+import TableroDeConexion from './TableroDeConexion'
 
-// El puente con ORBE se compila aparte (carpeta simulador/) y se publica en public/simulador.
-// En desarrollo la app vive en la raíz del servidor; en producción, al lado de index.html.
-const baseDeLaApp = () =>
-  import.meta.env.MODE === 'development'
-    ? `${window.location.origin}/`
-    : document.baseURI
-const urlSimulador = ruta => new URL(`simulador/${ruta}`, baseDeLaApp()).href
-const cargarPuente = () =>
-  import(/* @vite-ignore */ urlSimulador('gridie-simulador.js'))
-let hexVacio = null
-const cargarHexVacio = async () => {
-  if (!hexVacio) {
-    const r = await fetch(urlSimulador('vacio.hex'))
-    hexVacio = new Uint8Array(await r.arrayBuffer())
-  }
-  return hexVacio
-}
+const CargaSimulador = ({ progreso, mensaje }) => (
+  <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#1e1e1e]/85 p-6">
+    <div className="flex w-full max-w-xs flex-col gap-2.5 text-center">
+      <div className="flex items-center justify-between text-xs text-gray-300">
+        <span>{mensaje}</span>
+        <span className="tabular-nums text-gray-400">
+          {Math.round(progreso)}%
+        </span>
+      </div>
+      <Progress value={progreso} />
+    </div>
+  </div>
+)
 
 const esMensajeDeBloqueo = codigo => codigo.trim().startsWith('Recuerda')
 
@@ -103,6 +106,10 @@ const PanelSimulador = ({
     guardado.verificado && completo ? 'probar' : 'conectar'
   )
   const [verEsquema, setVerEsquema] = useState(false)
+
+  useEffect(() => {
+    precargarSimuladorDesafio(toolBox)
+  }, [toolBox])
 
   const cambiarConexiones = nuevas => {
     setConexiones(nuevas)
@@ -223,27 +230,6 @@ const Encabezado = ({ paso, encabezado, children }) => (
 
 // Los conectores del Arduino Uno como se ven en la placa, con el USB a la izquierda.
 // `pin` es el que se elige; los que no tienen pin no se usan en GrIDIE.
-const CONECTOR_DIGITAL = [
-  { texto: 'AREF' },
-  { texto: 'GND', pin: 'GND' },
-  ...[13, 12, 11, 10, 9, 8].map(n => ({ texto: `${n}`, pin: `D${n}` })),
-  null,
-  ...[7, 6, 5, 4, 3, 2].map(n => ({ texto: `${n}`, pin: `D${n}` })),
-  { texto: 'TX 1' },
-  { texto: 'RX 0' }
-]
-const CONECTOR_ABAJO = [
-  { texto: 'IOREF' },
-  { texto: 'RESET' },
-  { texto: '3.3V', pin: '3V3' },
-  { texto: '5V', pin: '5V' },
-  { texto: 'GND', pin: 'GND' },
-  { texto: 'GND', pin: 'GND' },
-  { texto: 'Vin' },
-  null,
-  ...[0, 1, 2, 3, 4, 5].map(n => ({ texto: `A${n}`, pin: `A${n}` }))
-]
-
 /** Dónde está un pin en la placa, para ayudar a encontrarlo. */
 const dondeEsta = pin => {
   if (/^D/.test(pin))
@@ -252,49 +238,6 @@ const dondeEsta = pin => {
   if (pin === 'GND')
     return 'abajo, en POWER (también hay uno arriba, al lado del 13)'
   return 'abajo, en el conector POWER'
-}
-
-/** Los conectores del Arduino para hacer clic en el pin donde va el cable. */
-const TableroDePines = ({ onElegir, marcado, deshabilitado }) => {
-  const fila = (pines, arriba) => (
-    <div className="flex gap-[2px]">
-      {pines.map((p, i) =>
-        p === null ? (
-          <span key={i} className="w-2" />
-        ) : (
-          <button
-            key={i}
-            type="button"
-            disabled={!p.pin || deshabilitado}
-            onClick={() => onElegir(p.pin)}
-            title={p.pin ? nombreDelPin(p.pin) : 'No se usa en GrIDIE'}
-            className={`flex w-[22px] flex-col items-center gap-0.5 rounded-sm py-0.5 text-[9px] leading-none ${
-              p.pin
-                ? 'text-white hover:bg-white/20'
-                : 'cursor-default text-white/40'
-            } ${marcado && p.pin === marcado ? 'animate-pulse bg-amber-500/70' : ''}`}
-          >
-            {arriba && <span className="h-3">{p.texto}</span>}
-            <span
-              className={`h-3 w-3 rounded-[2px] border ${p.pin ? 'border-gray-500 bg-black' : 'border-gray-700 bg-gray-900'}`}
-            />
-            {!arriba && <span className="h-3">{p.texto}</span>}
-          </button>
-        )
-      )}
-    </div>
-  )
-  return (
-    <div className="inline-flex flex-col gap-3 rounded-md bg-[#00878f] px-2 py-2 shadow-inner">
-      <div className="flex items-end justify-end">
-        {fila(CONECTOR_DIGITAL, true)}
-      </div>
-      <div className="text-center text-[10px] font-semibold tracking-widest text-white/80">
-        ARDUINO UNO
-      </div>
-      <div className="flex justify-end pr-6">{fila(CONECTOR_ABAJO, false)}</div>
-    </div>
-  )
 }
 
 /** Etapa 1: el alumno conecta los cables uno por uno, como indica el esquema. */
@@ -308,42 +251,111 @@ const EtapaConectar = ({
   onAprobar
 }) => {
   const contenedorRef = useRef(null)
+  const simuladorRef = useRef(null)
+  const hexRef = useRef(null)
+  const epocaRef = useRef(0)
   const [errorVista, setErrorVista] = useState('')
+  const [carga, setCarga] = useState({
+    progreso: 20,
+    mensaje: 'Cargando motor 3D…'
+  })
   const [aviso, setAviso] = useState(null) // { ok, texto }
   const listos = conectadosBien(cables, conexiones)
   const actual = cables.find(c => conexiones[c.id] !== c.esperado)
   const numero = actual ? cables.indexOf(actual) + 1 : cables.length
 
+  // Cierra el visor al desmontar o cambiar de desafío.
+  useEffect(() => {
+    return () => {
+      epocaRef.current += 1
+      simuladorRef.current?.cerrar()
+      simuladorRef.current = null
+    }
+  }, [toolBox])
+
   // La vista 3D muestra solo los cables que el alumno ya conectó.
-  const conexionesHechas = Object.fromEntries(
-    listos.map(c => [c.id, conexiones[c.id]])
+  const claveConexionesHechas = JSON.stringify(
+    Object.fromEntries(listos.map(c => [c.id, conexiones[c.id]]))
   )
   useEffect(() => {
-    let simulador = null
-    let cancelado = false
+    const conexionesHechas = JSON.parse(claveConexionesHechas)
+    const escena = escenaDelDesafio(toolBox, conexionesHechas, {
+      soloElegidas: true
+    }).escena
+    const epoca = ++epocaRef.current
+    let rafId = 0
+    let timer = 0
     setErrorVista('')
+
+    const alMensaje = m => {
+      if (epocaRef.current !== epoca) return
+      if (m.type === 'scene') {
+        setCarga(prev =>
+          prev ? { progreso: 100, mensaje: 'Mostrando circuito…' } : prev
+        )
+        rafId = window.requestAnimationFrame(() => {
+          if (epocaRef.current === epoca) setCarga(null)
+        })
+      } else if (m.type === 'closed') {
+        setCarga(null)
+        setErrorVista(m.reason)
+        simuladorRef.current?.cerrar()
+        simuladorRef.current = null
+      }
+    }
+
+    if (simuladorRef.current?.actualizar && hexRef.current) {
+      setCarga({ progreso: 50, mensaje: 'Actualizando circuito 3D…' })
+      simuladorRef.current.actualizar({
+        escena,
+        hex: hexRef.current,
+        reproducir: false,
+        alMensaje
+      })
+      return () => {
+        epocaRef.current += 1
+        if (rafId) window.cancelAnimationFrame(rafId)
+      }
+    }
+
+    setCarga({ progreso: 20, mensaje: 'Cargando motor 3D…' })
+    timer = window.setInterval(() => {
+      setCarga(prev =>
+        prev && prev.progreso < 90
+          ? { ...prev, progreso: Math.min(90, prev.progreso + 3) }
+          : prev
+      )
+    }, 350)
     ;(async () => {
       try {
-        const hex = await cargarHexVacio()
-        if (cancelado || !contenedorRef.current) return
-        simulador = await montar(contenedorRef.current, {
-          escena: escenaDelDesafio(toolBox, conexionesHechas, {
-            soloElegidas: true
-          }).escena,
+        const [hex] = await Promise.all([cargarHexVacio(), cargarPuente()])
+        if (epocaRef.current !== epoca || !contenedorRef.current) return
+        hexRef.current = hex
+        setCarga({ progreso: 60, mensaje: 'Cargando piezas y escena 3D…' })
+        const sim = await montar(contenedorRef.current, {
+          escena,
           hex,
           reproducir: false,
-          alMensaje: m => m.type === 'closed' && setErrorVista(m.reason)
+          alMensaje
         })
-        if (cancelado) simulador.cerrar()
+        if (epocaRef.current !== epoca) {
+          sim.cerrar()
+          return
+        }
+        simuladorRef.current = sim
       } catch (e) {
-        setErrorVista(e.message || String(e))
+        if (epocaRef.current === epoca) {
+          setCarga(null)
+          setErrorVista(e.message || String(e))
+        }
       }
     })()
     return () => {
-      cancelado = true
-      simulador?.cerrar()
+      epocaRef.current += 1
+      if (timer) window.clearInterval(timer)
+      if (rafId) window.cancelAnimationFrame(rafId)
     }
-  }, [toolBox, JSON.stringify(conexionesHechas)])
+  }, [toolBox, claveConexionesHechas])
 
   const elegir = pin => {
     if (!actual) return
@@ -410,13 +422,20 @@ const EtapaConectar = ({
               </span>
             </div>
             <div className="mt-1 text-xs text-gray-400">
-              Lo encontrás {dondeEsta(actual.esperado)}. Hacé clic en ese pin:
+              Lo encontrás {dondeEsta(actual.esperado)}. Arrastrá el conector
+              hasta ese pin (o hacé clic):
             </div>
           </div>
           <div className="overflow-x-auto">
-            <TableroDePines
-              onElegir={elegir}
+            <TableroDeConexion
+              cablesComponente={cables.filter(
+                c => c.componente === actual.componente
+              )}
+              todosLosCables={cables}
+              actual={actual}
+              conexiones={conexiones}
               marcado={aviso && !aviso.ok ? actual.esperado : null}
+              onElegir={elegir}
             />
           </div>
           {aviso && (
@@ -468,8 +487,14 @@ const EtapaConectar = ({
         {guia}
         <div className="relative min-h-0 min-w-0 flex-1">
           <div ref={contenedorRef} className="absolute inset-0" />
+          {carga && !errorVista && (
+            <CargaSimulador
+              progreso={carga.progreso}
+              mensaje={carga.mensaje}
+            />
+          )}
           {errorVista && (
-            <pre className="absolute inset-x-0 bottom-0 max-h-[50%] overflow-auto bg-[#1e1e1e]/90 p-3 text-xs text-red-300">
+            <pre className="absolute inset-x-0 bottom-0 z-10 max-h-[50%] overflow-auto bg-[#1e1e1e]/90 p-3 text-xs text-red-300">
               {errorVista}
             </pre>
           )}
@@ -490,27 +515,52 @@ const EtapaProbar = ({
   const contenedorRef = useRef(null)
   const simuladorRef = useRef(null)
   const parlanteRef = useRef(null)
-  const [estado, setEstado] = useState('compilando') // compilando | corriendo | error
+  const cargaIdRef = useRef(0)
+  const [estado, setEstado] = useState('cargando') // cargando | corriendo | error
+  const [carga, setCarga] = useState({
+    progreso: 20,
+    mensaje: 'Compilando tu programa…'
+  })
   const [error, setError] = useState('')
   const [codigoCargado, setCodigoCargado] = useState(null)
   const desafio = escenaDelDesafio(toolBox, conexiones)
 
-  const detener = () => {
-    simuladorRef.current?.cerrar()
-    simuladorRef.current = null
+  const detenerParlante = useCallback(() => {
+    cargaIdRef.current += 1
     parlanteRef.current?.detener()
     parlanteRef.current = null
-  }
+  }, [])
+
+  const detener = useCallback(() => {
+    detenerParlante()
+    simuladorRef.current?.cerrar()
+    simuladorRef.current = null
+  }, [detenerParlante])
+
+  useEffect(() => {
+    if (estado !== 'cargando') return undefined
+    const timer = window.setInterval(() => {
+      setCarga(prev =>
+        prev.progreso < 92
+          ? { ...prev, progreso: Math.min(92, prev.progreso + 2) }
+          : prev
+      )
+    }, 400)
+    return () => window.clearInterval(timer)
+  }, [estado])
 
   const iniciar = useCallback(async () => {
-    detener()
+    detenerParlante()
+    const id = cargaIdRef.current
     setError('')
     if (!desafio) {
+      detener()
       setEstado('error')
       setError('Este desafío todavía no tiene simulación.')
       return
     }
     if (!codigo || esMensajeDeBloqueo(codigo)) {
+      detener()
       setEstado('error')
       setError(
         codigo
@@ -519,25 +569,61 @@ const EtapaProbar = ({
       )
       return
     }
-    setEstado('compilando')
+    setEstado('cargando')
+    setCarga({
+      progreso: 20,
+      mensaje: 'Compilando tu programa y cargando motor 3D…'
+    })
     try {
-      const hex = await compilar(prepararCodigoParaSimulador(codigo))
-      if (!contenedorRef.current) return
+      let compilo = false
+      let cargoPuente = false
+      const compilacion = compilar(prepararCodigoParaSimulador(codigo)).then(
+        res => {
+          compilo = true
+          if (cargaIdRef.current === id && !cargoPuente) {
+            setCarga({
+              progreso: 55,
+              mensaje: 'Terminando de cargar el motor 3D…'
+            })
+          }
+          return res
+        }
+      )
+      const puente = cargarPuente().then(res => {
+        cargoPuente = true
+        if (cargaIdRef.current === id && !compilo) {
+          setCarga({ progreso: 45, mensaje: 'Compilando tu programa…' })
+        }
+        return res
+      })
+      const [hex] = await Promise.all([compilacion, puente])
+      if (cargaIdRef.current !== id || !contenedorRef.current) return
+      setCarga({
+        progreso: 75,
+        mensaje: 'Cargando circuito en el simulador…'
+      })
       const parlante =
         desafio.pinParlante && usaParlante(codigo)
           ? new Parlante(frecuenciaDelParlante(codigo))
           : null
       parlanteRef.current = parlante
       let indicePinParlante = -1
-      simuladorRef.current = await montar(contenedorRef.current, {
+      const opcionesMontaje = {
         escena: desafio.escena,
         hex,
         reproducir: true,
         alMensaje: mensaje => {
+          if (cargaIdRef.current !== id) return
           if (mensaje.type === 'scene') {
             indicePinParlante = mensaje.channels.pins.indexOf(
               desafio.pinParlante
             )
+            setCarga({ progreso: 100, mensaje: 'Iniciando simulación…' })
+            window.requestAnimationFrame(() => {
+              if (cargaIdRef.current !== id) return
+              setCodigoCargado(codigo)
+              setEstado('corriendo')
+            })
           } else if (
             mensaje.type === 'frame' &&
             parlante &&
@@ -548,24 +634,38 @@ const EtapaProbar = ({
               mensaje.state === 'playing'
             )
           } else if (mensaje.type === 'closed') {
+            detener()
             setEstado('error')
             setError(`El simulador se detuvo: ${mensaje.reason}`)
           }
         }
-      })
-      setCodigoCargado(codigo)
-      setEstado('corriendo')
+      }
+      if (simuladorRef.current?.actualizar) {
+        simuladorRef.current.actualizar(opcionesMontaje)
+      } else {
+        const sim = await montar(contenedorRef.current, opcionesMontaje)
+        if (cargaIdRef.current !== id) {
+          sim.cerrar()
+          return
+        }
+        simuladorRef.current = sim
+      }
     } catch (e) {
+      if (cargaIdRef.current !== id) return
+      detener()
       setEstado('error')
       setError(e.message || String(e))
     }
-  }, [codigo, toolBox])
+  }, [codigo, desafio, detener, detenerParlante])
+
+  const iniciarRef = useRef(iniciar)
+  iniciarRef.current = iniciar
 
   // Arranca al abrir la etapa; se cierra todo al salir.
   useEffect(() => {
-    iniciar()
+    iniciarRef.current()
     return detener
-  }, [toolBox])
+  }, [toolBox, detener])
 
   const desactualizado = estado === 'corriendo' && codigoCargado !== codigo
 
@@ -586,7 +686,7 @@ const EtapaProbar = ({
           size="sm"
           className={`h-8 text-white ${desactualizado ? 'animate-pulse bg-amber-600 hover:bg-amber-700' : 'bg-emerald-700 hover:bg-emerald-800'}`}
           onClick={iniciar}
-          disabled={estado === 'compilando'}
+          disabled={estado === 'cargando'}
           title="Compila tu programa y lo vuelve a cargar en el simulador"
         >
           <ReloadIcon className="mr-1.5 h-3.5 w-3.5" />
@@ -603,10 +703,8 @@ const EtapaProbar = ({
 
       <div className="relative min-h-0 flex-1">
         <div ref={contenedorRef} className="absolute inset-0" />
-        {estado === 'compilando' && (
-          <div className="absolute inset-0 flex items-center justify-center gap-2 bg-[#1e1e1e]/80 text-gray-200">
-            <Spinner /> Preparando tu programa…
-          </div>
+        {estado === 'cargando' && (
+          <CargaSimulador progreso={carga.progreso} mensaje={carga.mensaje} />
         )}
         {estado === 'error' && (
           <div className="absolute inset-0 overflow-auto bg-[#1e1e1e] p-4 text-sm text-red-300">
