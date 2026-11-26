@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import ArduinoUnoInteractivo from './ArduinoUnoInteractivo'
 import DibujoComponente from './DibujoComponente'
 
@@ -38,12 +44,63 @@ function encontrarPinBajoPuntero(contenedor, clientX, clientY) {
   return mejor
 }
 
+/** Los cables de un dispositivo dibujados del conector al pin del Arduino. */
+const CablesDibujados = ({ cables, className }) => (
+  <svg
+    className={`pointer-events-none absolute inset-0 h-full w-full overflow-visible ${className}`}
+    aria-hidden="true"
+  >
+    {cables.map(c => {
+      const d = trazarCurvaCable(c.desde, c.hasta)
+      const esOscuro = /^#[0-3]/i.test(c.color)
+      return (
+        <g key={c.id}>
+          <path
+            d={d}
+            fill="none"
+            stroke={esOscuro ? '#475569' : '#090b0f'}
+            strokeWidth="5"
+            strokeLinecap="round"
+            opacity="0.7"
+          />
+          <path
+            d={d}
+            fill="none"
+            stroke={c.color}
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <circle
+            cx={c.hasta.x}
+            cy={c.hasta.y}
+            r="3.5"
+            fill={c.color}
+            stroke={esOscuro ? '#94a3b8' : '#090b0f'}
+            strokeWidth="1.5"
+          />
+          <circle
+            cx={c.desde.x}
+            cy={c.desde.y}
+            r="3"
+            fill={c.color}
+            stroke={esOscuro ? '#94a3b8' : '#090b0f'}
+            strokeWidth="1.5"
+          />
+        </g>
+      )
+    })}
+  </svg>
+)
+
 /**
- * Tablero interactivo de conexión: arriba muestra el componente actual y abajo el Arduino Uno,
- * permitiendo arrastrar cada cable hasta su pin (o hacer clic directo en el pin).
+ * Tablero interactivo de conexión: arriba los dispositivos que ya se conectaron (en chico,
+ * con sus cables puestos), después el dispositivo actual y abajo el Arduino Uno, para
+ * arrastrar cada cable hasta su pin (o hacer clic directo en el pin). Sin `actual` (todo
+ * conectado) muestra el circuito completo.
  */
 const TableroDeConexion = ({
   cablesComponente,
+  todosLosCables = cablesComponente,
   actual,
   conexiones,
   marcado,
@@ -97,7 +154,7 @@ const TableroDeConexion = ({
     const obs = new ResizeObserver(medirPuntos)
     obs.observe(root)
     return () => obs.disconnect()
-  }, [medirPuntos, actual?.componente, cablesComponente.length])
+  }, [medirPuntos, actual?.componente, todosLosCables.length])
 
   const elegirConSocket = useCallback(
     (pin, socketKey) => {
@@ -175,20 +232,37 @@ const TableroDeConexion = ({
     }
   }, [estaArrastrando, elegirConSocket])
 
-  // Cables ya conectados de este componente para dibujarlos sobre el tablero 2D.
-  const cablesDibujados = cablesComponente
+  // Los dispositivos en el orden de la guía. Los anteriores al actual se muestran en chico
+  // si ya tienen algún cable puesto.
+  const dispositivos = []
+  for (const c of todosLosCables) {
+    if (!dispositivos.some(d => d.componente === c.componente))
+      dispositivos.push({
+        componente: c.componente,
+        nombreComponente: c.nombreComponente,
+        cables: todosLosCables.filter(x => x.componente === c.componente)
+      })
+  }
+  const anteriores = dispositivos.filter(
+    d =>
+      d.componente !== actual?.componente &&
+      d.cables.some(c => conexiones[c.id] === c.esperado)
+  )
+
+  // Cables ya conectados, para dibujarlos sobre el tablero 2D.
+  const cablesDibujados = todosLosCables
     .filter(c => conexiones[c.id] === c.esperado)
     .map(c => {
       const desde = puntos.terminales[c.id]
       const socketKey = enchufes[c.id] ?? puntos.pinASocket[c.esperado]
       const hasta = socketKey ? puntos.sockets[socketKey] : null
-      return desde && hasta ? { id: c.id, color: c.color, desde, hasta } : null
+      return desde && hasta
+        ? { id: c.id, componente: c.componente, color: c.color, desde, hasta }
+        : null
     })
     .filter(Boolean)
 
-  const origenArrastre = arrastre
-    ? puntos.terminales[arrastre.cable.id]
-    : null
+  const origenArrastre = arrastre ? puntos.terminales[arrastre.cable.id] : null
   const destinoArrastre = arrastre
     ? (arrastre.hoverSocket && puntos.sockets[arrastre.hoverSocket]) || {
         x: arrastre.x,
@@ -196,71 +270,67 @@ const TableroDeConexion = ({
       }
     : null
 
+  // Los cables de los dispositivos anteriores pasan por debajo de la tarjeta del actual
+  // (que es opaca) y por encima del Arduino; los del actual van arriba de todo.
   return (
     <div
       ref={stageRef}
       className="relative inline-flex flex-col items-center gap-9"
     >
-      <DibujoComponente
-        componente={actual.componente}
-        nombreComponente={actual.nombreComponente}
-        cablesComponente={cablesComponente}
-        cableActualId={actual.id}
-        conexiones={conexiones}
-        arrastrandoId={arrastre?.cable.id ?? null}
-        onIniciarArrastre={iniciarArrastre}
-      />
+      {anteriores.length > 0 && (
+        <div className="relative z-20 flex w-[396px] flex-wrap justify-center gap-2">
+          {anteriores.map(d => (
+            <DibujoComponente
+              key={d.componente}
+              compacto
+              componente={d.componente}
+              nombreComponente={d.nombreComponente}
+              cablesComponente={d.cables}
+              cableActualId={null}
+              conexiones={conexiones}
+            />
+          ))}
+        </div>
+      )}
 
-      <ArduinoUnoInteractivo
-        onElegir={elegirConSocket}
-        marcado={marcado}
-        resaltadoArrastre={arrastre?.hoverSocket ?? null}
-      />
+      {actual && (
+        <div className="relative z-20">
+          <DibujoComponente
+            componente={actual.componente}
+            nombreComponente={actual.nombreComponente}
+            cablesComponente={cablesComponente}
+            cableActualId={actual.id}
+            conexiones={conexiones}
+            arrastrandoId={arrastre?.cable.id ?? null}
+            onIniciarArrastre={iniciarArrastre}
+          />
+        </div>
+      )}
 
+      <div className="relative z-0">
+        <ArduinoUnoInteractivo
+          onElegir={elegirConSocket}
+          marcado={marcado}
+          resaltadoArrastre={arrastre?.hoverSocket ?? null}
+        />
+      </div>
+
+      <CablesDibujados
+        className="z-10"
+        cables={cablesDibujados.filter(
+          c => c.componente !== actual?.componente
+        )}
+      />
+      <CablesDibujados
+        className="z-30"
+        cables={cablesDibujados.filter(
+          c => c.componente === actual?.componente
+        )}
+      />
       <svg
-        className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
+        className="pointer-events-none absolute inset-0 z-30 h-full w-full overflow-visible"
         aria-hidden="true"
       >
-        {cablesDibujados.map(c => {
-          const d = trazarCurvaCable(c.desde, c.hasta)
-          const esOscuro = /^#[0-3]/i.test(c.color)
-          return (
-            <g key={c.id}>
-              <path
-                d={d}
-                fill="none"
-                stroke={esOscuro ? '#475569' : '#090b0f'}
-                strokeWidth="5"
-                strokeLinecap="round"
-                opacity="0.7"
-              />
-              <path
-                d={d}
-                fill="none"
-                stroke={c.color}
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-              <circle
-                cx={c.hasta.x}
-                cy={c.hasta.y}
-                r="3.5"
-                fill={c.color}
-                stroke={esOscuro ? '#94a3b8' : '#090b0f'}
-                strokeWidth="1.5"
-              />
-              <circle
-                cx={c.desde.x}
-                cy={c.desde.y}
-                r="3"
-                fill={c.color}
-                stroke={esOscuro ? '#94a3b8' : '#090b0f'}
-                strokeWidth="1.5"
-              />
-            </g>
-          )
-        })}
-
         {arrastre && origenArrastre && destinoArrastre && (
           <g>
             <path

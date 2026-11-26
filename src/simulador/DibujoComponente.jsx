@@ -338,20 +338,29 @@ const DibujoComponente = ({
   cableActualId,
   conexiones,
   arrastrandoId,
-  onIniciarArrastre
+  onIniciarArrastre,
+  compacto = false
 }) => {
   return (
-    <div className="flex w-[396px] flex-col items-center rounded-lg border border-gray-700 bg-gray-800/80 px-3 pt-2 pb-2.5 shadow-inner">
-      <div className="mb-1 flex w-full items-center justify-between text-[11px]">
+    <div
+      className={`flex flex-col items-center rounded-lg border border-gray-700 bg-gray-800 shadow-inner ${compacto ? 'w-[194px] px-2 pb-2 pt-1.5' : 'w-[396px] px-3 pb-2.5 pt-2'}`}
+    >
+      <div
+        className={`mb-1 flex w-full items-center text-[11px] ${compacto ? 'justify-center' : 'justify-between'}`}
+      >
         <span className="font-semibold uppercase tracking-wide text-gray-300">
           {nombreComponente}
         </span>
-        <span className="text-gray-400">Arrastrá el conector al Arduino</span>
+        {compacto ? null : (
+          <span className="text-gray-400">Arrastrá el conector al Arduino</span>
+        )}
       </div>
 
       <SvgComponente tipo={componente} />
 
-      <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+      <div
+        className={`mt-1 flex flex-wrap items-center justify-center ${compacto ? 'gap-1' : 'gap-2'}`}
+      >
         {cablesComponente.map(cable => {
           const conectado = conexiones[cable.id] === cable.esperado
           const esActual = cable.id === cableActualId
@@ -372,7 +381,7 @@ const DibujoComponente = ({
                     ? `${cable.etiqueta} conectado`
                     : cable.etiqueta
               }
-              className={`flex touch-none select-none items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-all ${
+              className={`flex touch-none select-none items-center gap-1.5 rounded-full border font-medium transition-all ${compacto ? 'px-1.5 py-0.5 text-[11px]' : 'px-2.5 py-1 text-xs'} ${
                 esActual
                   ? `cursor-grab border-amber-400 bg-gray-900 text-white shadow-md ring-2 ring-amber-400/50 active:cursor-grabbing ${arrastrando ? 'scale-105 ring-arduino-claro' : 'animate-pulse'}`
                   : conectado
