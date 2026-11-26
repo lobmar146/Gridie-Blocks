@@ -61,13 +61,13 @@ const FilaDePines = ({
           activo
             ? 'cursor-pointer text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-300'
             : 'cursor-default text-white/45'
-        } ${estaEnArrastre ? 'scale-110 bg-cyan-400/90 text-gray-950 ring-2 ring-white' : estaMarcado ? 'animate-pulse bg-amber-400/90 text-gray-950 ring-2 ring-amber-300' : ''}`}
+        } ${estaEnArrastre ? 'scale-110 bg-arduino-claro/90 text-gray-950 ring-2 ring-white' : estaMarcado ? 'animate-pulse bg-amber-400/90 text-gray-950 ring-2 ring-amber-300' : ''}`}
       >
         {arriba && (
           <span
             className={`flex h-3.5 w-3.5 items-center justify-center rounded-[2px] border ${
               estaEnArrastre
-                ? 'border-white bg-cyan-950'
+                ? 'border-white bg-arduino-profundo'
                 : estaMarcado
                   ? 'border-amber-900 bg-gray-950'
                   : activo
@@ -89,7 +89,7 @@ const FilaDePines = ({
           <span
             className={`mt-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-[2px] border ${
               estaEnArrastre
-                ? 'border-white bg-cyan-950'
+                ? 'border-white bg-arduino-profundo'
                 : estaMarcado
                   ? 'border-amber-900 bg-gray-950'
                   : activo

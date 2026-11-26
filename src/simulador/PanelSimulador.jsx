@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  ArrowLeftIcon,
-  CheckCircledIcon,
-  Cross2Icon,
-  ExternalLinkIcon,
-  ImageIcon,
-  ReloadIcon,
-  ResetIcon
-} from '@radix-ui/react-icons'
+import { CheckCircledIcon, Cross2Icon, ResetIcon } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import {
@@ -214,7 +206,7 @@ const Encabezado = ({ paso, encabezado, children }) => (
   <div className="flex items-center justify-between gap-2 border-b border-gray-700 px-3 py-2">
     <div className="flex min-w-0 items-center gap-3 text-sm">
       {encabezado.titulo && (
-        <span className="truncate font-semibold text-violet-300">
+        <span className="truncate font-semibold text-arduino-suave">
           {encabezado.titulo}
         </span>
       )}
@@ -252,8 +244,7 @@ const Encabezado = ({ paso, encabezado, children }) => (
           onClick={encabezado.onVerEsquema}
           title="Ver el esquema de conexión del desafío"
         >
-          <ImageIcon className="mr-1 h-3.5 w-3.5" />
-          Esquema
+          Esquema 🗺️
         </Button>
       )}
       {encabezado.onDesacoplar && (
@@ -264,8 +255,7 @@ const Encabezado = ({ paso, encabezado, children }) => (
           onClick={encabezado.onDesacoplar}
           title="Abrir el simulador en una ventana aparte"
         >
-          <ExternalLinkIcon className="mr-1 h-3.5 w-3.5" />
-          Ventana aparte
+          Ventana aparte 🪟
         </Button>
       )}
       {encabezado.onCerrar && (
@@ -454,7 +444,7 @@ const EtapaConectar = ({
       </div>
       <div className="h-1.5 overflow-hidden rounded bg-gray-700">
         <div
-          className="h-full bg-emerald-500 transition-all"
+          className="h-full bg-arduino-claro transition-all"
           style={{ width: `${(100 * listos.length) / cables.length}%` }}
         />
       </div>
@@ -496,22 +486,22 @@ const EtapaConectar = ({
             />
           </div>
           {aviso && (
-            <p className={aviso.ok ? 'text-emerald-300' : 'text-amber-300'}>
+            <p className={aviso.ok ? 'text-arduino-suave' : 'text-amber-300'}>
               {aviso.ok ? '✓ ' : '✗ '}
               {aviso.texto}
             </p>
           )}
         </>
       ) : (
-        <div className="rounded-lg border border-emerald-700 bg-emerald-900/30 p-3">
-          <p className="mb-3 text-base text-emerald-200">
+        <div className="rounded-lg border border-arduino bg-arduino-profundo/40 p-3">
+          <p className="mb-3 text-base text-arduino-suave">
             🎉 ¡Circuito armado! Ya podés probar tu programa.
           </p>
           <Button
-            className="bg-emerald-700 text-white hover:bg-emerald-800"
+            className="bg-arduino text-white hover:bg-arduino-oscuro"
             onClick={onAprobar}
           >
-            Probar mi programa ▶
+            Probar mi programa ▶️
           </Button>
         </div>
       )}
@@ -520,7 +510,7 @@ const EtapaConectar = ({
         <ul className="space-y-1 text-xs text-gray-400">
           {listos.map(c => (
             <li key={c.id} className="flex items-center gap-2">
-              <CheckCircledIcon className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+              <CheckCircledIcon className="h-3.5 w-3.5 shrink-0 text-arduino-claro" />
               <span
                 className="h-1.5 w-4 shrink-0 rounded-full"
                 style={{ background: c.color }}
@@ -733,18 +723,16 @@ const EtapaProbar = ({
           onClick={onVolverAConectar}
           title="Volver a la etapa de conexión"
         >
-          <ArrowLeftIcon className="mr-1 h-3.5 w-3.5" />
-          Conexiones
+          🔌 Conexiones
         </Button>
         <Button
           size="sm"
-          className={`h-8 text-white ${desactualizado ? 'animate-pulse bg-amber-600 hover:bg-amber-700' : 'bg-emerald-700 hover:bg-emerald-800'}`}
+          className={`h-8 text-white ${desactualizado ? 'animate-pulse bg-amber-700 hover:bg-amber-800' : 'bg-arduino hover:bg-arduino-oscuro'}`}
           onClick={iniciar}
           disabled={estado === 'cargando'}
           title="Compila tu programa y lo vuelve a cargar en el simulador"
         >
-          <ReloadIcon className="mr-1.5 h-3.5 w-3.5" />
-          {desactualizado ? 'Probar los cambios' : 'Reiniciar'}
+          {desactualizado ? 'Probar los cambios ▶️' : 'Reiniciar 🔄'}
         </Button>
       </Encabezado>
 
@@ -809,7 +797,7 @@ const Pulsador = ({ control, enviar }) => {
       <span>{control.etiqueta}:</span>
       <Button
         size="sm"
-        className={`h-7 min-w-[250px] touch-none select-none text-white ${apretado ? 'bg-amber-600 hover:bg-amber-600' : 'bg-gray-700 hover:bg-gray-600'}`}
+        className={`h-7 min-w-[250px] touch-none select-none text-white ${apretado ? 'bg-amber-700 hover:bg-amber-700' : 'bg-gray-700 hover:bg-gray-600'}`}
         // La captura del puntero mantiene el botón apretado aunque el mouse se mueva un poco.
         onPointerDown={e => {
           e.currentTarget.setPointerCapture(e.pointerId)
@@ -855,7 +843,7 @@ const Deslizador = ({ control, enviar }) => {
         max={control.max}
         value={valor}
         onChange={e => cambiar(Number(e.target.value))}
-        className="w-36 accent-emerald-500"
+        className="w-36 accent-arduino-claro"
       />
       <span className="w-14 tabular-nums">
         {valor} {control.unidad}

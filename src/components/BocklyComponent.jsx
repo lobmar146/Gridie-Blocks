@@ -315,7 +315,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
         <Button
           onClick={() => setShowCode(!showCode)}
           // className="blockly-toggle-button"
-          className="absolute right-8 top-2 z-10 w-[160px] bg-blue-600 text-white hover:bg-blue-700"
+          className="absolute right-8 top-2 z-10 w-[160px] bg-arduino text-white hover:bg-arduino-oscuro"
         >
           <CodeIcon className="mr-2 h-4 w-4" />
           {showCode ? 'Ocultar Código' : 'Mostrar Código'}
@@ -325,7 +325,7 @@ const BlocklyComponent = ({ toolBoxDesafio, altura, onCodeChange }) => {
           // className={
           //   showCode ? 'monitor-variable mostrando-codigo' : 'monitor-variable'
           // }
-          className="absolute right-8 top-[52px] z-10 w-[160px] bg-green-600 text-white hover:bg-green-700"
+          className="absolute right-8 top-[52px] z-10 w-[160px] bg-arduino-profundo text-white hover:bg-arduino-oscuro"
         >
           <CopyIcon className="mr-2 h-4 w-4" />
           Copiar Código
