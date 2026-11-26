@@ -4,7 +4,7 @@ import * as Blockly from 'blockly/core'
 import { Button } from '@/components/ui/button'
 import 'blockly/blocks'
 import { javascriptGenerator } from 'blockly/javascript'
-import 'blockly/msg/es'
+import * as Es from 'blockly/msg/es'
 import { blocksArduino } from '../blocks/blocksArduino'
 import '../blocks/botonCrearComando'
 import { forBlock } from '../generators/customGeneratos'
@@ -28,6 +28,10 @@ import { toolboxDesafioClase4 } from '@/toolbox/Clase 4/toolboxDesafioClase4'
 import { toolboxDesafioHumedad } from '@/toolbox/Clase 4/toolboxDesafioHumedad'
 import { toolboxDesafio4Clase2 } from '../toolbox/Clase 2/toolboxDesafio4Clase2'
 import { toolboxEjercicio1Clase3 } from '../toolbox/Clase 3/toolboxEjercicio1Clase3'
+
+// Todo Blockly en español (menú del clic derecho, avisos, etc.). Importar el archivo
+// no alcanza: hay que aplicarlo, y antes de los textos propios de abajo.
+Blockly.setLocale(Es)
 
 // Sobrescribe los mensajes de los bloques de procedimientos
 Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'] = 'Definir'
