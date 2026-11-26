@@ -1,12 +1,13 @@
 # Mantiene despierto el servicio gratis de Render (se duerme a los 15 minutos sin uso).
-# Pide /salud cada 10 minutos. Para activarlo:
+# Pide /salud cada 5 minutos (GitHub a veces atrasa o saltea corridas programadas;
+# el propio servidor también se autopinguea, ver AUTOPING_URL en servidor.mjs). Para activarlo:
 #   GitHub > Settings > Secrets and variables > Actions > Variables > New repository variable
 #   Nombre: GRIDIE_URL   Valor: https://gridie-blocks.onrender.com  (tu dirección de Render)
 name: Mantener despierto Render
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:

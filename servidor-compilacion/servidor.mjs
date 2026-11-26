@@ -22,6 +22,9 @@
 //                          separados por espacio. Por defecto "*" (cualquiera).
 //   CARPETA_WEB            carpeta con la versión web compilada. Por defecto dist/.
 //   CALENTAR               "0" para no compilar un programa de prueba al arrancar.
+//   AUTOPING_URL           dirección pública del propio servidor: se pide /salud cada 10 minutos
+//                          para que Render (plan gratis) no lo duerma. En Render se usa sola
+//                          RENDER_EXTERNAL_URL, que Render define. "0" para desactivarlo.
 import http from 'node:http'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -221,6 +224,22 @@ servidor.listen(puerto, () => {
       )
   }
 })
+
+// Render (plan gratis) duerme el servicio a los 15 minutos sin pedidos de afuera.
+// Pedirse /salud a sí mismo por la dirección pública cuenta como pedido y lo mantiene despierto.
+const autoping =
+  process.env.AUTOPING_URL === '0'
+    ? ''
+    : process.env.AUTOPING_URL || process.env.RENDER_EXTERNAL_URL || ''
+if (autoping) {
+  const url = `${autoping.replace(/\/+$/, '')}/salud`
+  console.log(`Mantener despierto: pidiendo ${url} cada 10 minutos.`)
+  setInterval(() => {
+    fetch(url, { signal: AbortSignal.timeout(30_000) }).catch(error =>
+      console.warn('No se pudo pedir /salud:', error.message)
+    )
+  }, 10 * 60_000).unref()
+}
 
 // Render y Docker apagan el proceso con SIGTERM.
 for (const senal of ['SIGTERM', 'SIGINT'])
