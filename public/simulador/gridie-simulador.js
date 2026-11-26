@@ -40748,24 +40748,44 @@ async function YE(e = {}) {
 	e.escena && n.push(JE(t, e.escena).catch(() => {})), await Promise.all(n);
 }
 function XE(e, t) {
-	let n = new URL(t.base ?? "./", import.meta.url), r = t.escena, i = t.hex, a = !!t.reproducir, o = t.alMensaje, s = !1, c = async () => {
-		let e = await JE(n, r);
-		return e.set("block.jsonc", RE.encode(zE)), e.set("scene.jsonc", RE.encode(r)), e.set("build/sketch.hex", i), {
-			name: "gridie",
-			files: e
+	let n = new URL(t.base ?? "./", import.meta.url), r = { ...t }, i = null, a = null, o = !1, s = (e) => {
+		e && (e.desuscribir(), e.root.unmount(), e.source.close(), e.div.remove());
+	}, c = (t, r) => {
+		let s = document.createElement("div");
+		s.style.cssText = "position:absolute;inset:0;", e.appendChild(s);
+		let c = LE(() => new Worker(new URL("orbe-wasm/worker.js", n), { type: "module" }), async () => {
+			let e = await JE(n, t.escena);
+			return e.set("block.jsonc", RE.encode(zE)), e.set("scene.jsonc", RE.encode(t.escena)), e.set("build/sketch.hex", t.hex), {
+				name: "gridie",
+				files: e
+			};
+		}), l = !1, u = !1, d = {
+			div: s,
+			source: c,
+			root: (0, y.createRoot)(s),
+			desuscribir: () => {}
 		};
-	}, l = LE(() => new Worker(new URL("orbe-wasm/worker.js", n), { type: "module" }), c), u = null;
-	u = l.subscribe((e) => {
-		o?.(e), a && !s && e.type === "scene" && (s = !0, l.send({ cmd: "play" }).catch(() => {}));
-	});
-	let d = (0, y.createRoot)(e);
-	return d.render(/* @__PURE__ */ (0, $.jsx)(ME, { source: l })), {
-		enviar: (e) => l.send(e),
+		return d.desuscribir = c.subscribe((e) => {
+			o || (d === i || d === a) && (t.alMensaje?.(e), e.type === "scene" ? (t.reproducir && !l && (l = !0, c.send({ cmd: "play" }).catch(() => {})), u || (u = !0, requestAnimationFrame(() => requestAnimationFrame(() => r(d))))) : e.type === "closed" && !u && (u = !0, r(d)));
+		}), d.root.render(/* @__PURE__ */ (0, $.jsx)(ME, { source: c })), d;
+	};
+	return getComputedStyle(e).position === "static" && (e.style.position = "relative"), i = c(r, () => {}), {
+		enviar: (e) => i ? i.source.send(e) : Promise.reject(/* @__PURE__ */ Error("simulador cerrado")),
 		actualizar(e) {
-			e.escena !== void 0 && (r = e.escena), e.hex !== void 0 && (i = e.hex), e.reproducir !== void 0 && (a = e.reproducir), e.alMensaje !== void 0 && (o = e.alMensaje), s = !1, l.reload(c);
+			if (o) return;
+			r = {
+				...r,
+				...e
+			}, s(a);
+			let t = c(r, (e) => {
+				if (o || e !== a) return;
+				let t = i;
+				i = e, a = null, e.div.style.visibility = "visible", s(t);
+			});
+			t.div.style.visibility = "hidden", a = t;
 		},
 		cerrar() {
-			u?.(), d.unmount(), l.close();
+			o = !0, s(a), s(i), a = null, i = null;
 		}
 	};
 }

@@ -150,50 +150,103 @@ export async function precargarSimulador(opciones: { base?: string; escena?: str
   await Promise.all(tareas)
 }
 
+// Una vista: un visor de ORBE con su propio Worker, dibujado en una capa del elemento.
+interface Capa {
+  div: HTMLDivElement
+  source: ReusableSessionSource
+  root: ReturnType<typeof createRoot>
+  desuscribir: () => void
+}
+
+/**
+ * Monta el simulador en `elemento`. `actualizar` cambia la escena o el programa: arma una
+ * vista nueva en una capa oculta y, cuando ya muestra la escena, la pone en lugar de la
+ * anterior, así el alumno nunca ve la pantalla en negro mientras carga. (Reabrir la escena en
+ * el mismo visor dejaba la vista en negro.) Las piezas quedan en memoria entre vistas.
+ */
 export function montarSimulador(elemento: HTMLElement, opciones: OpcionesSimulador): Simulador {
   const base = new URL(opciones.base ?? './', import.meta.url)
-  let escenaActual = opciones.escena
-  let hexActual = opciones.hex
-  let reproducirActual = Boolean(opciones.reproducir)
-  let alMensajeActual = opciones.alMensaje
-  let yaReprodujo = false
+  let actual: OpcionesSimulador = { ...opciones }
+  let visible: Capa | null = null
+  let pendiente: Capa | null = null
+  let cerrado = false
 
-  const armarBloque = async () => {
-    const files = await cargarPiezasDeEscena(base, escenaActual)
-    files.set('block.jsonc', encoder.encode(BLOCK_JSONC))
-    files.set('scene.jsonc', encoder.encode(escenaActual))
-    files.set('build/sketch.hex', hexActual)
-    return { name: 'gridie', files }
+  const cerrarCapa = (capa: Capa | null) => {
+    if (!capa) return
+    capa.desuscribir()
+    capa.root.unmount()
+    capa.source.close()
+    capa.div.remove()
   }
 
-  const source: ReusableSessionSource = workerSource(
-    () => new Worker(new URL('orbe-wasm/worker.js', base), { type: 'module' }),
-    armarBloque
-  )
-  let desuscribir: (() => void) | null = null
-  desuscribir = source.subscribe(mensaje => {
-    alMensajeActual?.(mensaje)
-    if (reproducirActual && !yaReprodujo && mensaje.type === 'scene') {
-      yaReprodujo = true
-      source.send({ cmd: 'play' }).catch(() => {})
+  const crearCapa = (opc: OpcionesSimulador, alMostrarse: (capa: Capa) => void): Capa => {
+    const div = document.createElement('div')
+    div.style.cssText = 'position:absolute;inset:0;'
+    elemento.appendChild(div)
+    const armarBloque = async () => {
+      const files = await cargarPiezasDeEscena(base, opc.escena)
+      files.set('block.jsonc', encoder.encode(BLOCK_JSONC))
+      files.set('scene.jsonc', encoder.encode(opc.escena))
+      files.set('build/sketch.hex', opc.hex)
+      return { name: 'gridie', files }
     }
-  })
-  const root = createRoot(elemento)
-  root.render(<Viewer source={source} />)
+    const source: ReusableSessionSource = workerSource(
+      () => new Worker(new URL('orbe-wasm/worker.js', base), { type: 'module' }),
+      armarBloque
+    )
+    let yaReprodujo = false
+    let mostrada = false
+    const capa: Capa = { div, source, root: createRoot(div), desuscribir: () => {} }
+    capa.desuscribir = source.subscribe(mensaje => {
+      if (cerrado) return
+      if (capa !== visible && capa !== pendiente) return
+      opc.alMensaje?.(mensaje)
+      if (mensaje.type === 'scene') {
+        if (opc.reproducir && !yaReprodujo) {
+          yaReprodujo = true
+          source.send({ cmd: 'play' }).catch(() => {})
+        }
+        if (!mostrada) {
+          mostrada = true
+          // Dos cuadros para que el visor ya haya dibujado la escena.
+          requestAnimationFrame(() => requestAnimationFrame(() => alMostrarse(capa)))
+        }
+      } else if (mensaje.type === 'closed' && !mostrada) {
+        mostrada = true
+        alMostrarse(capa)
+      }
+    })
+    capa.root.render(<Viewer source={source} />)
+    return capa
+  }
+
+  if (getComputedStyle(elemento).position === 'static') elemento.style.position = 'relative'
+  visible = crearCapa(actual, () => {})
+
   return {
-    enviar: comando => source.send(comando),
+    enviar: comando =>
+      visible ? visible.source.send(comando) : Promise.reject(new Error('simulador cerrado')),
     actualizar(nuevasOpciones) {
-      if (nuevasOpciones.escena !== undefined) escenaActual = nuevasOpciones.escena
-      if (nuevasOpciones.hex !== undefined) hexActual = nuevasOpciones.hex
-      if (nuevasOpciones.reproducir !== undefined) reproducirActual = nuevasOpciones.reproducir
-      if (nuevasOpciones.alMensaje !== undefined) alMensajeActual = nuevasOpciones.alMensaje
-      yaReprodujo = false
-      source.reload(armarBloque)
+      if (cerrado) return
+      actual = { ...actual, ...nuevasOpciones }
+      cerrarCapa(pendiente)
+      const nueva = crearCapa(actual, capa => {
+        if (cerrado || capa !== pendiente) return
+        const vieja = visible
+        visible = capa
+        pendiente = null
+        capa.div.style.visibility = 'visible'
+        cerrarCapa(vieja)
+      })
+      nueva.div.style.visibility = 'hidden'
+      pendiente = nueva
     },
     cerrar() {
-      desuscribir?.()
-      root.unmount()
-      source.close()
+      cerrado = true
+      cerrarCapa(pendiente)
+      cerrarCapa(visible)
+      pendiente = null
+      visible = null
     }
   }
 }
