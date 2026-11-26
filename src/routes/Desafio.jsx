@@ -34,6 +34,7 @@ import { Spinner } from '@/components/ui/spinner'
 import BlocklyComponent from '../components/BocklyComponent'
 import { TOOLBOXES_CON_SIMULADOR } from '../simulador/escenas'
 import PanelSimulador from '../simulador/PanelSimulador'
+import { abrirVentanaSimulador, publicarCodigo } from '../simulador/ventana'
 
 // En la app de escritorio hay arduino-cli para subir a una placa real.
 // En el navegador (modalidad a distancia por web) solo está el simulador.
@@ -264,6 +265,26 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
     setGeneratedCode(code) // Actualiza el estado con el código generado
   }
 
+  // La ventana del simulador lee el programa de acá cada vez que cambia.
+  useEffect(() => {
+    if (tieneSimulador) publicarCodigo(toolBox, generatedCode)
+  }, [toolBox, generatedCode, tieneSimulador])
+
+  // El simulador se abre en una ventana aparte. Si el navegador la bloquea, se muestra al
+  // costado de los bloques.
+  const probarEnSimulador = () => {
+    if (mostrarSimulador) {
+      setMostrarSimulador(false)
+      return
+    }
+    publicarCodigo(toolBox, generatedCode)
+    const abierta = abrirVentanaSimulador(toolBox, {
+      titulo,
+      esquema: conexion ? new URL(conexion, document.baseURI).href : null
+    })
+    if (!abierta) setMostrarSimulador(true)
+  }
+
   const subirCodigo = async () => {
     if (!placaSeleccionada) {
       toast.error('Por favor, selecciona una placa antes de subir el código.', {
@@ -334,7 +355,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
                 variant="default"
                 size="sm"
                 className="bg-violet-600 text-white hover:bg-violet-700"
-                onClick={() => setMostrarSimulador(visible => !visible)}
+                onClick={probarEnSimulador}
               >
                 <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
                 {mostrarSimulador ? 'Ocultar simulador' : 'Probar en simulador'}
@@ -519,6 +540,8 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
           <PanelSimulador
             toolBox={toolBox}
             codigo={generatedCode}
+            titulo={titulo}
+            esquema={conexion}
             onCerrar={() => setMostrarSimulador(false)}
           />
         )}

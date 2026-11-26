@@ -50,6 +50,28 @@ const createWindow = () => {
   })
   // win.maximize() // Esto inicia la ventana maximizada
   win.setMenu(null)
+  // El simulador se abre en una ventana aparte (window.open desde «Probar en simulador»),
+  // con el mismo preload para poder compilar.
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    const esDeGridie =
+      url.startsWith('app://gridie/') || url.startsWith('http://localhost:5173/')
+    if (!esDeGridie) return { action: 'allow' }
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        width: 1280,
+        height: 860,
+        icon: path.join(__dirname, '../public/favicon.ico'),
+        autoHideMenuBar: true,
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+          nodeIntegration: false,
+          contextIsolation: true
+        }
+      }
+    }
+  })
+  win.webContents.on('did-create-window', ventana => ventana.setMenu(null))
   // Open dev tools
   // win.webContents.openDevTools()
   if (process.env.NODE_ENV === 'development') {

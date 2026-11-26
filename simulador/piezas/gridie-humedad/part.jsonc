@@ -1,0 +1,155 @@
+// Sensor de humedad en tierra FC-28 de GrIDIE Blocks (Clase 4). Generado por simulador/scripts/generar-piezas.py.
+{
+  "format": 1,
+  "part": "gridie-humedad",
+  "version": "0.1.0",
+  "title": "Sensor de humedad en tierra FC-28",
+  "summary": "Horquilla FC-28 con su plaqueta comparadora y pines A0, D0, GND y VCC. A0 es más alto cuanto más seca está la tierra.",
+  "tags": [
+    "sensor",
+    "humedad",
+    "tierra",
+    "fc-28",
+    "gridie"
+  ],
+  "license": "MIT",
+  "docs": {
+    "GrIDIE Blocks, esquemas de conexión de las clases": null
+  },
+  "real": {
+    "generic": true,
+    "maker": null,
+    "number": "FC-28",
+    "datasheet": "GrIDIE Blocks, esquemas de conexión de las clases"
+  },
+  "uses": {
+    "led-0805": "0.2.1",
+    "pin-header-1x4": "0.1.0",
+    "resistor-0603": "0.2.0",
+    "trimmer-3362p": "0.2.2"
+  },
+  "parts": {
+    "hdr": {
+      "type": "pin-header-1x4"
+    },
+    "tierra": {
+      "type": "trimmer-3362p",
+      "resistance": "10k",
+      "position": 0.5
+    },
+    "r_pwr": {
+      "type": "resistor-0603",
+      "resistance": "1k"
+    },
+    "led_pwr": {
+      "type": "led-0805",
+      "color": "red"
+    }
+  },
+  "wires": [
+    [
+      "tierra.a",
+      "hdr.3",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "tierra.b",
+      "hdr.4",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "tierra.wiper",
+      "hdr.1",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pwr.a",
+      "hdr.4",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pwr.b",
+      "led_pwr.anode",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "led_pwr.cathode",
+      "hdr.3",
+      {
+        "kind": "trace"
+      }
+    ]
+  ],
+  "layout": {
+    "hdr": {
+      "at": [
+        0,
+        -12,
+        6.68
+      ],
+      "rotate": [
+        180,
+        0,
+        0
+      ]
+    },
+    "tierra": {
+      "at": [
+        0,
+        6,
+        2.54
+      ],
+      "rotate": [
+        180,
+        0,
+        0
+      ]
+    },
+    "r_pwr": {
+      "at": [
+        5,
+        -6,
+        4.14
+      ],
+      "rotate": [
+        0,
+        0,
+        90
+      ]
+    },
+    "led_pwr": {
+      "at": [
+        5,
+        -2,
+        4.14
+      ],
+      "rotate": [
+        0,
+        0,
+        90
+      ]
+    }
+  },
+  "pins": {
+    "A0": "hdr.1",
+    "D0": "hdr.2",
+    "GND": "hdr.3",
+    "VCC": "hdr.4"
+  },
+  "not_simulated": [
+    {
+      "what": "la tierra y la salida D0",
+      "why": "La humedad es la posición del trimmer escondido debajo de la plaqueta, que el panel mueve. D0 no se usa en GrIDIE y queda sin conectar."
+    }
+  ]
+}

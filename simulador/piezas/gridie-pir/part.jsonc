@@ -1,0 +1,106 @@
+// Sensor PIR HC-SR501 de GrIDIE Blocks (Clase 3). Generado por simulador/scripts/generar-piezas.py.
+{
+  "format": 1,
+  "part": "gridie-pir",
+  "version": "0.1.0",
+  "title": "Sensor de movimiento PIR HC-SR501",
+  "summary": "Sensor infrarrojo pasivo con pines VCC, OUT y GND. OUT queda en HIGH mientras detecta movimiento.",
+  "tags": [
+    "sensor",
+    "pir",
+    "movimiento",
+    "hc-sr501",
+    "gridie"
+  ],
+  "license": "MIT",
+  "docs": {
+    "GrIDIE Blocks, esquemas de conexión de las clases": null
+  },
+  "real": {
+    "generic": true,
+    "maker": null,
+    "number": "HC-SR501",
+    "datasheet": "GrIDIE Blocks, esquemas de conexión de las clases"
+  },
+  "uses": {
+    "pin-header-1x3": "0.1.0",
+    "resistor-0603": "0.2.0",
+    "tactile-switch-smd": "0.2.0"
+  },
+  "parts": {
+    "hdr": {
+      "type": "pin-header-1x3"
+    },
+    "sw": {
+      "type": "tactile-switch-smd"
+    },
+    "r": {
+      "type": "resistor-0603",
+      "resistance": "10k"
+    }
+  },
+  "wires": [
+    [
+      "hdr.1",
+      "sw.a",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "sw.b",
+      "hdr.2",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r.a",
+      "hdr.2",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r.b",
+      "hdr.3",
+      {
+        "kind": "trace"
+      }
+    ]
+  ],
+  "layout": {
+    "hdr": {
+      "at": [
+        0,
+        -9.5,
+        0
+      ]
+    },
+    "sw": {
+      "at": [
+        0,
+        0,
+        4.14
+      ]
+    },
+    "r": {
+      "at": [
+        0,
+        6,
+        4.14
+      ]
+    }
+  },
+  "pins": {
+    "VCC": "hdr.1",
+    "OUT": "hdr.2",
+    "GND": "hdr.3"
+  },
+  "not_simulated": [
+    {
+      "what": "el infrarrojo, el retardo y la sensibilidad",
+      "why": "El movimiento es el pulsador escondido debajo de la cúpula, que el panel aprieta. Los dos trimmers naranjas son dibujo."
+    }
+  ]
+}

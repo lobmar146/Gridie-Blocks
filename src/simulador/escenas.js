@@ -1,257 +1,195 @@
-// Arma la escena (scene.jsonc de ORBE) de cada desafío a partir de la lista de
-// componentes que usa. Cada componente ocupa unas columnas de la protoboard y se
-// cablea al pin del Arduino Uno que usa el generador de código de GrIDIE:
+// Arma la escena (scene.jsonc de ORBE) de cada desafío siguiendo su esquema de conexión
+// (public/img/conexiones/): qué componentes van, dónde y a qué pin del Arduino Uno se
+// conecta cada cable. Los pines son los que usa el generador de código de GrIDIE:
 //
-//   LED ................ D13          Semáforo ....... rojo D7, amarillo D6, verde D5
-//   Servo .............. D2           Sensor PIR / IR  D4
-//   Parlante ........... D12          Ultrasónico .... (simulado en A1, ver codigoSimulador.js)
-//   Humedad en tierra .. A0
+//   LED ................ pata larga D13, pata corta GND (enchufado directo en la placa)
+//   Semáforo ........... R D7, A D6, V D5, GND          Servo ........ señal D2, 5V, GND
+//   Sensor PIR / obst. . OUT D4, VCC 5V, GND            Fuego ........ OUT D3
+//   Ultrasónico ........ Trig D8, Echo D9, VCC 5V, GND  Parlante ..... + D12, − GND
+//   Humedad en tierra .. A0, VCC 5V, GND
 //
-// Las escenas usan piezas reales del catálogo de ORBE. Los sensores que ORBE todavía no
-// tiene se representan con una pieza equivalente que da la misma señal al Arduino:
-// el PIR y el IR con un pulsador (detecta = HIGH), la humedad y la distancia con un
-// potenciómetro. El panel del simulador muestra controles con nombres de sensores.
+// Los módulos (semáforo, HC-SR04, PIR, FC-51, fuego y FC-28) son piezas propias de GrIDIE,
+// en simulador/piezas/ (las genera simulador/scripts/generar-piezas.py). Los que van en la
+// protoboard (PIR, obstáculos, fuego y ultrasónico) se enchufan en ella y los cables van a la
+// misma columna, como en los esquemas. El resto se cablea directo al Arduino.
 
-// Las dos protoboards de ORBE. Se usa la chica si los componentes entran, así el circuito
-// se ve más grande. `riel` dice en qué columnas hay agujeros en los rieles + y -.
-const PROTOBOARDS = {
-  chica: {
-    tipo: 'breadboard-400',
-    columnas: 30,
-    xArduino: -90,
-    riel: col => col >= 1 && col <= 29 && col % 6 !== 0
-  },
-  grande: {
-    tipo: 'breadboard-830',
-    columnas: 63,
-    xArduino: -128,
-    riel: col => col >= 3 && col <= 61 && col % 6 !== 2
-  }
-}
-
-class NoEntra extends Error {}
-
-/** Componentes disponibles. `columnas` es cuántas columnas de la protoboard ocupa. */
-const COMPONENTES = {
-  led: { columnas: 6 },
-  sensorDigital: { columnas: 4 },
-  sensorDigitalBajo: { columnas: 7 },
-  potenciometro: { columnas: 5 },
-  parlante: { columnas: 8 },
-  servo: { columnas: 0 }
-}
-
-const COLOR_CABLE = {
+const COLOR = {
   rojo: '#d12b2b',
   negro: '#161616',
+  marron: '#6b3a1a',
   amarillo: '#f2c21c',
   naranja: '#f28c1c',
   verde: '#2e9e44',
-  azul: '#2b6bd1'
+  azul: '#2b6bd1',
+  violeta: '#8e44ad'
 }
 
-function crearConstructor(protoboard, { pin5V = '5V', pinGND = 'GND' } = {}) {
-  const existeRiel = protoboard.riel
-  const parts = {
-    uno: { type: 'uno-board', firmware: 'build/sketch.hex' },
-    bb: { type: protoboard.tipo }
-  }
-  const layout = {
-    uno: { at: [protoboard.xArduino, 0, 0] },
-    bb: { at: [0, 0, 0] }
-  }
-  const wires = []
-  // Un cable desde un pin del Arduino. Si el alumno todavía no eligió el pin, no se dibuja.
-  const alArduino = (pin, hacia, color) => {
-    if (pin) wires.push([`uno.${pin}`, hacia, { color }])
-  }
-  alArduino(pin5V, 'bb.W3', COLOR_CABLE.rojo)
-  alArduino(pinGND, 'bb.X3', COLOR_CABLE.negro)
-  const usados = new Set(['W3', 'X3'])
-  let columna = 5
+// Las dos protoboards de ORBE. La fila "a" queda del lado del Arduino.
+const PROTOBOARDS = [
+  { tipo: 'breadboard-400', columnas: 30 },
+  { tipo: 'breadboard-830', columnas: 63 }
+]
+const POSICION_PROTOBOARD = [8, 82, 0]
 
-  // Un agujero libre del riel `riel` cerca de la columna `col`.
-  const riel = (nombre, col) => {
-    for (let d = 0; d < 6; d++) {
-      for (const c of [col + d, col - d]) {
-        const id = `${nombre}${c}`
-        if (existeRiel(c) && !usados.has(id)) {
-          usados.add(id)
-          return `bb.${id}`
-        }
-      }
-    }
-    throw new Error(
-      `No hay lugar en el riel ${nombre} cerca de la columna ${col}`
-    )
-  }
+// Los tres agujeros GND del Arduino: dos en el conector de alimentación y uno al lado del 13.
+const ENCHUFES_GND = ['power.6', 'power.7', 'ioh.7']
 
-  const reservar = tipo => {
-    const c = columna
-    columna += COMPONENTES[tipo].columnas
-    if (columna > protoboard.columnas) throw new NoEntra()
-    return c
-  }
+/** Un pin del Arduino como lo nombra el docente: "pin 13", "A0", "5V", "GND". */
+export const nombreDelPin = pin =>
+  /^D\d+$/.test(pin) ? `pin ${pin.slice(1)}` : pin
 
-  return {
-    /** LED con su resistencia de 220 ohm. */
-    led(id, pin, color = 'rojo') {
-      const c = reservar('led')
-      const tipoLed = {
-        rojo: 'led-5mm',
-        amarillo: 'led-5mm-yellow',
-        verde: 'led-5mm-green',
-        azul: 'led-5mm-blue',
-        blanco: 'led-5mm-white'
-      }[color]
-      parts[`r_${id}`] = { type: 'resistor-axial', resistance: '220' }
-      parts[id] = { type: tipoLed }
-      layout[`r_${id}`] = { on: { a: `bb.d${c}` } } // b en d{c+4}
-      layout[id] = { on: { anode: `bb.c${c + 4}` } } // cátodo en c{c+5}
-      alArduino(pin, `bb.a${c}`, COLOR_CABLE[color] ?? COLOR_CABLE.amarillo)
-      wires.push([
-        `bb.a${c + 5}`,
-        riel('X', c + 5),
-        { color: COLOR_CABLE.negro }
-      ])
-    },
-
-    /** Sensor de salida digital (PIR, obstáculos IR): un pulsador con resistencia de pull-down.
-     * Apretado = el sensor detecta = HIGH. */
-    sensorDigital(id, pin, { activoEnBajo = false } = {}) {
-      if (activoEnBajo) return this.sensorDigitalBajo(id, pin)
-      // La resistencia de pull-down cae en el riel X de la columna c+2: tiene que haber agujero.
-      while (!existeRiel(columna + 2)) columna++
-      const c = reservar('sensorDigital')
-      parts[id] = { type: 'tactile-switch-6mm' }
-      parts[`r_${id}`] = { type: 'resistor-axial', resistance: '10k' }
-      layout[id] = { on: { a: `bb.f${c + 2}` }, rotate: [0, 0, 90] } // a en la columna c+2, b en c
-      layout[`r_${id}`] = { on: { a: `bb.b${c + 2}` }, rotate: [0, 0, -90] } // b al riel X
-      wires.push([`bb.a${c}`, riel('W', c), { color: COLOR_CABLE.rojo }])
-      alArduino(pin, `bb.j${c + 2}`, COLOR_CABLE.verde)
-    },
-
-    /** Sensor que da LOW cuando detecta (el de obstáculos IR): pulsador a GND y
-     * resistencia de pull-up a 5V. */
-    sensorDigitalBajo(id, pin) {
-      const c = reservar('sensorDigitalBajo')
-      parts[id] = { type: 'tactile-switch-6mm' }
-      parts[`r_${id}`] = { type: 'resistor-axial', resistance: '10k' }
-      layout[id] = { on: { a: `bb.f${c + 2}` }, rotate: [0, 0, 90] } // a en la columna c+2, b en c
-      layout[`r_${id}`] = { on: { a: `bb.d${c + 2}` } } // b en d{c+6}
-      wires.push([`bb.a${c}`, riel('X', c), { color: COLOR_CABLE.negro }])
-      wires.push([
-        `bb.a${c + 6}`,
-        riel('W', c + 6),
-        { color: COLOR_CABLE.rojo }
-      ])
-      alArduino(pin, `bb.j${c + 2}`, COLOR_CABLE.verde)
-    },
-
-    /** Potenciómetro entre GND y 5V, con el cursor en una entrada analógica. */
-    potenciometro(id, pin, posicion = 0.5) {
-      const c = reservar('potenciometro')
-      parts[id] = {
-        type: 'potentiometer-wh148',
-        resistance: '10k',
-        position: posicion
-      }
-      layout[id] = { on: { a: `bb.c${c}` } } // cursor en c+2, b en c+4
-      wires.push([`bb.a${c}`, riel('X', c), { color: COLOR_CABLE.negro }])
-      wires.push([
-        `bb.a${c + 4}`,
-        riel('W', c + 4),
-        { color: COLOR_CABLE.rojo }
-      ])
-      alArduino(pin, `bb.a${c + 2}`, COLOR_CABLE.azul)
-    },
-
-    /** Parlante (buzzer pasivo) con una resistencia de 100 ohm en serie. */
-    parlante(id, pin) {
-      const c = reservar('parlante')
-      parts[`r_${id}`] = { type: 'resistor-axial', resistance: '100' }
-      parts[id] = { type: 'buzzer-12mm' }
-      layout[`r_${id}`] = { on: { a: `bb.d${c}` } } // b en d{c+4}
-      layout[id] = { on: { '+': `bb.c${c + 4}` } } // - en c{c+7}
-      alArduino(pin, `bb.a${c}`, COLOR_CABLE.naranja)
-      wires.push([
-        `bb.a${c + 7}`,
-        riel('X', c + 7),
-        { color: COLOR_CABLE.negro }
-      ])
-    },
-
-    /** Servo SG90 al costado de la protoboard, alimentado desde los rieles. */
-    servo(id, pin) {
-      parts[id] = { type: 'servo-sg90' }
-      layout[id] = { at: [protoboard.xArduino, 70, 0], rotate: [0, 0, 90] }
-      alArduino(pin, `${id}.SIGNAL`, COLOR_CABLE.naranja)
-      wires.push([riel('W', 4), `${id}.VCC`, { color: COLOR_CABLE.rojo }])
-      wires.push([riel('X', 4), `${id}.GND`, { color: COLOR_CABLE.negro }])
-    },
-
-    construir(comentario) {
-      return (
-        `// ${comentario}\n// Escena generada por GrIDIE Blocks (src/simulador/escenas.js).\n` +
-        JSON.stringify(
-          { format: 1, parts, layout, nets: { GND: 'uno.GND' }, wires },
-          null,
-          2
-        )
-      )
-    }
-  }
-}
-
-// ---- Escenas por desafío -----------------------------------------------------------------
+const cable = (pin, esperado, etiqueta, color) => ({
+  pin,
+  esperado,
+  etiqueta,
+  color
+})
 
 /**
- * Controles que el panel muestra para cada sensor de la escena.
- * - pulsador: envía press/release a `ref`.
- * - deslizador: envía `set ref valor` (0..1) y muestra el valor en las unidades del sensor.
+ * Los componentes de los esquemas. Cada uno tiene sus cables en el orden en que se
+ * conectan: `pin` es el pin del componente y `esperado` el del Arduino según el esquema.
+ * `protoboard` dice cuántas columnas ocupa y en qué orden quedan sus pines si va enchufado.
  */
-const CONTROL = {
-  pir: {
-    tipo: 'pulsador',
-    ref: '@pir',
-    etiqueta: 'Sensor PIR',
-    accion: 'Simular movimiento'
+const COMPONENTES = {
+  led: {
+    nombre: 'LED',
+    cables: [
+      cable('anode', 'D13', 'Pata larga del LED (+)', COLOR.rojo),
+      cable('cathode', 'GND', 'Pata corta del LED (−)', COLOR.negro)
+    ]
   },
-  obstaculo: {
-    tipo: 'pulsador',
-    ref: '@obstaculos',
-    etiqueta: 'Sensor de obstáculos',
-    accion: 'Poner un obstáculo'
+  semaforo: {
+    nombre: 'Semáforo',
+    tipo: 'gridie-semaforo',
+    cables: [
+      cable('R', 'D7', 'Luz roja del semáforo (R)', COLOR.rojo),
+      cable('A', 'D6', 'Luz amarilla del semáforo (A)', COLOR.amarillo),
+      cable('V', 'D5', 'Luz verde del semáforo (V)', COLOR.verde),
+      cable('GND', 'GND', 'GND del semáforo', COLOR.marron)
+    ]
+  },
+  servo: {
+    nombre: 'Servo',
+    tipo: 'servo-sg90',
+    cables: [
+      cable('SIGNAL', 'D2', 'Cable naranja del servo (señal)', COLOR.naranja),
+      cable('VCC', '5V', 'Cable rojo del servo (+)', COLOR.rojo),
+      cable('GND', 'GND', 'Cable marrón del servo (−)', COLOR.marron)
+    ]
+  },
+  pir: {
+    nombre: 'Sensor PIR',
+    tipo: 'gridie-pir',
+    protoboard: { columnas: 13, pines: ['VCC', 'OUT', 'GND'] },
+    cables: [
+      cable('VCC', '5V', 'VCC del sensor PIR', COLOR.rojo),
+      cable('OUT', 'D4', 'OUT del sensor PIR (señal)', COLOR.verde),
+      cable('GND', 'GND', 'GND del sensor PIR', COLOR.azul)
+    ],
+    control: {
+      tipo: 'pulsador',
+      ref: '@pir.sw',
+      etiqueta: 'Sensor PIR',
+      accion: 'Simular movimiento'
+    }
+  },
+  obstaculos: {
+    nombre: 'Sensor de obstáculos',
+    tipo: 'gridie-fc51',
+    // Girado 180°: el sensor mira hacia atrás y los pines quedan VCC, GND, OUT.
+    protoboard: { columnas: 6, pines: ['VCC', 'GND', 'OUT'], girar: true },
+    cables: [
+      cable('VCC', '5V', 'VCC del sensor de obstáculos', COLOR.rojo),
+      cable('GND', 'GND', 'GND del sensor de obstáculos', COLOR.azul),
+      cable('OUT', 'D4', 'OUT del sensor de obstáculos (señal)', COLOR.verde)
+    ],
+    control: {
+      tipo: 'pulsador',
+      ref: '@obstaculos.sw',
+      etiqueta: 'Sensor de obstáculos',
+      accion: 'Poner un obstáculo'
+    }
   },
   fuego: {
-    tipo: 'pulsador',
-    ref: '@fuego',
-    etiqueta: 'Sensor de fuego',
-    accion: 'Acercar una llama'
+    nombre: 'Sensor de fuego',
+    tipo: 'gridie-fuego',
+    protoboard: { columnas: 6, pines: ['VCC', 'GND', 'OUT'], girar: true },
+    cables: [
+      cable('VCC', '5V', 'VCC del sensor de fuego', COLOR.rojo),
+      cable('GND', 'GND', 'GND del sensor de fuego', COLOR.azul),
+      cable('OUT', 'D3', 'OUT del sensor de fuego (señal)', COLOR.amarillo)
+    ],
+    control: {
+      tipo: 'pulsador',
+      ref: '@fuego.sw',
+      etiqueta: 'Sensor de fuego',
+      accion: 'Acercar una llama'
+    }
   },
-  distancia: {
-    tipo: 'deslizador',
-    ref: '@ultrasonico.position',
-    etiqueta: 'Distancia al obstáculo',
-    unidad: 'cm',
-    min: 0,
-    max: 100,
-    inicial: 0.6
+  ultrasonico: {
+    nombre: 'Sensor ultrasónico',
+    tipo: 'gridie-hc-sr04',
+    protoboard: { columnas: 18, pines: ['VCC', 'Trig', 'Echo', 'GND'] },
+    cables: [
+      cable('VCC', '5V', 'VCC del sensor ultrasónico', COLOR.rojo),
+      cable('Trig', 'D8', 'Trig del sensor ultrasónico', COLOR.verde),
+      cable('Echo', 'D9', 'Echo del sensor ultrasónico', COLOR.violeta),
+      cable('GND', 'GND', 'GND del sensor ultrasónico', COLOR.azul)
+    ],
+    // ORBE no simula el eco: la distancia sale del pin DIST de la pieza, que va a A1 sin
+    // cable visible (ver codigoSimulador.js).
+    oculto: [['DIST', 'A1']],
+    control: {
+      tipo: 'deslizador',
+      ref: '@ultrasonico.eco.position',
+      etiqueta: 'Distancia al obstáculo',
+      unidad: 'cm',
+      min: 0,
+      max: 100,
+      inicial: 0.6
+    }
+  },
+  parlante: {
+    nombre: 'Parlante',
+    tipo: 'buzzer-12mm',
+    cables: [
+      cable('+', 'D12', 'Cable rojo del parlante (+)', COLOR.rojo),
+      cable('-', 'GND', 'Cable negro del parlante (−)', COLOR.negro)
+    ]
   },
   humedad: {
+    nombre: 'Sensor de humedad',
+    tipo: 'gridie-humedad',
+    cables: [
+      cable('A0', 'A0', 'A0 del sensor de humedad (señal)', COLOR.violeta),
+      cable('VCC', '5V', 'VCC del sensor de humedad', COLOR.rojo),
+      cable('GND', 'GND', 'GND del sensor de humedad', COLOR.negro)
+    ],
+    control: {
+      tipo: 'deslizador',
+      ref: '@humedad.tierra.position',
+      etiqueta: 'Humedad en la tierra',
+      unidad: '%',
+      min: 0,
+      max: 100,
+      inicial: 0.5,
+      // El sensor resistivo da un valor alto cuando la tierra está seca.
+      invertido: true
+    }
+  }
+}
+
+// En la Concept Card el sensor de A0 puede ser el de humedad o el de gas.
+COMPONENTES.analogico = {
+  ...COMPONENTES.humedad,
+  nombre: 'Sensor de humedad o gas',
+  cables: COMPONENTES.humedad.cables.map(c => ({
+    ...c,
+    etiqueta: c.etiqueta.replace('de humedad', 'de humedad o gas')
+  })),
+  control: {
     tipo: 'deslizador',
-    ref: '@humedad.position',
-    etiqueta: 'Humedad en la tierra',
-    unidad: '%',
-    min: 0,
-    max: 100,
-    inicial: 0.5,
-    // El sensor resistivo da un valor alto cuando la tierra está seca.
-    invertido: true
-  },
-  analogicoA0: {
-    tipo: 'deslizador',
-    ref: '@analogico.position',
+    ref: '@analogico.tierra.position',
     etiqueta: 'Sensor en A0 (humedad o gas)',
     unidad: '',
     min: 0,
@@ -260,96 +198,56 @@ const CONTROL = {
   }
 }
 
-/**
- * Los componentes del kit. `pin` es el que usa el generador de código de GrIDIE, o sea
- * la conexión correcta. `cable` es cómo se nombra ese cable en la etapa de conexión.
- */
-const KIT = {
-  led: { tipo: 'led', pin: 'D13', color: 'rojo', cable: 'LED' },
-  rojo: {
-    tipo: 'led',
-    pin: 'D7',
-    color: 'rojo',
-    cable: 'Luz roja del semáforo'
-  },
-  amarillo: {
-    tipo: 'led',
-    pin: 'D6',
-    color: 'amarillo',
-    cable: 'Luz amarilla del semáforo'
-  },
-  verde: {
-    tipo: 'led',
-    pin: 'D5',
-    color: 'verde',
-    cable: 'Luz verde del semáforo'
-  },
-  servo: { tipo: 'servo', pin: 'D2', cable: 'Señal del servo (cable naranja)' },
-  pir: {
-    tipo: 'sensorDigital',
-    pin: 'D4',
-    cable: 'Salida del sensor PIR',
-    control: CONTROL.pir
-  },
-  obstaculos: {
-    tipo: 'sensorDigital',
-    pin: 'D4',
-    activoEnBajo: true,
-    cable: 'Salida del sensor de obstáculos',
-    control: CONTROL.obstaculo
-  },
-  fuego: {
-    tipo: 'sensorDigital',
-    pin: 'D3',
-    cable: 'Salida del sensor de fuego',
-    control: CONTROL.fuego
-  },
-  ultrasonico: {
-    tipo: 'potenciometro',
-    pin: 'A1',
-    cable: 'Sensor ultrasónico (simulado en A1)',
-    control: CONTROL.distancia
-  },
-  humedad: {
-    tipo: 'potenciometro',
-    pin: 'A0',
-    cable: 'Salida del sensor de humedad',
-    control: CONTROL.humedad
-  },
-  analogico: {
-    tipo: 'potenciometro',
-    pin: 'A0',
-    cable: 'Sensor analógico (humedad o gas)',
-    control: CONTROL.analogicoA0
-  },
-  parlante: { tipo: 'parlante', pin: 'D12', cable: 'Parlante' }
+// Dónde va cada componente que no va en la protoboard (mm, con el Arduino en el origen:
+// +X a la derecha, +Y hacia el lado de los pines digitales).
+const LUGAR = {
+  semaforo: { at: [62, -8, 0] },
+  servo: { at: [-28, -66, 0] },
+  parlante: { at: [40, -52, 8] },
+  humedad: { at: [-84, -14, 0] },
+  analogico: { at: [-84, -14, 0] }
 }
 
-const SEMAFORO = ['rojo', 'amarillo', 'verde']
+// El LED enchufado en el conector de la placa: la pata larga en el 13 y la corta en el GND de
+// al lado. Si el alumno elige otros pines, el LED queda al costado con dos cables.
+const LED_EN_LA_PLACA = { at: [-6.64, 24.13, 31.5], rotate: [0, 0, 180] }
+const LED_AL_COSTADO = { at: [-14, 46, 27.4] }
 
 /** Para cada número de toolbox (el que usa BocklyComponent), qué componentes van. */
 const DESAFIOS = {
-  // Clase 1 y 2: LED en el pin 13
-  1: { componentes: ['led'], comentario: 'Un LED en el pin 13.' },
-  2: { componentes: ['led'], comentario: 'Un LED en el pin 13.' },
-  4: { componentes: ['led'], comentario: 'Un LED en el pin 13.' },
-  5: { componentes: ['led'], comentario: 'Un LED en el pin 13.' },
-  // Semáforo
+  // Clase 1 y 2: un LED en el pin 13 (esquema Eje1Cl1)
+  1: {
+    componentes: ['led'],
+    comentario: 'Un LED enchufado en el pin 13 y GND.'
+  },
+  2: {
+    componentes: ['led'],
+    comentario: 'Un LED enchufado en el pin 13 y GND.'
+  },
+  4: {
+    componentes: ['led'],
+    comentario: 'Un LED enchufado en el pin 13 y GND.'
+  },
+  5: {
+    componentes: ['led'],
+    comentario: 'Un LED enchufado en el pin 13 y GND.'
+  },
+  // Semáforo (Eje2Cl1)
   3: {
-    componentes: SEMAFORO,
-    comentario: 'El semáforo: rojo D7, amarillo D6, verde D5.'
+    componentes: ['semaforo'],
+    comentario: 'El semáforo: R D7, A D6, V D5.'
   },
   6: {
-    componentes: SEMAFORO,
-    comentario: 'El semáforo: rojo D7, amarillo D6, verde D5.'
+    componentes: ['semaforo'],
+    comentario: 'El semáforo: R D7, A D6, V D5.'
   },
-  // Servo y barrera
+  // Servo (Eje2Cl2) y barrera (Pro3Cl2)
   7: { componentes: ['servo'], comentario: 'Un servo SG90 en el pin 2.' },
   8: {
-    componentes: [...SEMAFORO, 'servo'],
+    componentes: ['servo', 'semaforo'],
     comentario: 'La barrera: servo en el pin 2 y semáforo.'
   },
-  // Clase 3: PIR + LED
+  // Clase 3: sensor de movimiento y LED (Ej1Cl3)
   9: {
     componentes: ['pir', 'led'],
     comentario: 'Sensor PIR en el pin 4 y LED en el pin 13.'
@@ -358,21 +256,20 @@ const DESAFIOS = {
     componentes: ['pir', 'led'],
     comentario: 'Sensor PIR en el pin 4 y LED en el pin 13.'
   },
-  // Ultrasónico + parlante
+  // Ultrasónico y parlante (Ej2Cl3)
   11: {
     componentes: ['ultrasonico', 'parlante'],
-    comentario: 'Sensor ultrasónico (simulado en A1) y parlante en el pin 12.'
+    comentario: 'Sensor ultrasónico (Trig 8, Echo 9) y parlante en el pin 12.'
   },
-  // Sensor de estacionamiento
+  // Sensor de estacionamiento (Pro3Cl3)
   12: {
-    componentes: ['ultrasonico', 'parlante', ...SEMAFORO],
+    componentes: ['ultrasonico', 'parlante', 'semaforo'],
     comentario: 'Sensor de estacionamiento: ultrasónico, parlante y semáforo.'
   },
-  // Clase 4: Concept Card. En su caja de herramientas están el sensor de obstáculos (D4,
-  // LOW al detectar), el de fuego (D3), los de humedad y gas (A0) y el ultrasónico.
+  // Clase 4: Concept Card. En su caja de herramientas están todos los componentes del kit.
   13: {
     componentes: [
-      ...SEMAFORO,
+      'semaforo',
       'led',
       'obstaculos',
       'fuego',
@@ -383,11 +280,12 @@ const DESAFIOS = {
     ],
     comentario: 'Concept Card: todos los componentes del kit.'
   },
-  // Riego inteligente
+  // Riego inteligente (sensor_humedad_tierra). El esquema tiene LED y semáforo; los bloques
+  // del desafío usan el parlante, así que también va.
   14: {
-    componentes: ['humedad', ...SEMAFORO, 'parlante'],
+    componentes: ['humedad', 'led', 'semaforo', 'parlante'],
     comentario:
-      'Riego inteligente: sensor de humedad en A0, semáforo y parlante.'
+      'Riego inteligente: sensor de humedad en A0, LED, semáforo y parlante.'
   }
 }
 
@@ -405,36 +303,31 @@ export const PINES_ARDUINO = [
   'GND'
 ]
 
+const idDelCable = (componente, c) => `${componente}.${c.pin}`
+
 /**
- * Los cables que el alumno tiene que conectar en el desafío: uno por componente, más la
- * alimentación de la protoboard. `esperado` es el pin correcto.
+ * Los cables que el alumno tiene que conectar en el desafío, en orden: uno por cada pin de
+ * cada componente. `esperado` es el pin del Arduino según el esquema.
  */
 export function cablesDelDesafio(toolBox) {
   const desafio = DESAFIOS[Number(toolBox)]
   if (!desafio) return []
-  return [
-    {
-      id: 'riel5V',
-      etiqueta: 'Riel + de la protoboard (cable rojo)',
-      esperado: '5V'
-    },
-    {
-      id: 'rielGND',
-      etiqueta: 'Riel − de la protoboard (cable negro)',
-      esperado: 'GND'
-    },
-    ...desafio.componentes.map(id => ({
-      id,
-      etiqueta: KIT[id].cable,
-      esperado: KIT[id].pin
+  return desafio.componentes.flatMap(id =>
+    COMPONENTES[id].cables.map(c => ({
+      id: idDelCable(id, c),
+      componente: id,
+      nombreComponente: COMPONENTES[id].nombre,
+      etiqueta: c.etiqueta,
+      esperado: c.esperado,
+      color: c.color
     }))
-  ]
+  )
 }
 
 /**
  * La escena y los controles del desafío `toolBox`, o null si no tiene simulación.
  * `conexiones` ({ idDelCable: pin }) es lo que conectó el alumno. Si falta un cable se usa
- * la conexión correcta, salvo con `soloElegidas`, que deja ese cable sin dibujar (para la
+ * la conexión del esquema, salvo con `soloElegidas`, que deja ese cable sin dibujar (para la
  * etapa de conexión, así la escena no muestra la respuesta).
  */
 export function escenaDelDesafio(
@@ -444,39 +337,107 @@ export function escenaDelDesafio(
 ) {
   const desafio = DESAFIOS[Number(toolBox)]
   if (!desafio) return null
-  const elegido = (id, correcto) =>
-    conexiones[id] || (soloElegidas ? null : correcto)
-  const pinDe = id => elegido(id, KIT[id]?.pin)
-  const armar = protoboard => {
-    const e = crearConstructor(protoboard, {
-      pin5V: elegido('riel5V', '5V'),
-      pinGND: elegido('rielGND', 'GND')
-    })
-    for (const id of desafio.componentes) {
-      const c = KIT[id]
-      if (c.tipo === 'led') e.led(id, pinDe(id), c.color)
-      else if (c.tipo === 'sensorDigital')
-        e.sensorDigital(id, pinDe(id), { activoEnBajo: c.activoEnBajo })
-      else if (c.tipo === 'potenciometro')
-        e.potenciometro(id, pinDe(id), c.control.inicial)
-      else if (c.tipo === 'parlante') e.parlante(id, pinDe(id))
-      else if (c.tipo === 'servo') e.servo(id, pinDe(id))
+  const pinElegido = (id, c) =>
+    conexiones[idDelCable(id, c)] || (soloElegidas ? null : c.esperado)
+
+  const parts = { uno: { type: 'uno-board', firmware: 'build/sketch.hex' } }
+  const layout = { uno: { at: [0, 0, 0] } }
+  const wires = []
+
+  // El LED va en la placa si sus patas están en el 13 y el GND de al lado, y entonces ese
+  // GND queda ocupado. Los otros cables a GND se reparten entre los agujeros libres.
+  const conLed = desafio.componentes.includes('led')
+  const anodo = conLed ? pinElegido('led', COMPONENTES.led.cables[0]) : null
+  const catodo = conLed ? pinElegido('led', COMPONENTES.led.cables[1]) : null
+  const ledEnLaPlaca = anodo === 'D13' && catodo === 'GND'
+  const gndsLibres = ENCHUFES_GND.filter(e => !(ledEnLaPlaca && e === 'ioh.7'))
+  let siguienteGnd = 0
+  const enchufeDe = pin =>
+    pin === 'GND'
+      ? `uno.${gndsLibres[siguienteGnd++ % gndsLibres.length]}`
+      : `uno.${pin}`
+
+  // Protoboard, solo si algún componente va enchufado en ella.
+  const enProtoboard = desafio.componentes.filter(
+    id => COMPONENTES[id].protoboard
+  )
+  if (enProtoboard.length > 0) {
+    const ancho = enProtoboard.reduce(
+      (total, id) => total + COMPONENTES[id].protoboard.columnas + 1,
+      3
+    )
+    const protoboard =
+      PROTOBOARDS.find(p => p.columnas >= ancho) ?? PROTOBOARDS.at(-1)
+    parts.bb = { type: protoboard.tipo }
+    layout.bb = { at: POSICION_PROTOBOARD }
+  }
+  let columna = 2
+
+  for (const id of desafio.componentes) {
+    const c = COMPONENTES[id]
+    if (id === 'led') {
+      // En la placa, una resistencia de 220 ohm escondida en la cúpula cuida al LED, que en
+      // clase se enchufa sin resistencia. Queda en serie con la pata larga.
+      parts.led = { type: 'led-5mm' }
+      if (ledEnLaPlaca) {
+        parts.r_led = { type: 'resistor-0603', resistance: '220' }
+        wires.push(['r_led.b', 'led.anode', { kind: 'contact' }])
+        layout.led = LED_EN_LA_PLACA
+        layout.r_led = { at: [-6.64, 24.13, 36] }
+        wires.push(['uno.D13', 'r_led.a', { kind: 'contact' }])
+        wires.push(['uno.ioh.7', 'led.cathode', { kind: 'contact' }])
+      } else {
+        layout.led = LED_AL_COSTADO
+        if (anodo)
+          wires.push([enchufeDe(anodo), 'led.anode', { color: COLOR.rojo }])
+        if (catodo)
+          wires.push([enchufeDe(catodo), 'led.cathode', { color: COLOR.negro }])
+      }
+      continue
     }
-    return e.construir(desafio.comentario)
+
+    parts[id] = { type: c.tipo }
+    if (c.protoboard) {
+      const { columnas, pines, girar } = c.protoboard
+      const primera = columna + Math.floor((columnas - pines.length) / 2)
+      layout[id] = {
+        on: { [pines[0]]: `bb.e${primera}` },
+        ...(girar ? { rotate: [0, 0, 180] } : {})
+      }
+      columna += columnas + 1
+      for (const cc of c.cables) {
+        const pin = pinElegido(id, cc)
+        const agujero = `bb.a${primera + pines.indexOf(cc.pin)}`
+        if (pin) wires.push([enchufeDe(pin), agujero, { color: cc.color }])
+      }
+    } else {
+      layout[id] = LUGAR[id]
+      for (const cc of c.cables) {
+        const pin = pinElegido(id, cc)
+        if (pin)
+          wires.push([enchufeDe(pin), `${id}.${cc.pin}`, { color: cc.color }])
+      }
+    }
+    for (const [desde, hacia] of c.oculto ?? [])
+      wires.push([`${id}.${desde}`, `uno.${hacia}`, { kind: 'contact' }])
   }
-  let escena
-  try {
-    escena = armar(PROTOBOARDS.chica)
-  } catch (error) {
-    if (!(error instanceof NoEntra)) throw error
-    escena = armar(PROTOBOARDS.grande)
-  }
+
+  const escena =
+    `// ${desafio.comentario}\n// Escena generada por GrIDIE Blocks (src/simulador/escenas.js).\n` +
+    JSON.stringify(
+      { format: 1, parts, layout, nets: { GND: 'uno.GND' }, wires },
+      null,
+      2
+    )
+  const pinParlante = desafio.componentes.includes('parlante')
+    ? pinElegido('parlante', COMPONENTES.parlante.cables[0])
+    : null
   return {
     escena,
-    controles: desafio.componentes.map(id => KIT[id].control).filter(Boolean),
-    pinParlante: desafio.componentes.includes('parlante')
-      ? `@uno.${pinDe('parlante')}`
-      : null
+    controles: desafio.componentes
+      .map(id => COMPONENTES[id].control)
+      .filter(Boolean),
+    pinParlante: pinParlante ? `@uno.${pinParlante}` : null
   }
 }
 

@@ -1,0 +1,191 @@
+// Módulo semáforo de los esquemas de GrIDIE Blocks (Clase 1 y 2): tres LEDs con su
+// resistencia y un conector R, A, V, GND. Generado por simulador/scripts/generar-piezas.py.
+{
+  "format": 1,
+  "part": "gridie-semaforo",
+  "version": "0.1.0",
+  "title": "Módulo semáforo",
+  "summary": "Semáforo de tres luces (roja, amarilla y verde) con su resistencia de 220 ohm cada una y un conector de 4 pines: R, A, V y GND.",
+  "tags": [
+    "led",
+    "semaforo",
+    "modulo",
+    "gridie"
+  ],
+  "license": "MIT",
+  "docs": {
+    "GrIDIE Blocks, esquemas de conexión de las clases": null
+  },
+  "real": {
+    "generic": true,
+    "maker": null,
+    "number": "Semáforo LED",
+    "datasheet": "GrIDIE Blocks, esquemas de conexión de las clases"
+  },
+  "uses": {
+    "led-5mm": "0.3.1",
+    "led-5mm-green": "0.1.1",
+    "led-5mm-yellow": "0.1.1",
+    "pin-header-1x4": "0.1.0",
+    "resistor-0603": "0.2.0"
+  },
+  "parts": {
+    "hdr": {
+      "type": "pin-header-1x4"
+    },
+    "rojo": {
+      "type": "led-5mm"
+    },
+    "amarillo": {
+      "type": "led-5mm-yellow"
+    },
+    "verde": {
+      "type": "led-5mm-green"
+    },
+    "r_rojo": {
+      "type": "resistor-0603",
+      "resistance": "220"
+    },
+    "r_amarillo": {
+      "type": "resistor-0603",
+      "resistance": "220"
+    },
+    "r_verde": {
+      "type": "resistor-0603",
+      "resistance": "220"
+    }
+  },
+  "wires": [
+    [
+      "hdr.1",
+      "r_rojo.a",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_rojo.b",
+      "rojo.anode",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "rojo.cathode",
+      "hdr.4",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "hdr.2",
+      "r_amarillo.a",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_amarillo.b",
+      "amarillo.anode",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "amarillo.cathode",
+      "hdr.4",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "hdr.3",
+      "r_verde.a",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_verde.b",
+      "verde.anode",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "verde.cathode",
+      "hdr.4",
+      {
+        "kind": "trace"
+      }
+    ]
+  ],
+  "layout": {
+    "hdr": {
+      "at": [
+        0,
+        5,
+        34.54
+      ],
+      "rotate": [
+        180,
+        0,
+        0
+      ]
+    },
+    "rojo": {
+      "at": [
+        0,
+        56.0,
+        28.0
+      ]
+    },
+    "r_rojo": {
+      "at": [
+        8,
+        56.0,
+        10
+      ]
+    },
+    "amarillo": {
+      "at": [
+        0,
+        38.0,
+        28.0
+      ]
+    },
+    "r_amarillo": {
+      "at": [
+        8,
+        38.0,
+        10
+      ]
+    },
+    "verde": {
+      "at": [
+        0,
+        20.0,
+        28.0
+      ]
+    },
+    "r_verde": {
+      "at": [
+        8,
+        20.0,
+        10
+      ]
+    }
+  },
+  "pins": {
+    "R": "hdr.1",
+    "A": "hdr.2",
+    "V": "hdr.3",
+    "GND": "hdr.4"
+  },
+  "not_simulated": [
+    {
+      "what": "la caja",
+      "why": "Es el dibujo del semáforo de los esquemas de GrIDIE; lo eléctrico son los tres LEDs y sus resistencias."
+    }
+  ]
+}

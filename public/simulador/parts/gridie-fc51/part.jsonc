@@ -1,0 +1,198 @@
+// Sensor de obstáculos FC-51 de GrIDIE Blocks (Clase 3 y 4). Generado por simulador/scripts/generar-piezas.py.
+{
+  "format": 1,
+  "part": "gridie-fc51",
+  "version": "0.1.0",
+  "title": "Sensor de obstáculos infrarrojo FC-51",
+  "summary": "Sensor de obstáculos con pines OUT, GND y VCC. OUT queda en LOW mientras hay un obstáculo adelante y se prende el LED verde.",
+  "tags": [
+    "sensor",
+    "obstaculos",
+    "infrarrojo",
+    "fc-51",
+    "gridie"
+  ],
+  "license": "MIT",
+  "docs": {
+    "GrIDIE Blocks, esquemas de conexión de las clases": null
+  },
+  "real": {
+    "generic": true,
+    "maker": null,
+    "number": "FC-51",
+    "datasheet": "GrIDIE Blocks, esquemas de conexión de las clases"
+  },
+  "uses": {
+    "led-0805": "0.2.1",
+    "pin-header-1x3": "0.1.0",
+    "resistor-0603": "0.2.0",
+    "tactile-switch-smd": "0.2.0"
+  },
+  "parts": {
+    "hdr": {
+      "type": "pin-header-1x3"
+    },
+    "sw": {
+      "type": "tactile-switch-smd"
+    },
+    "r_pu": {
+      "type": "resistor-0603",
+      "resistance": "10k"
+    },
+    "r_obs": {
+      "type": "resistor-0603",
+      "resistance": "1k"
+    },
+    "r_pwr": {
+      "type": "resistor-0603",
+      "resistance": "1k"
+    },
+    "led_obs": {
+      "type": "led-0805",
+      "color": "green"
+    },
+    "led_pwr": {
+      "type": "led-0805",
+      "color": "red"
+    }
+  },
+  "wires": [
+    [
+      "r_pu.a",
+      "hdr.3",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pu.b",
+      "hdr.1",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "sw.a",
+      "hdr.1",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "sw.b",
+      "hdr.2",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_obs.a",
+      "hdr.3",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_obs.b",
+      "led_obs.anode",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "led_obs.cathode",
+      "hdr.1",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pwr.a",
+      "hdr.3",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pwr.b",
+      "led_pwr.anode",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "led_pwr.cathode",
+      "hdr.2",
+      {
+        "kind": "trace"
+      }
+    ]
+  ],
+  "layout": {
+    "hdr": {
+      "at": [
+        0,
+        0,
+        0
+      ]
+    },
+    "sw": {
+      "at": [
+        0,
+        -25,
+        2.54
+      ],
+      "rotate": [
+        180,
+        0,
+        0
+      ]
+    },
+    "r_pu": {
+      "at": [
+        -4.5,
+        -3.5,
+        4.14
+      ]
+    },
+    "r_obs": {
+      "at": [
+        4.5,
+        -3.5,
+        4.14
+      ]
+    },
+    "r_pwr": {
+      "at": [
+        -4.5,
+        -24,
+        4.14
+      ]
+    },
+    "led_obs": {
+      "at": [
+        4.5,
+        -24,
+        4.14
+      ]
+    },
+    "led_pwr": {
+      "at": [
+        -4.5,
+        -26.5,
+        4.14
+      ]
+    }
+  },
+  "pins": {
+    "OUT": "hdr.1",
+    "GND": "hdr.2",
+    "VCC": "hdr.3"
+  },
+  "not_simulated": [
+    {
+      "what": "el infrarrojo y la distancia de detección",
+      "why": "El obstáculo es el pulsador escondido debajo de la plaqueta, que el panel aprieta. El trimmer azul es dibujo."
+    }
+  ]
+}

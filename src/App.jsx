@@ -7,6 +7,7 @@ import { Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from '@/components/theme-provider'
 import Desafio from './routes/Desafio'
 import Home from './routes/Home'
+import VentanaSimulador from './simulador/VentanaSimulador'
 
 const App = () => {
   return (
@@ -15,6 +16,10 @@ const App = () => {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route
+            path="/ventana-simulador/:toolBox"
+            element={<VentanaSimulador />}
+          />
           <Route
             path="/Ejercicio1"
             element={

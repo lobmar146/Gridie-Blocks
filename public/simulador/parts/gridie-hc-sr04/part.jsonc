@@ -1,0 +1,90 @@
+// Sensor ultrasónico HC-SR04 de los esquemas de GrIDIE Blocks (Clase 3).
+// Generado por simulador/scripts/generar-piezas.py.
+{
+  "format": 1,
+  "part": "gridie-hc-sr04",
+  "version": "0.1.0",
+  "title": "Sensor ultrasónico HC-SR04",
+  "summary": "Sensor de distancia por ultrasonido con pines VCC, Trig, Echo y GND. En el simulador la distancia sale como tensión en el pin DIST.",
+  "tags": [
+    "sensor",
+    "ultrasonico",
+    "distancia",
+    "hc-sr04",
+    "gridie"
+  ],
+  "license": "MIT",
+  "docs": {
+    "GrIDIE Blocks, esquemas de conexión de las clases": null
+  },
+  "real": {
+    "generic": true,
+    "maker": null,
+    "number": "HC-SR04",
+    "datasheet": "GrIDIE Blocks, esquemas de conexión de las clases"
+  },
+  "uses": {
+    "pin-header-1x4": "0.1.0",
+    "trimmer-3362p": "0.2.2"
+  },
+  "parts": {
+    "hdr": {
+      "type": "pin-header-1x4"
+    },
+    "eco": {
+      "type": "trimmer-3362p",
+      "resistance": "10k",
+      "position": 0.6
+    }
+  },
+  "wires": [
+    [
+      "eco.a",
+      "hdr.4",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "eco.b",
+      "hdr.1",
+      {
+        "kind": "trace"
+      }
+    ]
+  ],
+  "layout": {
+    "hdr": {
+      "at": [
+        0,
+        0.8,
+        0
+      ]
+    },
+    "eco": {
+      "at": [
+        -13,
+        -4.5,
+        13
+      ],
+      "rotate": [
+        90,
+        0,
+        0
+      ]
+    }
+  },
+  "pins": {
+    "VCC": "hdr.1",
+    "Trig": "hdr.2",
+    "Echo": "hdr.3",
+    "GND": "hdr.4",
+    "DIST": "eco.wiper"
+  },
+  "not_simulated": [
+    {
+      "what": "el ultrasonido",
+      "why": "ORBE no simula el eco. Trig y Echo no hacen nada: la distancia es la posición del trimmer escondido, que va de GND a VCC por el pin DIST. GrIDIE cambia lecturaUltrasonica() por una lectura de A1."
+    }
+  ]
+}

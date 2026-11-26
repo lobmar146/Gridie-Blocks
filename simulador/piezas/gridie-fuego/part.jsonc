@@ -1,0 +1,198 @@
+// Sensor de fuego de GrIDIE Blocks (Clase 4). Generado por simulador/scripts/generar-piezas.py.
+{
+  "format": 1,
+  "part": "gridie-fuego",
+  "version": "0.1.0",
+  "title": "Sensor de fuego (llama)",
+  "summary": "Sensor de llama infrarrojo con pines OUT, GND y VCC. En GrIDIE OUT queda en HIGH mientras ve una llama y se prende el LED verde.",
+  "tags": [
+    "sensor",
+    "fuego",
+    "llama",
+    "infrarrojo",
+    "gridie"
+  ],
+  "license": "MIT",
+  "docs": {
+    "GrIDIE Blocks, esquemas de conexión de las clases": null
+  },
+  "real": {
+    "generic": true,
+    "maker": null,
+    "number": "Sensor de llama",
+    "datasheet": "GrIDIE Blocks, esquemas de conexión de las clases"
+  },
+  "uses": {
+    "led-0805": "0.2.1",
+    "pin-header-1x3": "0.1.0",
+    "resistor-0603": "0.2.0",
+    "tactile-switch-smd": "0.2.0"
+  },
+  "parts": {
+    "hdr": {
+      "type": "pin-header-1x3"
+    },
+    "sw": {
+      "type": "tactile-switch-smd"
+    },
+    "r_pd": {
+      "type": "resistor-0603",
+      "resistance": "10k"
+    },
+    "r_det": {
+      "type": "resistor-0603",
+      "resistance": "1k"
+    },
+    "r_pwr": {
+      "type": "resistor-0603",
+      "resistance": "1k"
+    },
+    "led_det": {
+      "type": "led-0805",
+      "color": "green"
+    },
+    "led_pwr": {
+      "type": "led-0805",
+      "color": "red"
+    }
+  },
+  "wires": [
+    [
+      "sw.a",
+      "hdr.3",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "sw.b",
+      "hdr.1",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pd.a",
+      "hdr.1",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pd.b",
+      "hdr.2",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_det.a",
+      "hdr.1",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_det.b",
+      "led_det.anode",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "led_det.cathode",
+      "hdr.2",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pwr.a",
+      "hdr.3",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "r_pwr.b",
+      "led_pwr.anode",
+      {
+        "kind": "trace"
+      }
+    ],
+    [
+      "led_pwr.cathode",
+      "hdr.2",
+      {
+        "kind": "trace"
+      }
+    ]
+  ],
+  "layout": {
+    "hdr": {
+      "at": [
+        0,
+        0,
+        0
+      ]
+    },
+    "sw": {
+      "at": [
+        0,
+        -25,
+        2.54
+      ],
+      "rotate": [
+        180,
+        0,
+        0
+      ]
+    },
+    "r_pd": {
+      "at": [
+        -4.5,
+        -3.5,
+        4.14
+      ]
+    },
+    "r_det": {
+      "at": [
+        4.5,
+        -3.5,
+        4.14
+      ]
+    },
+    "r_pwr": {
+      "at": [
+        -4.5,
+        -24,
+        4.14
+      ]
+    },
+    "led_det": {
+      "at": [
+        4.5,
+        -24,
+        4.14
+      ]
+    },
+    "led_pwr": {
+      "at": [
+        -4.5,
+        -26.5,
+        4.14
+      ]
+    }
+  },
+  "pins": {
+    "OUT": "hdr.1",
+    "GND": "hdr.2",
+    "VCC": "hdr.3"
+  },
+  "not_simulated": [
+    {
+      "what": "el infrarrojo de la llama",
+      "why": "La llama es el pulsador escondido debajo de la plaqueta, que el panel aprieta. El trimmer azul es dibujo."
+    }
+  ]
+}
