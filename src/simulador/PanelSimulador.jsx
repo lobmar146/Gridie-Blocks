@@ -11,6 +11,7 @@ import {
 } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { guardarConexiones, leerConexiones } from '@/lib/trabajo'
 import {
   frecuenciaDelParlante,
   prepararCodigoParaSimulador,
@@ -43,22 +44,10 @@ const CargaSimulador = ({ progreso, mensaje }) => (
 
 const esMensajeDeBloqueo = codigo => codigo.trim().startsWith('Recuerda')
 
-// Lo que conectó el alumno se guarda en el navegador, por desafío.
-const claveConexiones = toolBox => `gridie-conexiones-${toolBox}`
-const leerGuardado = toolBox => {
-  try {
-    return JSON.parse(localStorage.getItem(claveConexiones(toolBox))) || {}
-  } catch {
-    return {}
-  }
-}
-const guardar = (toolBox, datos) => {
-  try {
-    localStorage.setItem(claveConexiones(toolBox), JSON.stringify(datos))
-  } catch {
-    // sin almacenamiento: no pasa nada, solo no se recuerda
-  }
-}
+// Lo que conectó el alumno se guarda en el navegador, por desafío (y va en el archivo
+// .gridie cuando lo descarga: ver src/lib/trabajo.js).
+const leerGuardado = toolBox => leerConexiones(toolBox) || {}
+const guardar = guardarConexiones
 
 /** Monta el visor de ORBE en `contenedor` y devuelve el simulador (o lanza). */
 async function montar(contenedor, { escena, hex, reproducir, alMensaje }) {

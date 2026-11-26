@@ -1,15 +1,17 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ChevronRightIcon,
   CodeIcon,
+  Cross2Icon,
   EnterIcon,
   ExternalLinkIcon,
   EyeNoneIcon,
+  FileTextIcon,
   HomeIcon,
   InfoCircledIcon,
   Link2Icon,
@@ -20,6 +22,8 @@ import {
   UpdateIcon,
   UploadIcon
 } from '@radix-ui/react-icons'
+import { describirTrabajo } from '@/components/AbrirTrabajo'
+import MenuTrabajo from '@/components/MenuTrabajo'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -59,7 +63,22 @@ const textoPlano = nodo =>
 // En el navegador (modalidad a distancia por web) solo está el simulador.
 const hayPlaca = typeof window !== 'undefined' && Boolean(window.electronAPI)
 
-const App = ({ titulo, consigna, toolBox, conexion }) => {
+const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
+  // Los bloques del alumno (para guardarlos en un archivo o cargar uno).
+  const blocklyRef = useRef(null)
+  // Si se abrió un trabajo guardado (por ejemplo, el profe mirando el de un alumno), quién
+  // lo hizo y cuándo, para mostrarlo arriba.
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [trabajoAbierto, setTrabajoAbierto] = useState(
+    () => location.state?.trabajoAbierto ?? null
+  )
+  useEffect(() => {
+    // Que no vuelva a aparecer el aviso al recargar la página.
+    if (location.state?.trabajoAbierto)
+      navigate(location.pathname, { replace: true, state: null })
+  }, [])
+
   // ==== Zoom / Pan / Center ====
 
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
@@ -248,6 +267,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   const [vueltaDeLaVentana, setVueltaDeLaVentana] = useState(0)
 
   const consignaRef = useRef(null) // Referencia al div de la consigna
+  const avisoRef = useRef(null)
   const [blocklyHeight, setBlocklyHeight] = useState('82vh') // Altura dinámica de Blockly
 
   const cargarPlacas = async () => {
@@ -282,7 +302,8 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
       if (consignaRef.current) {
         const consignaHeight = consignaRef.current.offsetHeight // Altura del div de la consigna
         const windowHeight = window.innerHeight // Altura de la ventana
-        const remainingHeight = windowHeight - consignaHeight - 66 // Espacio restante
+        const avisoHeight = avisoRef.current?.offsetHeight || 0 // "Estás viendo el trabajo de…"
+        const remainingHeight = windowHeight - consignaHeight - avisoHeight - 66 // Espacio restante
         setBlocklyHeight(`${remainingHeight}px`)
       }
     }
@@ -324,7 +345,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   // Blockly mide su contenedor sólo cuando cambia el tamaño de la ventana.
   useEffect(() => {
     window.dispatchEvent(new Event('resize'))
-  }, [paso, ventanaAparte, consignaOculta, esMovil])
+  }, [paso, ventanaAparte, consignaOculta, esMovil, trabajoAbierto])
 
   const traerDeVuelta = () => {
     setVentanaAparte(ventana => {
@@ -333,6 +354,16 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
     })
     setConexionLista(conexionCompletaGuardada(toolBox))
     setVueltaDeLaVentana(n => n + 1)
+  }
+
+  // Se abrió un archivo de este mismo desafío: los bloques ya están; el simulador relee
+  // los cables.
+  const alAbrirTrabajo = resumen => {
+    setTrabajoAbierto(resumen)
+    setConexionLista(conexionCompletaGuardada(toolBox))
+    setVueltaDeLaVentana(n => n + 1)
+    if (paso === 'probar' && !conexionCompletaGuardada(toolBox))
+      setPaso('conectar')
   }
 
   // Cuando el alumno cierra la ventana aparte, el simulador vuelve a la pestaña.
@@ -514,7 +545,18 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
             </div>
           </div>
           {/* Right section: Board selection and upload */}
-          <div className="flex items-center space-x-4">
+          <div
+            className={`flex items-center ${esMovil ? 'gap-1' : 'space-x-4'}`}
+          >
+            <MenuTrabajo
+              titulo={titulo}
+              toolBox={toolBox}
+              codigo={generatedCode}
+              blocklyRef={blocklyRef}
+              compacto={esMovil}
+              onTrabajoAbierto={alAbrirTrabajo}
+              onEmpezarDeNuevo={() => setTrabajoAbierto(null)}
+            />
             {/* En el celular no hay Web Serial: no se puede subir a una placa. */}
             {!hayPlaca && !esMovil && <BotonSubirWeb codigo={generatedCode} />}
             {hayPlaca && (
@@ -559,6 +601,40 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
             )}
           </div>
         </header>
+        {trabajoAbierto && (
+          <div
+            ref={avisoRef}
+            role="status"
+            className={`flex items-center gap-2 border-y border-arduino/40 bg-arduino-profundo/40 text-gray-100 ${esMovil ? 'px-3 py-1.5 text-xs' : 'px-5 py-1.5 text-sm'}`}
+          >
+            <FileTextIcon className="h-4 w-4 shrink-0 text-arduino-claro" />
+            {esMovil ? (
+              <span className="min-w-0 flex-1 truncate">
+                Estás viendo{' '}
+                <strong className="font-semibold">
+                  {describirTrabajo(trabajoAbierto)}
+                </strong>
+              </span>
+            ) : (
+              <span className="min-w-0 flex-1">
+                Estás viendo{' '}
+                <strong className="font-semibold">
+                  {describirTrabajo(trabajoAbierto)}
+                </strong>
+                . Los cambios que hagas se guardan en este dispositivo.
+              </span>
+            )}
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 shrink-0"
+              onClick={() => setTrabajoAbierto(null)}
+              aria-label="Cerrar aviso"
+            >
+              <Cross2Icon className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <div
@@ -781,6 +857,7 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
           aria-hidden={paso !== 'programar'}
         >
           <BlocklyComponent
+            ref={blocklyRef}
             toolBoxDesafio={toolBox}
             altura="100%"
             onCodeChange={handleCodeChange}
@@ -887,4 +964,11 @@ const App = ({ titulo, consigna, toolBox, conexion }) => {
   )
 }
 
-export default App
+// Cada desafío empieza de cero al cambiar de ruta (por ejemplo, al abrir un archivo de
+// otro desafío desde uno): sin la clave, React reusaría el estado del anterior.
+const Desafio = props => {
+  const { pathname } = useLocation()
+  return <PantallaDesafio key={pathname} {...props} />
+}
+
+export default Desafio

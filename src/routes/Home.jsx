@@ -1,10 +1,18 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { UploadIcon } from '@radix-ui/react-icons'
+import { useAbrirTrabajo } from '@/components/AbrirTrabajo'
 import { LogoTextoUNLPAM } from '@/components/logo-texto-unlpam'
 import { LogoUNLPAM } from '@/components/logo-unlpam'
 import { LogoUPA } from '@/components/logo-upa'
+import { Button } from '@/components/ui/button'
+import { EXTENSION } from '@/lib/trabajo'
 
 const Home = () => {
+  // Para abrir un trabajo guardado (por ejemplo, el profe con la entrega de un alumno):
+  // lleva directo al desafío del archivo, con los bloques y los cables del alumno.
+  const { elegirArchivo, elementos } = useAbrirTrabajo({ soltar: true })
+
   return (
     <section className="m-5 max-w-4xl rounded-lg border bg-[#202020] p-5 lg:mx-auto">
       <div className="flex items-baseline justify-center gap-5">
@@ -24,7 +32,20 @@ const Home = () => {
         </span>{' '}
         Blocks!
       </h1>
-      <h3 className="mb-5 text-center text-xl font-bold text-primary"></h3>
+      <div className="mb-5 flex flex-col items-center gap-1.5 text-center">
+        <Button
+          variant="secondary"
+          className="bg-gray-800 text-gray-100 hover:bg-gray-700"
+          onClick={elegirArchivo}
+        >
+          <UploadIcon className="mr-2 h-4 w-4" />
+          Abrir un trabajo guardado
+        </Button>
+        <p className="text-xs text-gray-400">
+          Un archivo {EXTENSION} (también lo podés soltar arriba de esta página)
+        </p>
+        {elementos}
+      </div>
       {/* Clase 1 */}
       <section>
         <h2 className="border-y p-5 text-2xl font-extrabold dark:text-white">
