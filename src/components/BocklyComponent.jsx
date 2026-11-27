@@ -23,7 +23,9 @@ import { toolboxDesafio1Clase2 } from '../toolbox/Clase 2/toolboxDesafio1Clase2'
 import { toolboxDesafio2Clase2 } from '../toolbox/Clase 2/toolboxDesafio2Clase2'
 import '../App.css'
 import toast from 'react-hot-toast'
+import { revisarBuenasPracticas } from '@/lib/buenasPracticas'
 import { borrarBloques, guardarBloques, leerBloques } from '@/lib/trabajo'
+import PanelBuenasPracticas from './PanelBuenasPracticas'
 import { toolboxDesafio3Clase2 } from '@/toolbox/Clase 2/toolboxDesafio3Clase2'
 import { toolboxDesafio5Clase2 } from '@/toolbox/Clase 2/toolboxDesafio5Clase2'
 import { toolboxEjercicio1Clase3PIR } from '@/toolbox/Clase 3/toolboxEjercicio1Clase3PIR'
@@ -58,39 +60,48 @@ Blockly.Blocks['procedures_ifreturn'] = null
 // Define los bloques una vez fuera del componente
 Blockly.common.defineBlocks(blocksArduino)
 
-// Aviso para los comandos que quedan sueltos fuera de un procedimiento.
-const AVISO_SIN_PROCEDIMIENTO =
-  'Estos bloques deberían estar en un procedimiento. ¡No puede haber comandos sin procedimientos!'
+const ICONO_AVISO = Blockly.icons.IconType.WARNING
+const abriendo = new WeakSet() // burbujas de aviso que se están abriendo
 
-const AVISO_NOMBRE_NO_SIGNIFICATIVO =
-  'Este procedimiento no tiene un nombre significativo. Recordá cambiarle el nombre por uno significativo'
+// Las burbujas de Blockly no cortan el texto: lo partimos nosotros para que no queden
+// larguísimas (sobre todo en el celular).
+const partirEnRenglones = (texto, ancho = 42) =>
+  texto
+    .split(' ')
+    .reduce((renglones, palabra) => {
+      const ultimo = renglones[renglones.length - 1]
+      if (ultimo && (ultimo + ' ' + palabra).length <= ancho)
+        renglones[renglones.length - 1] = ultimo + ' ' + palabra
+      else renglones.push(palabra)
+      return renglones
+    }, [])
+    .join('\n')
 
-// Palabras que solas no dicen qué hace el procedimiento.
-const NOMBRES_GENERICOS = new Set([
-  'hacer algo', 'hacer', 'algo', 'cosa', 'cosas', 'hacer cosa', 'hacer cosas',
-  'proc', 'procedimiento', 'procedimientos', 'comando', 'funcion', 'bloque',
-  'nombre', 'nuevo', 'nueva', 'prueba', 'probar', 'test', 'hola', 'chau',
-  'ejemplo', 'tarea', 'accion', 'paso', 'pasos', 'parte', 'programa'
-])
-// Tecleos al azar comunes.
-const TECLEOS = ['asd', 'qwe', 'zxc', 'jkl', 'fgh', 'sdf', 'dfg', 'hjk']
-
-// Decide si el nombre de un procedimiento no dice nada de lo que hace.
-const nombreNoSignificativo = nombre => {
-  const limpio = (nombre || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // sin tildes
-    .replace(/[^a-zñ ]/g, ' ') // sin números ni signos
-    .replace(/\s+/g, ' ')
-    .trim()
-  const letras = limpio.replace(/ /g, '')
-  if (letras.length < 4) return true // "a", "p1", "abc"
-  if (NOMBRES_GENERICOS.has(limpio)) return true // "Hacer algo 2", "prueba"
-  if (/^(.)\1+$/.test(letras)) return true // "xxxx", "aaaa"
-  if (!/[aeiou]/.test(letras)) return true // "sdfg", "prcd"
-  if (TECLEOS.some(t => letras.includes(t))) return true // "asdasd", "qwerty"
-  return false
+/**
+ * Pone (o saca) el aviso de Blockly de cada bloque. Los avisos se abren solos para que el
+ * alumno los lea: cada vez que cambia algo del programa, se vuelven a abrir los que tenga
+ * cerrados (si el alumno solo cerró la burbuja sin cambiar nada, queda cerrada).
+ */
+function aplicarAvisos(workspace, avisos, evento) {
+  const cambioElPrograma = evento && !evento.isUiEvent
+  workspace.getAllBlocks(false).forEach(bloque => {
+    const textos = avisos.get(bloque)
+    const texto = textos ? textos.map(t => partirEnRenglones(t)).join('\n\n') : null
+    const icono = bloque.getIcon(ICONO_AVISO)
+    if (!texto) {
+      if (icono) bloque.setWarningText(null)
+      return
+    }
+    if (icono?.getText() !== texto) bloque.setWarningText(texto)
+    if (!cambioElPrograma || workspace.isDragging()) return
+    const nuevo = bloque.getIcon(ICONO_AVISO)
+    // Abrir la burbuja tarda un poquito: no la pedimos dos veces (quedaría una colgada).
+    if (!nuevo || nuevo.bubbleIsVisible() || abriendo.has(nuevo)) return
+    abriendo.add(nuevo)
+    Promise.resolve(nuevo.setBubbleVisible(true)).finally(() =>
+      abriendo.delete(nuevo)
+    )
+  })
 }
 
 // El bloque principal de cada desafío: <9 => Ejecutar 1 vez | >=9 => Ejecutar por siempre
@@ -148,6 +159,8 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
   const workspaceRef = useRef(null) // Referencia al workspace
   const [code, setCode] = useState('')
   const [showCode, setShowCode] = useState(false)
+  // Cómo va el programa con las buenas prácticas (la lista del costado).
+  const [practicas, setPracticas] = useState([])
   const alertShownRef = useRef(false) // Usamos useRef en lugar de useState
 
   // Definir todos los toolboxes disponibles en un objeto
@@ -274,7 +287,7 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
       )
     }
 
-    const onWorkspaceChange = () => {
+    const onWorkspaceChange = evento => {
       const allBlocks = workspaceRef.current.getAllBlocks()
       let shouldDisableAll = false
 
@@ -306,19 +319,20 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
         if (shouldDisableFloatingBlock) {
           block.setEnabled(false)
         }
-
-        // Aviso de Blockly (el triángulo) en la cabeza de cada pila suelta.
-        const esCabezaSuelta = shouldDisableFloatingBlock && !block.getParent()
-        if (esCabezaSuelta) block.setWarningText(AVISO_SIN_PROCEDIMIENTO)
-        else if (block.type === 'procedures_defnoreturn')
-          block.setWarningText(
-            nombreNoSignificativo(block.getFieldValue('NAME'))
-              ? AVISO_NOMBRE_NO_SIGNIFICATIVO
-              : null
-          )
-        else if (block.getIcon(Blockly.icons.IconType.WARNING))
-          block.setWarningText(null)
       })
+
+      // Buenas prácticas: los avisos de Blockly en cada bloque y la lista del costado.
+      const revision = revisarBuenasPracticas(
+        Blockly,
+        workspaceRef.current,
+        toolBoxDesafio
+      )
+      aplicarAvisos(workspaceRef.current, revision.avisos, evento)
+      setPracticas(anteriores =>
+        JSON.stringify(anteriores) === JSON.stringify(revision.reglas)
+          ? anteriores
+          : revision.reglas
+      )
       const msg =
         toolboxIndex >= 9
           ? `Recuerda: 
@@ -538,6 +552,9 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
             </Button>
           </>
         )}
+        {compacto && (
+          <PanelBuenasPracticas reglas={practicas} compacto key="compacto" />
+        )}
         {showCode && compacto && (
           <textarea
             value={code}
@@ -547,6 +564,7 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
           />
         )}
       </div>
+      {!compacto && <PanelBuenasPracticas reglas={practicas} />}
       {codigoAParte && (
         <textarea value={code} readOnly className="blockly-code-area" />
       )}

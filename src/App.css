@@ -46,13 +46,15 @@ h1 {
 }
 
 .blockly-workspace {
-  flex: 0 0 calc(70% - 10px);
+  flex: 1 1 0;
+  min-width: 0;
   height: 100%;
   position: relative;
 }
 
 .blockly-workspace-full {
-  flex: 1 1 100%;
+  flex: 1 1 0;
+  min-width: 0;
   height: 100%;
   position: relative;
 }
