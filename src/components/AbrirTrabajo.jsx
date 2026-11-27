@@ -20,6 +20,18 @@ import {
   leerBloques
 } from '@/lib/trabajo'
 
+// En el celular el selector no conoce la extensión .gridie: con `accept` deja el archivo
+// gris y no se puede elegir. Ahí se muestra todo y se rechaza al leerlo.
+const esCelular = () => {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  return (
+    /Android|iPhone|iPad|iPod/i.test(ua) ||
+    (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) // iPad que se hace pasar por Mac
+  )
+}
+const FILTRO = esCelular() ? undefined : EXTENSION
+
 const estiloAviso = {
   borderRadius: '10px',
   background: '#333',
@@ -125,11 +137,12 @@ export function useAbrirTrabajo({
 
   const elementos = (
     <>
-      {/* Sin `accept`: en Android, con una extensión que el teléfono no conoce, el
-          selector deja el archivo gris y no se puede elegir. Se valida al leerlo. */}
+      {/* En la compu y la app de escritorio el selector muestra solo archivos .gridie.
+          En el celular muestra todo (ver esCelular). Igual se valida al leerlo. */}
       <input
         ref={inputRef}
         type="file"
+        accept={FILTRO}
         className="hidden"
         aria-hidden="true"
         tabIndex={-1}

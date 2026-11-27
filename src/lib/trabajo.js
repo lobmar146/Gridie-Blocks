@@ -119,9 +119,20 @@ export function descargarArchivo(datos, nombreArchivo) {
 
 export class ArchivoInvalido extends Error {}
 
+// Termina en .gridie. También acepta "x.gridie.json" o "x.gridie.txt", porque algunos
+// celulares le agregan esa extensión al descargarlo.
+const terminaEnGridie = nombre =>
+  /\.gridie(\.(json|txt))?$/i.test(String(nombre || '').trim())
+
+/** Para el aviso cuando se elige (o se suelta) un archivo que no es .gridie. */
+export const avisoNoEsGridie = nombre =>
+  `"${nombre}" no es un trabajo de GrIDIE. Solo se pueden abrir archivos ${EXTENSION} (los que se guardan desde "Mi trabajo" > "Guardar en un archivo").`
+
 /** Lee y valida un archivo .gridie elegido por el usuario. Lanza ArchivoInvalido. */
 export async function leerArchivo(archivo) {
   if (!archivo) throw new ArchivoInvalido('No se eligió ningún archivo.')
+  if (!terminaEnGridie(archivo.name))
+    throw new ArchivoInvalido(avisoNoEsGridie(archivo.name))
   if (archivo.size > 5 * 1024 * 1024)
     throw new ArchivoInvalido(
       'El archivo es demasiado grande para ser de GrIDIE.'
@@ -130,14 +141,10 @@ export async function leerArchivo(archivo) {
   try {
     datos = JSON.parse(await archivo.text())
   } catch {
-    throw new ArchivoInvalido(
-      `"${archivo.name}" no es un trabajo de GrIDIE (tiene que ser un archivo ${EXTENSION}).`
-    )
+    throw new ArchivoInvalido(avisoNoEsGridie(archivo.name))
   }
   if (datos?.formato !== FORMATO || !datos.desafio?.toolBox || !datos.bloques)
-    throw new ArchivoInvalido(
-      `"${archivo.name}" no es un trabajo de GrIDIE (tiene que ser un archivo ${EXTENSION}).`
-    )
+    throw new ArchivoInvalido(avisoNoEsGridie(archivo.name))
   if (Number(datos.version) > VERSION)
     throw new ArchivoInvalido(
       'Este trabajo se guardó con una versión más nueva de GrIDIE. Actualizá la app para abrirlo.'
