@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CodeIcon, CopyIcon } from '@radix-ui/react-icons'
 import {
   CheckCircle2,
   ChevronRight,
@@ -7,7 +8,9 @@ import {
   Star,
   X
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { puntaje, TEMAS } from '@/lib/buenasPracticas'
+import CodigoColoreado from './CodigoColoreado'
 
 /** La lista de buenas prácticas, por tema; se van tildando a medida que el alumno programa. */
 function Lista({ reglas }) {
@@ -86,8 +89,15 @@ function Puntaje({ hechos, total }) {
   )
 }
 
-export default function PanelBuenasPracticas({ reglas, compacto = false }) {
+export default function PanelBuenasPracticas({
+  reglas,
+  compacto = false,
+  codigo,
+  onCopiar
+}) {
   const [abierto, setAbierto] = useState(!compacto)
+  // En la computadora la columna muestra las buenas prácticas o el código fuente.
+  const [verCodigo, setVerCodigo] = useState(false)
   if (!reglas?.length) return null
   const { hechos, total } = puntaje(reglas)
   const cumplidas = reglas.filter(r => r.cumple).length
@@ -134,46 +144,98 @@ export default function PanelBuenasPracticas({ reglas, compacto = false }) {
   // En la computadora: una columna a la derecha de los bloques, que se puede achicar.
   if (!abierto)
     return (
-      <button
-        type="button"
-        onClick={() => setAbierto(true)}
-        aria-label="Mostrar buenas prácticas"
-        className="flex h-full w-12 shrink-0 flex-col items-center gap-2 rounded-[10px] bg-[#252526] pt-3 text-white hover:bg-[#2d2d2e]"
-      >
-        <ListChecks
-          className={`h-5 w-5 ${todas ? 'text-arduino-claro' : 'text-gray-300'}`}
-        />
-        <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
-        <span className="text-sm font-semibold">{hechos}</span>
-      </button>
+      <div className="flex h-full w-12 shrink-0 flex-col items-center gap-1 rounded-[10px] bg-[#252526] pt-2 text-white">
+        <button
+          type="button"
+          onClick={() => {
+            setVerCodigo(false)
+            setAbierto(true)
+          }}
+          aria-label="Mostrar buenas prácticas"
+          className="flex w-10 flex-col items-center gap-1.5 rounded-md py-2 hover:bg-[#2d2d2e]"
+        >
+          <ListChecks
+            className={`h-5 w-5 ${todas ? 'text-arduino-claro' : 'text-gray-300'}`}
+          />
+          <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
+          <span className="text-sm font-semibold">{hechos}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setVerCodigo(true)
+            setAbierto(true)
+          }}
+          aria-label="Mostrar código"
+          className="flex w-10 justify-center rounded-md py-2 text-gray-300 hover:bg-[#2d2d2e]"
+        >
+          <CodeIcon className="h-5 w-5" />
+        </button>
+      </div>
     )
 
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col overflow-hidden rounded-[10px] bg-[#252526]">
-      <div className="flex items-start justify-between gap-2 px-4 pb-2 pt-3">
-        <div>
-          <h2 className="text-base font-bold text-white">Buenas prácticas</h2>
-          <p className="text-xs text-gray-400">
-            {todas
-              ? '¡Cumplís con todas!'
-              : `Cumplís ${cumplidas} de ${reglas.length}`}
-          </p>
-        </div>
+    <aside
+      className={`flex h-full shrink-0 flex-col overflow-hidden rounded-[10px] bg-[#252526] transition-[width] duration-200 ${verCodigo ? 'w-[min(420px,38%)]' : 'w-64'}`}
+    >
+      {/* Arriba de todo: el botón para pasar al código (y copiarlo). */}
+      <div className="flex items-center gap-1.5 px-3 pt-3">
+        <Button
+          onClick={() => setVerCodigo(v => !v)}
+          aria-pressed={verCodigo}
+          className="h-9 flex-1 bg-arduino text-white hover:bg-arduino-oscuro"
+        >
+          {verCodigo ? (
+            <ListChecks className="mr-2 h-4 w-4" />
+          ) : (
+            <CodeIcon className="mr-2 h-4 w-4" />
+          )}
+          {verCodigo ? 'Ver buenas prácticas' : 'Mostrar código'}
+        </Button>
+        {verCodigo && (
+          <Button
+            size="icon"
+            onClick={onCopiar}
+            aria-label="Copiar código"
+            title="Copiar código"
+            className="h-9 w-9 shrink-0 bg-arduino-profundo text-white hover:bg-arduino-oscuro"
+          >
+            <CopyIcon className="h-4 w-4" />
+          </Button>
+        )}
         <button
           type="button"
           onClick={() => setAbierto(false)}
-          aria-label="Achicar buenas prácticas"
-          className="rounded p-1 text-gray-300 hover:bg-gray-700"
+          aria-label="Achicar el panel"
+          className="rounded p-1.5 text-gray-300 hover:bg-gray-700"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
-      <div className="px-4 pb-3">
-        <Puntaje hechos={hechos} total={total} />
-      </div>
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        <Lista reglas={reglas} />
-      </div>
+
+      {verCodigo ? (
+        <CodigoColoreado
+          codigo={codigo}
+          className="m-3 min-h-0 flex-1 rounded-md"
+        />
+      ) : (
+        <>
+          <div className="px-4 pb-2 pt-3">
+            <h2 className="text-base font-bold text-white">Buenas prácticas</h2>
+            <p className="text-xs text-gray-400">
+              {todas
+                ? '¡Cumplís con todas!'
+                : `Cumplís ${cumplidas} de ${reglas.length}`}
+            </p>
+          </div>
+          <div className="px-4 pb-3">
+            <Puntaje hechos={hechos} total={total} />
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            <Lista reglas={reglas} />
+          </div>
+        </>
+      )}
     </aside>
   )
 }

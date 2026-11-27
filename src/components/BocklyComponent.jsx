@@ -25,6 +25,7 @@ import '../App.css'
 import toast from 'react-hot-toast'
 import { revisarBuenasPracticas } from '@/lib/buenasPracticas'
 import { borrarBloques, guardarBloques, leerBloques } from '@/lib/trabajo'
+import CodigoColoreado from './CodigoColoreado'
 import PanelBuenasPracticas from './PanelBuenasPracticas'
 import { toolboxDesafio3Clase2 } from '@/toolbox/Clase 2/toolboxDesafio3Clase2'
 import { toolboxDesafio5Clase2 } from '@/toolbox/Clase 2/toolboxDesafio5Clase2'
@@ -75,6 +76,8 @@ const partirEnRenglones = (texto, ancho = 42) =>
       else renglones.push(palabra)
       return renglones
     }, [])
+    // Un espacio fijo a cada lado, para que el texto no quede pegado al borde.
+    .map(renglon => `\u00a0${renglon}\u00a0`)
     .join('\n')
 
 /**
@@ -86,7 +89,16 @@ function aplicarAvisos(workspace, avisos, evento) {
   const cambioElPrograma = evento && !evento.isUiEvent
   workspace.getAllBlocks(false).forEach(bloque => {
     const textos = avisos.get(bloque)
-    const texto = textos ? textos.map(t => partirEnRenglones(t)).join('\n\n') : null
+    const texto = textos
+      ? textos
+          .map((t, i) =>
+            // Si hay más de uno, van numerados para leerlos de a uno.
+            textos.length > 1
+              ? partirEnRenglones(`${i + 1}. ${t}`)
+              : partirEnRenglones(t)
+          )
+          .join('\n\n')
+      : null
     const icono = bloque.getIcon(ICONO_AVISO)
     if (!texto) {
       if (icono) bloque.setWarningText(null)
@@ -492,7 +504,9 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
       })
   }
 
-  const codigoAParte = showCode && !compacto
+  // En la computadora, con buenas prácticas, el código se ve en la columna de la derecha.
+  const conPanel = !compacto && practicas.length > 0
+  const codigoAParte = showCode && !compacto && !conPanel
 
   return (
     <div
@@ -541,6 +555,7 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
             </Button>
           </div>
         ) : (
+          !conPanel && (
           <>
             <Button
               onClick={() => setShowCode(!showCode)}
@@ -557,22 +572,27 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
               Copiar Código
             </Button>
           </>
+          )
         )}
         {compacto && (
           <PanelBuenasPracticas reglas={practicas} compacto key="compacto" />
         )}
         {showCode && compacto && (
-          <textarea
-            value={code}
-            readOnly
-            aria-label="Código generado"
-            className="absolute inset-x-0 bottom-0 z-10 h-[45%] resize-none rounded-t-[10px] border-t border-gray-700 bg-[#1e1e1e] p-2.5 font-mono text-xs text-[#e0e0e0]"
+          <CodigoColoreado
+            codigo={code}
+            className="absolute inset-x-0 bottom-0 z-10 m-0 h-[45%] rounded-t-[10px] border-t border-gray-700"
           />
         )}
       </div>
-      {!compacto && <PanelBuenasPracticas reglas={practicas} />}
+      {conPanel && (
+        <PanelBuenasPracticas
+          reglas={practicas}
+          codigo={code}
+          onCopiar={copyToClipboard}
+        />
+      )}
       {codigoAParte && (
-        <textarea value={code} readOnly className="blockly-code-area" />
+        <CodigoColoreado codigo={code} className="blockly-code-area" />
       )}
     </div>
   )

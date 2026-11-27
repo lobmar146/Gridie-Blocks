@@ -62,10 +62,6 @@ h1 {
 .blockly-code-area {
   flex: 0 0 calc(30% - 10px);
   height: 100%;
-  resize: none; /* Evita que el textarea sea redimensionable */
-  padding: 10px;
-  background-color: #1e1e1e; /* Fondo oscuro para el área de código */
-  color: #e0e0e0; /* Texto claro */
   border-radius: 10px;
 }
 
@@ -158,4 +154,26 @@ h1 {
   height: 0.4rem;
   border-radius: 9999px;
   background: #4db6ac;
+}
+
+/* Burbujas de aviso (buenas prácticas): oscuras como el resto de la app, en vez de los
+   globos del color del bloque. Texto claro sobre #26262a: contraste 14:1 (WCAG AAA). */
+.blocklyBubble:has(.blocklyBubbleText) > g[filter] {
+  filter: drop-shadow(0 4px 10px rgb(0 0 0 / 0.45));
+}
+.blocklyBubble:has(.blocklyBubbleText) .blocklyDraggable {
+  fill: #26262a;
+  stroke: #fbbf24;
+  stroke-width: 1.5px;
+  rx: 10px;
+  ry: 10px;
+}
+.blocklyBubble:has(.blocklyBubbleText) .blocklyBubbleTail {
+  fill: #fbbf24;
+}
+.blocklyBubbleText text {
+  fill: #f4f4f5;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
 }
