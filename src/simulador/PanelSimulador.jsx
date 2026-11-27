@@ -190,6 +190,7 @@ const PanelSimulador = ({
           conexiones={conexiones}
           encabezado={encabezado}
           onVolverAConectar={() => setEtapa('conectar')}
+          onSimulacionLista={onSimulacionLista}
         />
       )}
       {verEsquema && esquema && (
@@ -738,7 +739,8 @@ const EtapaProbar = ({
   codigo,
   conexiones,
   encabezado,
-  onVolverAConectar
+  onVolverAConectar,
+  onSimulacionLista
 }) => {
   const contenedorRef = useRef(null)
   const simuladorRef = useRef(null)
