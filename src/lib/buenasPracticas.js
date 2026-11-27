@@ -9,11 +9,14 @@ const DEFINIR = 'procedures_defnoreturn'
 const LLAMAR = 'procedures_callnoreturn'
 const REPETIR = ['controls_repeat_ext', 'controls_for']
 const SI = ['custom_if_condition', 'custom_if_else_condition']
+const SERVO = ['aumentar_grados_servo', 'reducir_grados_servo']
+const ESPERAR = ['esperar_un_segundo', 'esperar_x_milisegundos']
 
 export const TEMAS = [
   { id: 'procedimientos', titulo: 'Procedimientos' },
   { id: 'repetitivas', titulo: 'Repetitivas' },
   { id: 'alternativas', titulo: 'Alternativas' },
+  { id: 'componentes', titulo: 'Componentes' },
   { id: 'extra', titulo: 'Extra' }
 ]
 
@@ -176,6 +179,36 @@ const numeroDeVeces = rep => {
   if (!valor) return null
   if (valor.type === 'math_number') return Number(valor.getFieldValue('NUM'))
   return NaN // una cuenta u otra cosa: no la juzgamos
+}
+
+/** ¿Lo primero que hace este bloque es esperar? (un Esperar, o un procedimiento que empieza con uno) */
+const empiezaEsperando = (b, defs, vistos = new Set()) => {
+  if (!b) return false
+  if (ESPERAR.includes(b.type)) return true
+  if (b.type !== LLAMAR || vistos.has(nombreDe(b))) return false
+  vistos.add(nombreDe(b))
+  const def = defs.find(d => nombreDe(d) === nombreDe(b))
+  return (
+    !!def && empiezaEsperando(def.getInputTargetBlock('STACK'), defs, vistos)
+  )
+}
+
+/**
+ * ¿Después de este bloque el programa espera? Mira el bloque de abajo; si es el último de un
+ * procedimiento, mira qué viene después de cada lugar donde se lo llama.
+ */
+const esperaDespues = (b, defs, llamadas, vistos = new Set()) => {
+  const siguiente = b.getNextBlock()
+  if (siguiente) return empiezaEsperando(siguiente, defs)
+  const contenedor = b.getSurroundParent()
+  if (contenedor?.type !== DEFINIR || vistos.has(contenedor)) return false
+  vistos.add(contenedor)
+  const usos = llamadas.filter(
+    c => nombreDe(c) === nombreDe(contenedor) && lugarDe(c)
+  )
+  return (
+    usos.length > 0 && usos.every(c => esperaDespues(c, defs, llamadas, vistos))
+  )
 }
 
 // ---------- Reglas ----------
@@ -555,6 +588,25 @@ const REGLAS = [
     }
   },
 
+  // ===== Componentes =====
+  {
+    id: 'servo-con-espera',
+    tema: 'componentes',
+    titulo: 'El servo tiene tiempo para moverse',
+    detalle: 'Después de mover el servo hay un Esperar.',
+    evaluar: ({ bloques, defs, llamadas }) => {
+      const servos = bloques.filter(b => SERVO.includes(b.type) && lugarDe(b))
+      const apurados = servos.filter(s => !esperaDespues(s, defs, llamadas))
+      return {
+        cumple: servos.length > 0 && apurados.length === 0,
+        avisos: apurados.map(s => [
+          s,
+          'El bloque de servo necesita un Esperar; si no, no tendrá el tiempo necesario para moverse. Agregá un bloque Esperar debajo.'
+        ])
+      }
+    }
+  },
+
   // ===== Extra =====
   {
     id: 'programa-extra-prolijo',
@@ -618,6 +670,7 @@ export function revisarBuenasPracticas(
         : 'Ejecutar 1 vez',
     hayRepetir: REPETIR.some(t => tipos.has(t)),
     haySi: SI.some(t => tipos.has(t)),
+    hayServo: SERVO.some(t => tipos.has(t)),
     avisoSuelto: sinProcedimientos
       ? 'Estos bloques deberían estar adentro de "Ejecutar 1 vez".'
       : 'Estos bloques deberían estar en un procedimiento. ¡No puede haber comandos sin procedimientos!'
@@ -638,7 +691,8 @@ export function revisarBuenasPracticas(
     : REGLAS.filter(
         r =>
           (r.tema !== 'repetitivas' || ctx.hayRepetir) &&
-          (r.tema !== 'alternativas' || ctx.haySi)
+          (r.tema !== 'alternativas' || ctx.haySi) &&
+          (r.tema !== 'componentes' || ctx.hayServo)
       )
 
   // Con el programa vacío no hay nada cumplido todavía (ni puntos).

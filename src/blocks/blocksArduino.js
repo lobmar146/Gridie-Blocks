@@ -1,3 +1,8 @@
+import {
+  iconoAlternativa,
+  iconoEjecutarUnaVez,
+  iconoRepetir
+} from './iconosRadix'
 import * as Blockly from 'blockly'
 
 const SENSORES = '#806000' // AAA con blanco (13.27:1)
@@ -260,8 +265,9 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'ejecutar_una_vez',
-      message0: 'Ejecutar 1 vez (setup) %1',
+      message0: '%1 Ejecutar 1 vez (setup) %2',
       args0: [
+        iconoEjecutarUnaVez(),
         {
           type: 'input_statement',
           name: 'SETUP_CODE'
@@ -282,8 +288,9 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'controls_repeat_ext', // Bloque para repetir X cantidad de veces
-      message0: 'Repetir %1 veces',
+      message0: '%1 Repetir %2 veces',
       args0: [
+        iconoRepetir(),
         {
           type: 'field_number', // Usar un campo numérico directamente
           name: 'TIMES',
@@ -393,8 +400,9 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'controls_for',
-      message0: 'LLevar %1 desde %2 hasta %3 de %4',
+      message0: '%1 LLevar %2 desde %3 hasta %4 de %5',
       args0: [
+        iconoRepetir(),
         {
           type: 'field_variable', // Campo de variable para controlar el bucle
           name: 'VAR',
@@ -562,8 +570,9 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'custom_if_condition',
-      message0: 'Si %1',
+      message0: '%1 Si %2',
       args0: [
+        iconoAlternativa(),
         {
           type: 'input_value',
           name: 'CONDITION',
@@ -586,8 +595,9 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'custom_if_else_condition',
-      message0: 'Si %1',
+      message0: '%1 Si %2',
       args0: [
+        iconoAlternativa(),
         {
           type: 'input_value',
           name: 'CONDITION',
@@ -617,8 +627,9 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'ejecutar_por_siempre',
-      message0: 'Ejecutar por siempre %1',
+      message0: '%1 Ejecutar por siempre %2',
       args0: [
+        iconoRepetir(),
         {
           type: 'input_statement',
           name: 'LOOP_CODE'
