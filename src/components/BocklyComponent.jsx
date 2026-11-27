@@ -90,16 +90,34 @@ const luminancia = hex => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
-/** Las burbujas toman el color del bloque: si el blanco no se lee bien, el texto va negro. */
+const CONTRASTE_MINIMO = 4.6 // WCAG AA pide 4.5:1 para texto de este tamaño
+
+const oscurecer = (hex, factor) =>
+  '#' +
+  [1, 3, 5]
+    .map(i =>
+      Math.round(parseInt(hex.slice(i, i + 2), 16) * factor)
+        .toString(16)
+        .padStart(2, '0')
+    )
+    .join('')
+
+/**
+ * Las burbujas toman el color del bloque y llevan texto blanco. Si con ese color el blanco
+ * no llega al contraste de WCAG AA, el globo se oscurece de a poco hasta que llegue.
+ */
 function ajustarTextoDeBurbujas(workspace) {
   const lienzo = workspace.getBubbleCanvas?.()
   lienzo?.querySelectorAll('.blocklyBubble').forEach(burbuja => {
-    const fondo = burbuja.querySelector('.blocklyDraggable')?.getAttribute('fill')
+    const formas = burbuja.querySelectorAll('.blocklyDraggable, .blocklyBubbleTail')
+    let fondo = formas[0]?.getAttribute('fill')
     if (!/^#[0-9a-f]{6}$/i.test(fondo || '')) return
-    const l = luminancia(fondo)
-    const conBlanco = 1.05 / (l + 0.05)
-    const conNegro = (l + 0.05) / 0.05
-    burbuja.toggleAttribute('data-texto-oscuro', conNegro > conBlanco)
+    let factor = 1
+    while (1.05 / (luminancia(oscurecer(fondo, factor)) + 0.05) < CONTRASTE_MINIMO)
+      factor -= 0.05
+    if (factor === 1) return
+    fondo = oscurecer(fondo, factor)
+    formas.forEach(forma => forma.setAttribute('fill', fondo))
   })
 }
 

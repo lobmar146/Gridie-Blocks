@@ -158,7 +158,8 @@ h1 {
 
 /* Burbujas de aviso (buenas prácticas): conservan el color del bloque, pero con un globo
    más actual (esquinas redondeadas, borde suave y sombra en vez del relieve viejo). El
-   color del texto se elige en BocklyComponent según el fondo, para pasar WCAG AA. */
+   texto es blanco; si el color del bloque no contrasta lo suficiente, BocklyComponent
+   oscurece el globo hasta pasar WCAG AA. */
 .blocklyBubble:has(.blocklyBubbleText) > g[filter] {
   filter: drop-shadow(0 4px 10px rgb(0 0 0 / 0.45));
 }
@@ -171,9 +172,6 @@ h1 {
 .blocklyBubbleText text {
   fill: #ffffff;
   font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
-}
-.blocklyBubble[data-texto-oscuro] .blocklyBubbleText text {
-  fill: #111111;
 }
