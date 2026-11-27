@@ -16,6 +16,7 @@ import {
   ReloadIcon,
   ResetIcon
 } from '@radix-ui/react-icons'
+import AnimacionArmado from '@/components/AnimacionArmado'
 import AnimacionEnvio from '@/components/AnimacionEnvio'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -37,12 +38,15 @@ import {
 import TableroDeConexion from './TableroDeConexion'
 import { pinesAVigilar, verificar } from './verificador'
 
-// `animacion`: mientras se compila el programa del alumno, bloques que viajan al Arduino.
-const CargaSimulador = ({ progreso, mensaje, animacion = false }) => (
+// `animacion`: 'envio' mientras se compila el programa del alumno (bloques que viajan al
+// Arduino) o 'armado' mientras se cargan las piezas y la escena 3D (piezas que se conectan).
+const CargaSimulador = ({ progreso, mensaje, animacion = 'armado' }) => (
   <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#1e1e1e]/85 p-6">
     <div className="flex w-full max-w-xs flex-col gap-2.5 text-center">
-      {animacion && (
+      {animacion === 'envio' ? (
         <AnimacionEnvio className="mx-auto mb-1 w-full max-w-[240px]" />
+      ) : (
+        <AnimacionArmado className="mx-auto mb-1 w-full max-w-[240px]" />
       )}
       <div className="flex items-center justify-between text-xs text-gray-300">
         <span>{mensaje}</span>
@@ -1030,7 +1034,7 @@ const EtapaProbar = ({
           <CargaSimulador
             progreso={carga.progreso}
             mensaje={carga.mensaje}
-            animacion
+            animacion="envio"
           />
         )}
         {estado === 'error' && (
