@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import { UploadIcon } from '@radix-ui/react-icons'
+import { AvisoEnvio } from '@/components/AnimacionEnvio'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { compilar, ErrorDeCompilacion } from '../simulador/compilador'
@@ -80,20 +81,23 @@ export default function BotonSubirWeb({ codigo, onSubido }) {
 
   const ocupado = mensaje !== null
   return (
-    <Button
-      variant="default"
-      size="sm"
-      className={`justify-start bg-arduino text-white hover:bg-arduino-oscuro ${ocupado ? 'opacity-70' : ''}`}
-      onClick={subir}
-      disabled={ocupado}
-      title="Conectá el Arduino Uno por USB (Chrome o Edge)"
-    >
-      {ocupado ? (
-        <Spinner className="mr-1.5" />
-      ) : (
-        <UploadIcon className="mr-1.5 h-3.5 w-3.5" />
-      )}
-      {mensaje ?? 'Subir a la placa'}
-    </Button>
+    <>
+      {ocupado && <AvisoEnvio mensaje={mensaje} />}
+      <Button
+        variant="default"
+        size="sm"
+        className={`justify-start bg-arduino text-white hover:bg-arduino-oscuro ${ocupado ? 'opacity-70' : ''}`}
+        onClick={subir}
+        disabled={ocupado}
+        title="Conectá el Arduino Uno por USB (Chrome o Edge)"
+      >
+        {ocupado ? (
+          <Spinner className="mr-1.5" />
+        ) : (
+          <UploadIcon className="mr-1.5 h-3.5 w-3.5" />
+        )}
+        {mensaje ?? 'Subir a la placa'}
+      </Button>
+    </>
   )
 }

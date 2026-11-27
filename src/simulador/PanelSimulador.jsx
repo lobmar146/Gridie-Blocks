@@ -15,6 +15,7 @@ import {
   ReloadIcon,
   ResetIcon
 } from '@radix-ui/react-icons'
+import AnimacionEnvio from '@/components/AnimacionEnvio'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { guardarConexiones, leerConexiones } from '@/lib/trabajo'
@@ -34,9 +35,13 @@ import {
 } from './precarga'
 import TableroDeConexion from './TableroDeConexion'
 
-const CargaSimulador = ({ progreso, mensaje }) => (
+// `animacion`: mientras se compila el programa del alumno, bloques que viajan al Arduino.
+const CargaSimulador = ({ progreso, mensaje, animacion = false }) => (
   <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#1e1e1e]/85 p-6">
     <div className="flex w-full max-w-xs flex-col gap-2.5 text-center">
+      {animacion && (
+        <AnimacionEnvio className="mx-auto mb-1 w-full max-w-[240px]" />
+      )}
       <div className="flex items-center justify-between text-xs text-gray-300">
         <span>{mensaje}</span>
         <span className="tabular-nums text-gray-400">
@@ -936,7 +941,11 @@ const EtapaProbar = ({
       <div className="relative min-h-0 flex-1">
         <div ref={contenedorRef} className="absolute inset-0" />
         {estado === 'cargando' && (
-          <CargaSimulador progreso={carga.progreso} mensaje={carga.mensaje} />
+          <CargaSimulador
+            progreso={carga.progreso}
+            mensaje={carga.mensaje}
+            animacion
+          />
         )}
         {estado === 'error' && (
           <div className="absolute inset-0 overflow-auto bg-[#1e1e1e] p-4 text-sm text-red-300">

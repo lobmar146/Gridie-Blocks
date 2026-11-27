@@ -29,6 +29,7 @@ import {
   UploadIcon
 } from '@radix-ui/react-icons'
 import { describirTrabajo } from '@/components/AbrirTrabajo'
+import { AvisoEnvio } from '@/components/AnimacionEnvio'
 import MenuTrabajo from '@/components/MenuTrabajo'
 import { Button } from '@/components/ui/button'
 import {
@@ -717,6 +718,9 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
                   )}
                   {isUploading ? 'Subiendo...' : 'Subir Código'}
                 </Button>
+                {isUploading && (
+                  <AvisoEnvio mensaje="Compilando y subiendo tu programa a la placa…" />
+                )}
               </>
             )}
           </div>
