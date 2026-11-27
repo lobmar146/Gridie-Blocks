@@ -6,6 +6,8 @@
 //    (por ejemplo, en una tarea de Moodle) y el profe lo abre en GrIDIE y ve los bloques y
 //    cómo conectó el circuito. No hace falta ningún servidor.
 
+import { progresoDe } from './progreso'
+
 const FORMATO = 'gridie-blocks'
 const VERSION = 1
 export const EXTENSION = '.gridie'
@@ -82,6 +84,8 @@ export function armarArchivo({
     guardado: new Date().toISOString(),
     bloques,
     conexiones: leerConexiones(toolBox),
+    // Si el alumno ya lo había terminado en su navegador: { puntos, total, fecha } (o null).
+    terminado: progresoDe(toolBox),
     // El código Arduino que generan los bloques, por si alguien lo quiere leer sin GrIDIE.
     codigo: codigo || ''
   }

@@ -51,6 +51,7 @@ import {
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { puntaje } from '@/lib/buenasPracticas'
+import { registrarTerminado } from '@/lib/progreso'
 import useEsMovil, { esPantallaMovil } from '@/lib/useEsMovil'
 import BlocklyComponent from '../components/BocklyComponent'
 import Felicitacion, { AvisoNoResuelto } from '../components/Felicitacion'
@@ -279,15 +280,19 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
     // Sin verificación y sin todas las buenas prácticas, no hay nada que festejar todavía.
     if (!todas && !resultado?.resuelto) return
     felicitadoRef.current = codigoRef.current
+    const { hechos, total } = puntaje(reglas)
     setFelicitacion({
       resuelto: !!resultado?.resuelto,
       todas,
       faltan: obligatorias.filter(r => !r.cumple).length,
       conPracticas: obligatorias.length > 0,
-      puntos: puntaje(reglas).hechos,
+      puntos: hechos,
       extraProlijo: reglas.some(r => r.tema === 'extra' && r.cumple)
     })
-  }, [])
+    // Para la página principal: el desafío queda marcado como terminado, con el mejor
+    // puntaje de buenas prácticas que sacó.
+    registrarTerminado(toolBox, { puntos: hechos, total })
+  }, [toolBox])
   const [isUploading, setIsUploading] = useState(false)
   const tieneSimulador = TOOLBOXES_CON_SIMULADOR.includes(Number(toolBox))
   // Los pasos del desafío: 1. Programá, 2. Conectá, 3. Probá (los dos últimos, con el

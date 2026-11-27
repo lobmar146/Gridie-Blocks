@@ -5,13 +5,17 @@ import { useAbrirTrabajo } from '@/components/AbrirTrabajo'
 import { LogoTextoUNLPAM } from '@/components/logo-texto-unlpam'
 import { LogoUNLPAM } from '@/components/logo-unlpam'
 import { LogoUPA } from '@/components/logo-upa'
+import MarcaTerminado from '@/components/MarcaTerminado'
 import { Button } from '@/components/ui/button'
+import { useProgreso } from '@/lib/progreso'
 import { EXTENSION } from '@/lib/trabajo'
 
 const Home = () => {
   // Para abrir un trabajo guardado (por ejemplo, el profe con la entrega de un alumno):
   // lleva directo al desafío del archivo, con los bloques y los cables del alumno.
   const { elegirArchivo, elementos } = useAbrirTrabajo({ soltar: true })
+  // Los desafíos que el alumno ya terminó en este navegador, con su mejor puntaje.
+  const progreso = useProgreso()
 
   return (
     <section className="m-5 max-w-4xl rounded-lg border bg-[#202020] p-5 lg:mx-auto">
@@ -54,8 +58,9 @@ const Home = () => {
         <div className="grid grid-cols-3 gap-4 py-5">
           <Link
             to="/Ejercicio1"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[1]} />
             <img
               src="img/ejercicio1/led_encendido.png"
               alt="Led encedido"
@@ -65,8 +70,9 @@ const Home = () => {
           </Link>
           <Link
             to="/Problema1"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[2]} />
             <img
               src="img/ejercicio1/led_apagado.png"
               alt="Led parpadeando"
@@ -76,8 +82,9 @@ const Home = () => {
           </Link>
           <Link
             to="/Ejercicio2"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[3]} />
             <img
               src="img/desafio2/semaforo.png"
               alt="Semáforo con led"
@@ -97,8 +104,9 @@ const Home = () => {
         <div className="grid grid-cols-3 gap-4 py-5">
           <Link
             to="/Ejercicio1Clase2"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[4]} />
             <img
               src="img/ejercicio1/led_encendido.png"
               alt="Led subir y bajar"
@@ -121,8 +129,9 @@ const Home = () => {
           </Link> */}
           <Link
             to="/Problema1Clase2"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[5]} />
             <img
               src="img/problema1Clase2/SOS.png"
               alt="Imagen 1"
@@ -132,8 +141,9 @@ const Home = () => {
           </Link>
           <Link
             to="/Problema2Clase2"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[6]} />
             <img
               src="img/desafio2/semaforo.png"
               alt="Imagen 1"
@@ -143,8 +153,9 @@ const Home = () => {
           </Link>
           <Link
             to="/Ejercicio2Clase2"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[7]} />
             <img
               src="img/ejercicio3Clase2/servo.svg"
               alt="Imagen 1"
@@ -154,8 +165,9 @@ const Home = () => {
           </Link>
           <Link
             to="/Problema3Clase2"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[8]} />
             <img
               src="img/problema3Clase2/barrera.gif"
               alt="Imagen 1"
@@ -174,8 +186,9 @@ const Home = () => {
         <div className="grid grid-cols-3 gap-4 py-5">
           <Link
             to="/Ejercicio1Clase3"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[9]} />
             <img
               src="img/clase3/sensorPir.svg"
               alt="Led subir y bajar"
@@ -187,8 +200,9 @@ const Home = () => {
           </Link>
           <Link
             to="/Problema1Clase3"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[10]} />
             <img
               src="img/clase3/sensorPir.svg"
               alt="Led subir y bajar"
@@ -200,8 +214,9 @@ const Home = () => {
           </Link>
           <Link
             to="/Ejercicio2Clase3"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[11]} />
             <img
               src="img/clase3/sensorUltrasonico.svg"
               alt="Led subir y bajar"
@@ -211,8 +226,9 @@ const Home = () => {
           </Link>
           <Link
             to="/Problema2Clase3"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[12]} />
             <img
               src="img/clase3/sensorUltrasonico.svg"
               alt="Led subir y bajar"
@@ -234,8 +250,9 @@ const Home = () => {
         <div className="grid grid-cols-3 gap-4 py-5">
           <Link
             to="/DesafioHumedad"
-            className="flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
+            className="relative flex transform flex-col rounded-lg border border-primary p-4 text-center transition-all duration-200 ease-in hover:scale-105"
           >
+            <MarcaTerminado progreso={progreso[14]} />
             <img
               src="img/clase3/sensorObstaculos.svg"
               alt="Led subir y bajar"
