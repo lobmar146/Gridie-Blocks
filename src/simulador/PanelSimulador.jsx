@@ -1054,12 +1054,15 @@ const SelectorVelocidad = ({ velocidad, onCambiar, compacto }) => (
     title="Velocidad de la simulación"
     className="flex h-8 items-center rounded-md border border-gray-600 bg-gray-800/60 p-0.5"
   >
-    {!compacto && (
-      <DoubleArrowRightIcon
-        className="mx-1.5 h-3.5 w-3.5 text-gray-400"
-        aria-hidden
-      />
-    )}
+    <span className="flex items-center gap-1 whitespace-nowrap px-1.5 text-xs text-gray-300">
+      {!compacto && (
+        <DoubleArrowRightIcon
+          className="h-3.5 w-3.5 text-gray-400"
+          aria-hidden
+        />
+      )}
+      {compacto ? 'Velocidad' : 'Velocidad de simulación'}
+    </span>
     {VELOCIDADES.map(v => (
       <Button
         key={v}
@@ -1069,7 +1072,7 @@ const SelectorVelocidad = ({ velocidad, onCambiar, compacto }) => (
         aria-checked={velocidad === v}
         title={v === 1 ? 'Velocidad normal' : `${v} veces más rápido`}
         onClick={() => onCambiar(v)}
-        className={`h-6 px-2 text-xs tabular-nums ${velocidad === v ? 'bg-arduino text-white hover:bg-arduino-oscuro hover:text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+        className={`h-6 text-xs tabular-nums ${compacto ? 'px-1.5' : 'px-2'} ${velocidad === v ? 'bg-arduino text-white hover:bg-arduino-oscuro hover:text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
       >
         x{v}
       </Button>
