@@ -58,6 +58,41 @@ Blockly.Blocks['procedures_ifreturn'] = null
 // Define los bloques una vez fuera del componente
 Blockly.common.defineBlocks(blocksArduino)
 
+// Aviso para los comandos que quedan sueltos fuera de un procedimiento.
+const AVISO_SIN_PROCEDIMIENTO =
+  'Estos bloques deberían estar en un procedimiento. ¡No puede haber comandos sin procedimientos!'
+
+const AVISO_NOMBRE_NO_SIGNIFICATIVO =
+  'Este procedimiento no tiene un nombre significativo. Recordá cambiarle el nombre por uno significativo'
+
+// Palabras que solas no dicen qué hace el procedimiento.
+const NOMBRES_GENERICOS = new Set([
+  'hacer algo', 'hacer', 'algo', 'cosa', 'cosas', 'hacer cosa', 'hacer cosas',
+  'proc', 'procedimiento', 'procedimientos', 'comando', 'funcion', 'bloque',
+  'nombre', 'nuevo', 'nueva', 'prueba', 'probar', 'test', 'hola', 'chau',
+  'ejemplo', 'tarea', 'accion', 'paso', 'pasos', 'parte', 'programa'
+])
+// Tecleos al azar comunes.
+const TECLEOS = ['asd', 'qwe', 'zxc', 'jkl', 'fgh', 'sdf', 'dfg', 'hjk']
+
+// Decide si el nombre de un procedimiento no dice nada de lo que hace.
+const nombreNoSignificativo = nombre => {
+  const limpio = (nombre || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // sin tildes
+    .replace(/[^a-zñ ]/g, ' ') // sin números ni signos
+    .replace(/\s+/g, ' ')
+    .trim()
+  const letras = limpio.replace(/ /g, '')
+  if (letras.length < 4) return true // "a", "p1", "abc"
+  if (NOMBRES_GENERICOS.has(limpio)) return true // "Hacer algo 2", "prueba"
+  if (/^(.)\1+$/.test(letras)) return true // "xxxx", "aaaa"
+  if (!/[aeiou]/.test(letras)) return true // "sdfg", "prcd"
+  if (TECLEOS.some(t => letras.includes(t))) return true // "asdasd", "qwerty"
+  return false
+}
+
 // El bloque principal de cada desafío: <9 => Ejecutar 1 vez | >=9 => Ejecutar por siempre
 const tipoRaiz = toolBoxDesafio =>
   (Number(toolBoxDesafio) || 1) >= 9
@@ -271,6 +306,18 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
         if (shouldDisableFloatingBlock) {
           block.setEnabled(false)
         }
+
+        // Aviso de Blockly (el triángulo) en la cabeza de cada pila suelta.
+        const esCabezaSuelta = shouldDisableFloatingBlock && !block.getParent()
+        if (esCabezaSuelta) block.setWarningText(AVISO_SIN_PROCEDIMIENTO)
+        else if (block.type === 'procedures_defnoreturn')
+          block.setWarningText(
+            nombreNoSignificativo(block.getFieldValue('NAME'))
+              ? AVISO_NOMBRE_NO_SIGNIFICATIVO
+              : null
+          )
+        else if (block.getIcon(Blockly.icons.IconType.WARNING))
+          block.setWarningText(null)
       })
       const msg =
         toolboxIndex >= 9
