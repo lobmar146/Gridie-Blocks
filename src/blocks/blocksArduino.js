@@ -1,6 +1,7 @@
 import {
   iconoAlternativa,
   iconoEjecutarUnaVez,
+  iconoEsperar,
   iconoRepetir
 } from './iconosRadix'
 import * as Blockly from 'blockly'
@@ -279,7 +280,8 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'esperar_un_segundo',
-      message0: 'Esperar 1 segundo',
+      message0: '%1 Esperar 1 segundo',
+      args0: [iconoEsperar()],
       previousStatement: null,
       nextStatement: null,
       colour: '#84651d', // Verde azulado muy oscuro (contraste adecuado)
@@ -486,8 +488,9 @@ export const blocksArduino = Blockly.common.createBlockDefinitionsFromJsonArray(
     },
     {
       type: 'esperar_x_milisegundos',
-      message0: 'Esperar %1 milisegundos ',
+      message0: '%1 Esperar %2 milisegundos ',
       args0: [
+        iconoEsperar(),
         {
           type: 'field_number', // Campo numérico para ingresar los milisegundos
           name: 'MILLISECONDS',
