@@ -80,6 +80,28 @@ const partirEnRenglones = (texto, ancho = 42) =>
     .map(renglon => `\u00a0${renglon}\u00a0`)
     .join('\n')
 
+// Contraste (WCAG) entre un color #rrggbb y el blanco o el negro.
+const luminancia = hex => {
+  const [r, g, b] = [1, 3, 5].map(i => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** Las burbujas toman el color del bloque: si el blanco no se lee bien, el texto va negro. */
+function ajustarTextoDeBurbujas(workspace) {
+  const lienzo = workspace.getBubbleCanvas?.()
+  lienzo?.querySelectorAll('.blocklyBubble').forEach(burbuja => {
+    const fondo = burbuja.querySelector('.blocklyDraggable')?.getAttribute('fill')
+    if (!/^#[0-9a-f]{6}$/i.test(fondo || '')) return
+    const l = luminancia(fondo)
+    const conBlanco = 1.05 / (l + 0.05)
+    const conNegro = (l + 0.05) / 0.05
+    burbuja.toggleAttribute('data-texto-oscuro', conNegro > conBlanco)
+  })
+}
+
 /**
  * Pone (o saca) el aviso de Blockly de cada bloque. Los avisos se abren solos para que el
  * alumno los lea: cada vez que cambia algo del programa, se vuelven a abrir los que tenga
@@ -346,6 +368,7 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
         selectedToolbox
       )
       aplicarAvisos(workspaceRef.current, revision.avisos, evento)
+      requestAnimationFrame(() => ajustarTextoDeBurbujas(workspaceRef.current))
       setPracticas(anteriores =>
         JSON.stringify(anteriores) === JSON.stringify(revision.reglas)
           ? anteriores
