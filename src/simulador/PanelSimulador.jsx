@@ -56,7 +56,10 @@ const leerGuardado = toolBox => leerConexiones(toolBox) || {}
 const guardar = guardarConexiones
 
 /** Monta el visor de ORBE en `contenedor` y devuelve el simulador (o lanza). */
-async function montar(contenedor, { escena, hex, reproducir, alMensaje, alListo }) {
+async function montar(
+  contenedor,
+  { escena, hex, reproducir, alMensaje, alListo }
+) {
   const puente = await cargarPuente()
   return puente.montarSimulador(contenedor, {
     escena,
@@ -252,7 +255,7 @@ const Encabezado = ({ paso, encabezado, children }) => (
     </div>
     <div className="flex items-center gap-2">
       {children}
-      {encabezado.esquema && (
+      {encabezado.esquema && !encabezado.compacto && (
         <Button
           size="sm"
           variant="ghost"
