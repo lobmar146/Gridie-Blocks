@@ -754,6 +754,10 @@ const EtapaProbar = ({
   const [error, setError] = useState('')
   const [codigoCargado, setCodigoCargado] = useState(null)
   const desafio = escenaDelDesafio(toolBox, conexiones)
+  // Para avisar cuando la simulación "terminó" (ver vigilarFin, más abajo).
+  const alTerminarRef = useRef(onSimulacionLista)
+  alTerminarRef.current = onSimulacionLista
+  const porSiempre = (Number(toolBox) || 1) >= 9
 
   const detenerParlante = useCallback(() => {
     cargaIdRef.current += 1
@@ -838,6 +842,25 @@ const EtapaProbar = ({
           : null
       parlanteRef.current = parlante
       let indicePinParlante = -1
+      // ¿Cuándo terminó la simulación? Con "Ejecutar 1 vez", cuando los pines dejan de
+      // cambiar por unos segundos (el programa ya hizo todo). Con "Ejecutar por siempre" no
+      // termina nunca: tomamos que anduvo bien después de un rato corriendo.
+      const QUIETO_MS = 4000
+      const POR_SIEMPRE_MS = 15000
+      const vigia = { inicio: 0, ultimoCambio: 0, pines: null }
+      const vigilarFin = () => {
+        vigia.inicio = vigia.ultimoCambio = Date.now()
+        const reloj = window.setInterval(() => {
+          if (cargaIdRef.current !== id) return window.clearInterval(reloj)
+          const ahora = Date.now()
+          const termino = porSiempre
+            ? ahora - vigia.inicio >= POR_SIEMPRE_MS
+            : ahora - vigia.ultimoCambio >= QUIETO_MS
+          if (!termino) return
+          window.clearInterval(reloj)
+          alTerminarRef.current?.()
+        }, 500)
+      }
       const opcionesMontaje = {
         escena: desafio.escena,
         hex,
@@ -848,10 +871,18 @@ const EtapaProbar = ({
           if (cargaIdRef.current !== id) return
           setCodigoCargado(codigo)
           setEstado('corriendo')
-          onSimulacionLista?.()
+          vigilarFin()
         },
         alMensaje: mensaje => {
           if (cargaIdRef.current !== id) return
+          if (mensaje.type === 'frame' && mensaje.pins) {
+            // Los pines y, si hay, el ángulo del servo.
+            const pines = `${mensaje.pins}|${(mensaje.horn_deg || []).map(Math.round)}`
+            if (pines !== vigia.pines) {
+              vigia.pines = pines
+              vigia.ultimoCambio = Date.now()
+            }
+          }
           if (mensaje.type === 'scene') {
             indicePinParlante = mensaje.channels.pins.indexOf(
               desafio.pinParlante
@@ -889,7 +920,7 @@ const EtapaProbar = ({
       setEstado('error')
       setError(e.message || String(e))
     }
-  }, [codigo, desafio, detener, detenerParlante])
+  }, [codigo, desafio, detener, detenerParlante, porSiempre])
 
   const iniciarRef = useRef(iniciar)
   iniciarRef.current = iniciar
