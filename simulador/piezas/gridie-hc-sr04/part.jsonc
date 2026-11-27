@@ -34,7 +34,7 @@
     "eco": {
       "type": "trimmer-3362p",
       "resistance": "10k",
-      "position": 0.6
+      "position": 0.05
     }
   },
   "wires": [

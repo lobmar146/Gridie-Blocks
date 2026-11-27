@@ -51,6 +51,7 @@ import {
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { puntaje } from '@/lib/buenasPracticas'
+import { registrarTerminado } from '@/lib/progreso'
 import useEsMovil, { esPantallaMovil } from '@/lib/useEsMovil'
 import BlocklyComponent from '../components/BocklyComponent'
 import Felicitacion, { AvisoNoResuelto } from '../components/Felicitacion'
@@ -285,12 +286,13 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
       // Sin verificación y sin todas las buenas prácticas, no hay nada que festejar todavía.
       if (!todas && !resultado?.resuelto) return
       felicitadoRef.current = codigoRef.current
+      const { hechos, total } = puntaje(reglas)
       setFelicitacion({
         resuelto: !!resultado?.resuelto,
         todas,
         faltan: obligatorias.filter(r => !r.cumple).length,
         conPracticas: obligatorias.length > 0,
-        puntos: puntaje(reglas).hechos,
+        puntos: hechos,
         extraProlijo: reglas.some(r => r.tema === 'extra' && r.cumple),
         // Problema 1 (parpadear): anda, pero falta el Esperar después del Apagar.
         consejo:
@@ -298,6 +300,9 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
             ? 'Tu solución funciona, pero lo ideal es que luego del Apagar se espere, para indicar, al igual que en el encendido, cuánto tiempo está apagado.'
             : null
       })
+      // Para la página principal: el desafío queda marcado como terminado, con el mejor
+      // puntaje de buenas prácticas que sacó.
+      registrarTerminado(toolBox, { puntos: hechos, total })
     },
     [toolBox]
   )

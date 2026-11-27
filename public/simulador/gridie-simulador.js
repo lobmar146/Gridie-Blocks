@@ -40299,18 +40299,18 @@ function DE({ controls: e, values: t, name: n, still: r, source: i, send: a }) {
 		}) : null]
 	});
 }
-function OE({ source: e, send: t }) {
-	let [n, r] = (0, v.useState)(null);
+function OE({ source: e, send: t, sinEstado: n = !1 }) {
+	let [r, i] = (0, v.useState)(null);
 	if ((0, v.useEffect)(() => e.subscribe((e) => {
-		e.type === "frame" && r({
+		e.type === "frame" && i({
 			state: e.state,
 			t_ps: e.t_ps,
 			ratio: e.ratio,
 			fault: e.fault
 		});
-	}), [e]), n === null) return null;
-	let i = n.state === "playing", a = n.state === "stopped" || n.state === "faulted", o = nE(n.state, n.ratio);
-	return /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsxs)("div", {
+	}), [e]), r === null) return null;
+	let a = r.state === "playing", o = r.state === "stopped" || r.state === "faulted", s = nE(r.state, r.ratio);
+	return /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [n ? null : /* @__PURE__ */ (0, $.jsxs)("div", {
 		"data-testid": "controls",
 		style: {
 			display: "flex",
@@ -40327,21 +40327,21 @@ function OE({ source: e, send: t }) {
 		children: [
 			/* @__PURE__ */ (0, $.jsx)("span", {
 				"data-testid": "state",
-				children: n.state
+				children: r.state
 			}),
 			/* @__PURE__ */ (0, $.jsxs)("span", {
 				"data-testid": "time",
-				children: ["t = ", bE(n.t_ps)]
+				children: ["t = ", bE(r.t_ps)]
 			}),
-			o === null ? null : /* @__PURE__ */ (0, $.jsx)("span", {
+			s === null ? null : /* @__PURE__ */ (0, $.jsx)("span", {
 				"data-testid": "speed",
 				style: { color: "var(--stage-label-muted, #c9ced6)" },
-				children: o
+				children: s
 			}),
 			/* @__PURE__ */ (0, $.jsx)("button", {
 				"data-testid": "play",
-				disabled: a,
-				onClick: () => t({ cmd: i ? "pause" : "play" }),
+				disabled: o,
+				onClick: () => t({ cmd: a ? "pause" : "play" }),
 				style: {
 					font: "inherit",
 					color: "inherit",
@@ -40349,13 +40349,13 @@ function OE({ source: e, send: t }) {
 					border: "1px solid var(--stage-field-border, #4a5058)",
 					borderRadius: "var(--radius, 4px)",
 					padding: "2px 10px",
-					cursor: a ? "default" : "pointer"
+					cursor: o ? "default" : "pointer"
 				},
 				type: "button",
-				children: i ? "Pause" : "Play"
+				children: a ? "Pause" : "Play"
 			})
 		]
-	}), n.fault === void 0 ? null : /* @__PURE__ */ (0, $.jsx)("pre", {
+	}), r.fault === void 0 ? null : /* @__PURE__ */ (0, $.jsx)("pre", {
 		"data-testid": "fault",
 		style: {
 			...gE,
@@ -40363,7 +40363,7 @@ function OE({ source: e, send: t }) {
 			padding: 0,
 			maxWidth: "100%"
 		},
-		children: n.fault
+		children: r.fault
 	})] });
 }
 function kE({ color: e }) {
@@ -40392,47 +40392,47 @@ var AE = 1600, jE = {
 	font: "12px ui-monospace, monospace",
 	whiteSpace: "nowrap"
 };
-function ME({ source: e, onCreated: t, onReady: n, pageScroll: r = !1 }) {
-	let i = GT(), a = (0, v.useRef)(null), [o, s] = (0, v.useState)(null), [c, l] = (0, v.useState)(null), [u, d] = (0, v.useState)("tilted"), f = (0, v.useRef)(null), p = (0, v.useRef)([]), m = (0, v.useRef)([]), h = (0, v.useMemo)(Dy, []), [g, _] = (0, v.useState)([]), [y, b] = (0, v.useState)([]), [x, S] = (0, v.useState)(null), C = (0, v.useCallback)((e) => _(e.errors), []), w = (0, v.useMemo)(() => (c?.world ?? []).map(cE), [c]), T = (0, v.useMemo)(() => (c?.params ?? []).map(dE), [c]), E = (0, v.useCallback)((t) => {
+function ME({ source: e, onCreated: t, onReady: n, pageScroll: r = !1, sinEstado: i = !1 }) {
+	let a = GT(), o = (0, v.useRef)(null), [s, c] = (0, v.useState)(null), [l, u] = (0, v.useState)(null), [d, f] = (0, v.useState)("tilted"), p = (0, v.useRef)(null), m = (0, v.useRef)([]), h = (0, v.useRef)([]), g = (0, v.useMemo)(Dy, []), [_, y] = (0, v.useState)([]), [b, x] = (0, v.useState)([]), [S, C] = (0, v.useState)(null), w = (0, v.useCallback)((e) => y(e.errors), []), T = (0, v.useMemo)(() => (l?.world ?? []).map(cE), [l]), E = (0, v.useMemo)(() => (l?.params ?? []).map(dE), [l]), D = (0, v.useCallback)((t) => {
 		let n = (e) => {
 			let n = `${tE(t)}: ${e}`;
-			console.error(n), b((e) => [...e, n]);
+			console.error(n), x((e) => [...e, n]);
 		};
 		return e.send(t).then((e) => (e.ok || n(eE(e.error)), e), (e) => (n(e instanceof Error ? e.message : String(e)), null));
 	}, [e]);
 	return (0, v.useEffect)(() => e.subscribe((e) => {
-		if (e.type === "scene") f.current = null, p.current = [], m.current = [], b([]), l(e);
+		if (e.type === "scene") p.current = null, m.current = [], h.current = [], x([]), u(e);
 		else if (e.type === "frame") {
-			let t = p.current;
+			let t = m.current;
 			for (let n = 0; n < e.led_a.length; n += 1) t[n] = Math.max(t[n] ?? 0, e.led_a[n] ?? 0);
-			for (let [t, n] of (e.screens ?? []).entries()) n !== null && (m.current[t] = n);
-			f.current = e;
-		} else S(e.reason);
+			for (let [t, n] of (e.screens ?? []).entries()) n !== null && (h.current[t] = n);
+			p.current = e;
+		} else C(e.reason);
 	}), [e]), (0, v.useEffect)(() => {
 		let e = (e) => {
-			e.target instanceof HTMLInputElement || (e.key === "t" || e.key === "T") && d((e) => e === "top" ? "tilted" : "top");
+			e.target instanceof HTMLInputElement || (e.key === "t" || e.key === "T") && f((e) => e === "top" ? "tilted" : "top");
 		};
 		return window.addEventListener("keydown", e), () => window.removeEventListener("keydown", e);
 	}, []), (0, v.useEffect)(() => {
 		if (!r) return;
-		let e = a.current;
+		let e = o.current;
 		if (e === null) return;
 		let t = 0, n = (e) => {
-			s(e), window.clearTimeout(t), t = window.setTimeout(() => s(null), AE);
+			c(e), window.clearTimeout(t), t = window.setTimeout(() => c(null), AE);
 		}, i = (e) => {
 			e.ctrlKey || e.metaKey || (e.stopPropagation(), n("Ctrl + scroll to zoom"));
-		}, o = null, c = (e) => {
-			e.pointerType === "touch" && (o = e.isPrimary ? {
+		}, a = null, s = (e) => {
+			e.pointerType === "touch" && (a = e.isPrimary ? {
 				id: e.pointerId,
 				x: e.clientX,
 				y: e.clientY
 			} : null);
 		}, l = (e) => {
-			if (o === null || e.pointerId !== o.id) return;
-			let t = e.clientX - o.x, r = e.clientY - o.y;
-			t * t + r * r < 64 || (o = null, n("Use two fingers to move the view"));
+			if (a === null || e.pointerId !== a.id) return;
+			let t = e.clientX - a.x, r = e.clientY - a.y;
+			t * t + r * r < 64 || (a = null, n("Use two fingers to move the view"));
 		}, u = (e) => {
-			o?.id === e.pointerId && (o = null);
+			a?.id === e.pointerId && (a = null);
 		}, d = () => {
 			for (let t of e.querySelectorAll("canvas")) t.style.touchAction !== "pan-y" && (t.style.touchAction = "pan-y");
 		};
@@ -40441,12 +40441,12 @@ function ME({ source: e, onCreated: t, onReady: n, pageScroll: r = !1 }) {
 		return f.observe(e, {
 			childList: !0,
 			subtree: !0
-		}), e.addEventListener("wheel", i, { capture: !0 }), e.addEventListener("pointerdown", c, { capture: !0 }), e.addEventListener("pointermove", l, { capture: !0 }), e.addEventListener("pointerup", u, { capture: !0 }), e.addEventListener("pointercancel", u, { capture: !0 }), () => {
-			f.disconnect(), window.clearTimeout(t), e.removeEventListener("wheel", i, { capture: !0 }), e.removeEventListener("pointerdown", c, { capture: !0 }), e.removeEventListener("pointermove", l, { capture: !0 }), e.removeEventListener("pointerup", u, { capture: !0 }), e.removeEventListener("pointercancel", u, { capture: !0 });
+		}), e.addEventListener("wheel", i, { capture: !0 }), e.addEventListener("pointerdown", s, { capture: !0 }), e.addEventListener("pointermove", l, { capture: !0 }), e.addEventListener("pointerup", u, { capture: !0 }), e.addEventListener("pointercancel", u, { capture: !0 }), () => {
+			f.disconnect(), window.clearTimeout(t), e.removeEventListener("wheel", i, { capture: !0 }), e.removeEventListener("pointerdown", s, { capture: !0 }), e.removeEventListener("pointermove", l, { capture: !0 }), e.removeEventListener("pointerup", u, { capture: !0 }), e.removeEventListener("pointercancel", u, { capture: !0 });
 		};
 	}, [r]), /* @__PURE__ */ (0, $.jsxs)("div", {
 		"data-testid": "viewer",
-		ref: a,
+		ref: o,
 		style: {
 			position: "relative",
 			width: "100%",
@@ -40462,25 +40462,25 @@ function ME({ source: e, onCreated: t, onReady: n, pageScroll: r = !1 }) {
 					alpha: !1
 				},
 				onCreated: t,
-				children: [/* @__PURE__ */ (0, $.jsx)(kE, { color: i.background }), c === null ? null : /* @__PURE__ */ (0, $.jsx)(v.Suspense, {
+				children: [/* @__PURE__ */ (0, $.jsx)(kE, { color: a.background }), l === null ? null : /* @__PURE__ */ (0, $.jsx)(v.Suspense, {
 					fallback: null,
 					children: /* @__PURE__ */ (0, $.jsx)(zT, {
-						colours: i,
-						frame: f,
-						hover: h,
-						ledPeak: p,
-						screens: m,
-						mode: u,
-						onBuilt: C,
+						colours: a,
+						frame: p,
+						hover: g,
+						ledPeak: m,
+						screens: h,
+						mode: d,
+						onBuilt: w,
 						onReady: n,
 						pageScroll: r,
-						scene: c,
-						send: E
+						scene: l,
+						send: D
 					})
 				})]
 			}) }),
-			/* @__PURE__ */ (0, $.jsx)(yE, { errors: [...g, ...y] }),
-			x === null ? /* @__PURE__ */ (0, $.jsxs)("div", {
+			/* @__PURE__ */ (0, $.jsx)(yE, { errors: [..._, ...b] }),
+			S === null ? /* @__PURE__ */ (0, $.jsxs)("div", {
 				style: {
 					position: "absolute",
 					top: 12,
@@ -40494,29 +40494,30 @@ function ME({ source: e, onCreated: t, onReady: n, pageScroll: r = !1 }) {
 				},
 				children: [
 					/* @__PURE__ */ (0, $.jsx)(OE, {
-						send: E,
-						source: e
+						send: D,
+						source: e,
+						sinEstado: i
 					}),
 					/* @__PURE__ */ (0, $.jsx)(vE, { source: e }),
-					w.length === 0 ? null : /* @__PURE__ */ (0, $.jsx)(DE, {
-						controls: w,
+					i || T.length === 0 ? null : /* @__PURE__ */ (0, $.jsx)(DE, {
+						controls: T,
 						values: wE,
 						name: "world",
 						still: "the world stays as it is",
-						send: E,
+						send: D,
 						source: e
 					}),
-					T.length === 0 ? null : /* @__PURE__ */ (0, $.jsx)(DE, {
-						controls: T,
+					i || E.length === 0 ? null : /* @__PURE__ */ (0, $.jsx)(DE, {
+						controls: E,
 						values: TE,
 						name: "params",
 						still: "each knob stays where it is",
-						send: E,
+						send: D,
 						source: e
 					})
 				]
 			}) : null,
-			x === null ? null : /* @__PURE__ */ (0, $.jsx)("div", {
+			S === null ? null : /* @__PURE__ */ (0, $.jsx)("div", {
 				"data-testid": "closed",
 				style: {
 					...gE,
@@ -40526,13 +40527,13 @@ function ME({ source: e, onCreated: t, onReady: n, pageScroll: r = !1 }) {
 					background: "rgba(16, 17, 20, 0.8)",
 					color: "#e6ebf2"
 				},
-				children: `the session ended: ${x}`
+				children: `the session ended: ${S}`
 			}),
-			/* @__PURE__ */ (0, $.jsx)(_E, { hover: h }),
-			o === null ? null : /* @__PURE__ */ (0, $.jsx)("div", {
+			/* @__PURE__ */ (0, $.jsx)(_E, { hover: g }),
+			s === null ? null : /* @__PURE__ */ (0, $.jsx)("div", {
 				"data-testid": "gesture-hint",
 				style: jE,
-				children: o
+				children: s
 			})
 		]
 	});
@@ -40754,39 +40755,44 @@ async function YE(e = {}) {
 function XE(e, t) {
 	let n = new URL(t.base ?? "./", import.meta.url), r = { ...t }, i = null, a = null, o = !1, s = (e) => {
 		e && (e.desuscribir(), e.root.unmount(), e.source.close(), e.div.remove());
-	}, c = (t, r) => {
-		let s = document.createElement("div");
-		s.style.cssText = "position:absolute;inset:0;", e.appendChild(s);
-		let c = LE(() => new Worker(new URL("orbe-wasm/worker.js", n), { type: "module" }), async () => {
+	}, c = (t, s) => {
+		let c = document.createElement("div");
+		c.style.cssText = "position:absolute;inset:0;", e.appendChild(c);
+		let l = async () => {
 			let e = await JE(n, t.escena);
 			return e.set("block.jsonc", RE.encode(zE)), e.set("scene.jsonc", RE.encode(t.escena)), e.set("build/sketch.hex", t.hex), {
 				name: "gridie",
 				files: e
 			};
-		}), l = !1, u = !1, d = !1, f = !1, p = 0, m = {
-			div: s,
-			source: c,
-			root: (0, y.createRoot)(s),
-			desuscribir: () => {}
-		}, h = () => {
-			f || (f = !0, r(m));
-		}, g = () => {
-			!o && !l && u && d && (m === i || m === a) && (window.clearTimeout(p), h(), t.alListo?.(), t.reproducir && (l = !0, requestAnimationFrame(() => {
-				o || m !== i && m !== a || c.send({ cmd: "play" }).catch(() => {});
+		}, u = null, d = LE(() => (u = new Worker(new URL("orbe-wasm/worker.js", n), { type: "module" }), u.postMessage({
+			type: "velocidad",
+			factor: r.velocidad ?? 1
+		}), u), l), f = !1, p = !1, m = !1, h = !1, g = 0, _ = {
+			div: c,
+			source: d,
+			root: (0, y.createRoot)(c),
+			desuscribir: () => {},
+			worker: u
+		}, v = () => {
+			h || (h = !0, s(_));
+		}, b = () => {
+			!o && !f && p && m && (_ === i || _ === a) && (window.clearTimeout(g), v(), t.alListo?.(), t.reproducir && (f = !0, requestAnimationFrame(() => {
+				o || _ !== i && _ !== a || d.send({ cmd: "play" }).catch(() => {});
 			})));
-		}, _ = () => {
-			d = !0, g();
+		}, x = () => {
+			m = !0, b();
 		};
-		m.desuscribir = c.subscribe((e) => {
-			o || (m === i || m === a) && (t.alMensaje?.(e), e.type === "scene" ? (u = !0, window.clearTimeout(p), p = window.setTimeout(_, 5e3), g()) : e.type === "closed" && (window.clearTimeout(p), h()));
+		_.desuscribir = d.subscribe((e) => {
+			o || (_ === i || _ === a) && (t.alMensaje?.(e), e.type === "scene" ? (p = !0, window.clearTimeout(g), g = window.setTimeout(x, 5e3), b()) : e.type === "closed" && (window.clearTimeout(g), v()));
 		});
-		let v = m.desuscribir;
-		return m.desuscribir = () => {
-			window.clearTimeout(p), v();
-		}, m.root.render(/* @__PURE__ */ (0, $.jsx)(ME, {
-			source: c,
-			onReady: _
-		})), m;
+		let S = _.desuscribir;
+		return _.desuscribir = () => {
+			window.clearTimeout(g), S();
+		}, _.root.render(/* @__PURE__ */ (0, $.jsx)(ME, {
+			source: d,
+			onReady: x,
+			sinEstado: !0
+		})), _;
 	};
 	return getComputedStyle(e).position === "static" && (e.style.position = "relative"), i = c(r, () => {}), {
 		enviar: (e) => i ? i.source.send(e) : Promise.reject(/* @__PURE__ */ Error("simulador cerrado")),
@@ -40802,6 +40808,16 @@ function XE(e, t) {
 				i = e, a = null, e.div.style.visibility = "visible", s(t);
 			});
 			t.div.style.visibility = "hidden", a = t;
+		},
+		velocidad(e) {
+			r = {
+				...r,
+				velocidad: e
+			};
+			for (let t of [i, a]) t?.worker?.postMessage({
+				type: "velocidad",
+				factor: e
+			});
 		},
 		cerrar() {
 			o = !0, s(a), s(i), a = null, i = null;

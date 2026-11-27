@@ -9,12 +9,14 @@ import {
   ArrowLeftIcon,
   CheckCircledIcon,
   Cross2Icon,
+  DoubleArrowRightIcon,
   ExternalLinkIcon,
   ImageIcon,
   PlayIcon,
   ReloadIcon,
   ResetIcon
 } from '@radix-ui/react-icons'
+import AnimacionArmado from '@/components/AnimacionArmado'
 import AnimacionEnvio from '@/components/AnimacionEnvio'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -36,12 +38,15 @@ import {
 import TableroDeConexion from './TableroDeConexion'
 import { pinesAVigilar, verificar } from './verificador'
 
-// `animacion`: mientras se compila el programa del alumno, bloques que viajan al Arduino.
-const CargaSimulador = ({ progreso, mensaje, animacion = false }) => (
+// `animacion`: 'envio' mientras se compila el programa del alumno (bloques que viajan al
+// Arduino) o 'armado' mientras se cargan las piezas y la escena 3D (piezas que se conectan).
+const CargaSimulador = ({ progreso, mensaje, animacion = 'armado' }) => (
   <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#1e1e1e]/85 p-6">
     <div className="flex w-full max-w-xs flex-col gap-2.5 text-center">
-      {animacion && (
+      {animacion === 'envio' ? (
         <AnimacionEnvio className="mx-auto mb-1 w-full max-w-[240px]" />
+      ) : (
+        <AnimacionArmado className="mx-auto mb-1 w-full max-w-[240px]" />
       )}
       <div className="flex items-center justify-between text-xs text-gray-300">
         <span>{mensaje}</span>
@@ -754,6 +759,15 @@ const EtapaProbar = ({
   })
   const [error, setError] = useState('')
   const [codigoCargado, setCodigoCargado] = useState(null)
+  // Modo rápido: 1, 2 o 4 veces más rápido. Lo pasa el motor, así el tiempo simulado (el que
+  // usa el verificador) sigue siendo el correcto.
+  const [velocidad, setVelocidad] = useState(1)
+  const velocidadRef = useRef(velocidad)
+  velocidadRef.current = velocidad
+  const cambiarVelocidad = v => {
+    setVelocidad(v)
+    simuladorRef.current?.velocidad?.(v)
+  }
   const desafio = escenaDelDesafio(toolBox, conexiones)
   // Para avisar cuando la simulación "terminó" (ver vigilarFin, más abajo).
   const alTerminarRef = useRef(onSimulacionLista)
@@ -846,9 +860,11 @@ const EtapaProbar = ({
       // ¿Cuándo terminó la simulación? Con "Ejecutar 1 vez", cuando los pines dejan de
       // cambiar por unos segundos (el programa ya hizo todo). Con "Ejecutar por siempre" no
       // termina nunca: tomamos que anduvo bien después de un rato corriendo.
+      // Todo en tiempo simulado (t_ps del motor), así anda igual en modo rápido o si la
+      // computadora no llega a simular en tiempo real.
       const QUIETO_MS = 4000
       const POR_SIEMPRE_MS = 15000
-      const vigia = { inicio: 0, ultimoCambio: 0, pines: null }
+      const vigia = { inicio: null, ultimoCambio: 0, ahora: 0, pines: null }
       // Lo que va pasando con los pines que importan en el desafío, para verificarlo al final.
       const aVigilar = pinesAVigilar(toolBox)
       let indices = []
@@ -866,24 +882,24 @@ const EtapaProbar = ({
         registro.cambios.push({ ms, pines })
       }
       const vigilarFin = () => {
-        vigia.inicio = vigia.ultimoCambio = Date.now()
         const reloj = window.setInterval(() => {
           if (cargaIdRef.current !== id) return window.clearInterval(reloj)
-          const ahora = Date.now()
+          if (vigia.inicio === null) return
           const termino = porSiempre
-            ? ahora - vigia.inicio >= POR_SIEMPRE_MS
-            : ahora - vigia.ultimoCambio >= QUIETO_MS
+            ? vigia.ahora - vigia.inicio >= POR_SIEMPRE_MS
+            : vigia.ahora - vigia.ultimoCambio >= QUIETO_MS
           if (!termino) return
           window.clearInterval(reloj)
           alTerminarRef.current?.(
             verificar(toolBox, registro.cambios, registro.finMs)
           )
-        }, 500)
+        }, 250)
       }
       const opcionesMontaje = {
         escena: desafio.escena,
         hex,
         reproducir: true,
+        velocidad: velocidadRef.current,
         // El programa arranca recién cuando el circuito ya se ve (ver simulador/src/simulador.tsx),
         // así no se pierde el comienzo; recién ahí se saca el cartel de carga.
         alListo: () => {
@@ -899,12 +915,17 @@ const EtapaProbar = ({
               .map(pin => [pin, mensaje.channels.pins.indexOf(`@uno.${pin}`)])
               .filter(([, i]) => i >= 0)
           if (mensaje.type === 'frame') anotar(mensaje)
-          if (mensaje.type === 'frame' && mensaje.pins) {
-            // Los pines y, si hay, el ángulo del servo.
-            const pines = `${mensaje.pins}|${(mensaje.horn_deg || []).map(Math.round)}`
-            if (pines !== vigia.pines) {
-              vigia.pines = pines
-              vigia.ultimoCambio = Date.now()
+          if (mensaje.type === 'frame' && mensaje.state === 'playing') {
+            const ms = mensaje.t_ps / 1e9
+            vigia.ahora = ms
+            if (vigia.inicio === null) vigia.inicio = vigia.ultimoCambio = ms
+            if (mensaje.pins) {
+              // Los pines y, si hay, el ángulo del servo.
+              const pines = `${mensaje.pins}|${(mensaje.horn_deg || []).map(Math.round)}`
+              if (pines !== vigia.pines) {
+                vigia.pines = pines
+                vigia.ultimoCambio = ms
+              }
             }
           }
           if (mensaje.type === 'scene') {
@@ -972,6 +993,11 @@ const EtapaProbar = ({
             Conexiones
           </Button>
         )}
+        <SelectorVelocidad
+          velocidad={velocidad}
+          onCambiar={cambiarVelocidad}
+          compacto={encabezado.compacto}
+        />
         <Button
           size="sm"
           className={`h-8 text-white ${desactualizado ? 'animate-pulse bg-amber-700 hover:bg-amber-800' : 'bg-arduino hover:bg-arduino-oscuro'}`}
@@ -980,11 +1006,18 @@ const EtapaProbar = ({
           title="Compila tu programa y lo vuelve a cargar en el simulador"
         >
           {desactualizado ? (
-            <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
+            <PlayIcon
+              className={`h-3.5 w-3.5 ${encabezado.compacto ? '' : 'mr-1.5'}`}
+            />
           ) : (
-            <ReloadIcon className="mr-1.5 h-3.5 w-3.5" />
+            <ReloadIcon
+              className={`h-3.5 w-3.5 ${encabezado.compacto ? '' : 'mr-1.5'}`}
+            />
           )}
-          {desactualizado ? 'Probar los cambios' : 'Reiniciar'}
+          {/* En el celular, solo el ícono: así entran las pestañas y la velocidad. */}
+          <span className={encabezado.compacto ? 'sr-only' : ''}>
+            {desactualizado ? 'Probar los cambios' : 'Reiniciar'}
+          </span>
         </Button>
       </Encabezado>
 
@@ -1001,7 +1034,7 @@ const EtapaProbar = ({
           <CargaSimulador
             progreso={carga.progreso}
             mensaje={carga.mensaje}
-            animacion
+            animacion="envio"
           />
         )}
         {estado === 'error' && (
@@ -1014,6 +1047,42 @@ const EtapaProbar = ({
     </>
   )
 }
+
+const VELOCIDADES = [1, 2, 4]
+
+/** Modo rápido: elige si la simulación va a velocidad normal o 2 o 4 veces más rápido. */
+const SelectorVelocidad = ({ velocidad, onCambiar, compacto }) => (
+  <div
+    role="radiogroup"
+    aria-label="Velocidad de la simulación"
+    title="Velocidad de la simulación"
+    className="flex h-8 items-center rounded-md border border-gray-600 bg-gray-800/60 p-0.5"
+  >
+    <span className="flex items-center gap-1 whitespace-nowrap px-1.5 text-xs text-gray-300">
+      {!compacto && (
+        <DoubleArrowRightIcon
+          className="h-3.5 w-3.5 text-gray-400"
+          aria-hidden
+        />
+      )}
+      {compacto ? 'Velocidad' : 'Velocidad de simulación'}
+    </span>
+    {VELOCIDADES.map(v => (
+      <Button
+        key={v}
+        size="sm"
+        variant="ghost"
+        role="radio"
+        aria-checked={velocidad === v}
+        title={v === 1 ? 'Velocidad normal' : `${v} veces más rápido`}
+        onClick={() => onCambiar(v)}
+        className={`h-6 text-xs tabular-nums ${compacto ? 'px-1.5' : 'px-2'} ${velocidad === v ? 'bg-arduino text-white hover:bg-arduino-oscuro hover:text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+      >
+        x{v}
+      </Button>
+    ))}
+  </div>
+)
 
 /** Botones y deslizadores para "tocar" los sensores de la escena. */
 const ControlesDeSensores = ({ controles, simulador }) => {

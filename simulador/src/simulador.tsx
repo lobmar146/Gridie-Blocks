@@ -20,11 +20,15 @@ export interface OpcionesSimulador {
   alMensaje?: (mensaje: ToViewer) => void
   /** La escena ya se ve en pantalla y (si `reproducir`) el programa está por arrancar. */
   alListo?: () => void
+  /** Modo rápido: 1 (normal), 2 o 4 veces más rápido que el tiempo real. */
+  velocidad?: number
 }
 
 export interface Simulador {
   enviar(comando: Command): Promise<Reply>
   actualizar(opciones: Partial<Omit<OpcionesSimulador, 'base'>>): void
+  /** Cambia la velocidad de la simulación en curso (y de las que se abran después). */
+  velocidad(factor: number): void
   cerrar(): void
 }
 
@@ -158,6 +162,7 @@ interface Capa {
   source: ReusableSessionSource
   root: ReturnType<typeof createRoot>
   desuscribir: () => void
+  worker: Worker | null
 }
 
 /**
@@ -192,16 +197,19 @@ export function montarSimulador(elemento: HTMLElement, opciones: OpcionesSimulad
       files.set('build/sketch.hex', opc.hex)
       return { name: 'gridie', files }
     }
-    const source: ReusableSessionSource = workerSource(
-      () => new Worker(new URL('orbe-wasm/worker.js', base), { type: 'module' }),
-      armarBloque
-    )
+    // workerSource crea el Worker en el momento; lo guardamos para cambiarle la velocidad.
+    let worker: Worker | null = null
+    const source: ReusableSessionSource = workerSource(() => {
+      worker = new Worker(new URL('orbe-wasm/worker.js', base), { type: 'module' })
+      worker.postMessage({ type: 'velocidad', factor: actual.velocidad ?? 1 })
+      return worker
+    }, armarBloque)
     let yaReprodujo = false
     let llegoEscena = false
     let lista = false
     let mostrada = false
     let respaldo = 0
-    const capa: Capa = { div, source, root: createRoot(div), desuscribir: () => {} }
+    const capa: Capa = { div, source, root: createRoot(div), desuscribir: () => {}, worker }
     const mostrar = () => {
       if (mostrada) return
       mostrada = true
@@ -248,7 +256,7 @@ export function montarSimulador(elemento: HTMLElement, opciones: OpcionesSimulad
       window.clearTimeout(respaldo)
       desuscribirMensajes()
     }
-    capa.root.render(<Viewer source={source} onReady={alEstarLista} />)
+    capa.root.render(<Viewer source={source} onReady={alEstarLista} sinEstado />)
     return capa
   }
 
@@ -272,6 +280,11 @@ export function montarSimulador(elemento: HTMLElement, opciones: OpcionesSimulad
       })
       nueva.div.style.visibility = 'hidden'
       pendiente = nueva
+    },
+    velocidad(factor) {
+      actual = { ...actual, velocidad: factor }
+      for (const capa of [visible, pendiente])
+        capa?.worker?.postMessage({ type: 'velocidad', factor })
     },
     cerrar() {
       cerrado = true
