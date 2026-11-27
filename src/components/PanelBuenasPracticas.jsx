@@ -1,52 +1,87 @@
 import { useState } from 'react'
-import { CheckCircle2, ChevronRight, Circle, ListChecks, X } from 'lucide-react'
+import {
+  CheckCircle2,
+  ChevronRight,
+  Circle,
+  ListChecks,
+  Star,
+  X
+} from 'lucide-react'
+import { puntaje, TEMAS } from '@/lib/buenasPracticas'
 
-/** La lista de buenas prácticas; se van tildando a medida que el alumno arma el programa. */
+/** La lista de buenas prácticas, por tema; se van tildando a medida que el alumno programa. */
 function Lista({ reglas }) {
+  const temas = TEMAS.filter(t => reglas.some(r => r.tema === t.id))
   return (
-    <ul className="flex flex-col gap-3">
-      {reglas.map(regla => (
-        <li key={regla.id} className="flex gap-2.5">
-          {regla.cumple ? (
-            <CheckCircle2
-              className="mt-0.5 h-5 w-5 shrink-0 text-arduino-claro"
-              aria-label="Cumplido"
-            />
-          ) : (
-            <Circle
-              className="mt-0.5 h-5 w-5 shrink-0 text-gray-500"
-              aria-label="Pendiente"
-            />
+    <div className="flex flex-col gap-4">
+      {temas.map(tema => (
+        <section key={tema.id}>
+          {temas.length > 1 && (
+            <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              {tema.titulo}
+            </h3>
           )}
-          <div className="min-w-0">
-            <p
-              className={`text-sm font-semibold leading-snug ${regla.cumple ? 'text-arduino-suave' : 'text-gray-100'}`}
-            >
-              {regla.titulo}
-            </p>
-            <p className="text-xs leading-snug text-gray-400">
-              {regla.detalle}
-            </p>
-          </div>
-        </li>
+          <ul className="flex flex-col gap-3">
+            {reglas
+              .filter(r => r.tema === tema.id)
+              .map(regla => (
+                <li key={regla.id} className="flex gap-2.5">
+                  {regla.cumple ? (
+                    <CheckCircle2
+                      className="mt-0.5 h-5 w-5 shrink-0 text-arduino-claro"
+                      aria-label="Cumplido"
+                    />
+                  ) : (
+                    <Circle
+                      className="mt-0.5 h-5 w-5 shrink-0 text-gray-500"
+                      aria-label="Pendiente"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`text-sm font-semibold leading-snug ${regla.cumple ? 'text-arduino-suave' : 'text-gray-100'}`}
+                    >
+                      {regla.titulo}
+                    </p>
+                    <p className="text-xs leading-snug text-gray-400">
+                      {regla.detalle}
+                    </p>
+                  </div>
+                  <span
+                    className={`mt-0.5 shrink-0 text-xs font-semibold ${regla.cumple ? 'text-amber-300' : 'text-gray-500'}`}
+                  >
+                    +{regla.puntos}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </section>
       ))}
-    </ul>
+    </div>
   )
 }
 
-function Progreso({ hechas, total }) {
+function Puntaje({ hechos, total }) {
   return (
-    <div
-      className="h-1.5 w-full overflow-hidden rounded-full bg-gray-700"
-      role="progressbar"
-      aria-valuemin={0}
-      aria-valuemax={total}
-      aria-valuenow={hechas}
-    >
+    <div>
+      <div className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-white">
+        <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
+        {hechos}{' '}
+        <span className="font-normal text-gray-400">de {total} puntos</span>
+      </div>
       <div
-        className="h-full rounded-full bg-arduino-claro transition-all duration-300"
-        style={{ width: `${total ? (hechas / total) * 100 : 0}%` }}
-      />
+        className="h-1.5 w-full overflow-hidden rounded-full bg-gray-700"
+        role="progressbar"
+        aria-label="Puntaje"
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-valuenow={hechos}
+      >
+        <div
+          className="h-full rounded-full bg-amber-300 transition-all duration-300"
+          style={{ width: `${total ? (hechos / total) * 100 : 0}%` }}
+        />
+      </div>
     </div>
   )
 }
@@ -54,9 +89,9 @@ function Progreso({ hechas, total }) {
 export default function PanelBuenasPracticas({ reglas, compacto = false }) {
   const [abierto, setAbierto] = useState(!compacto)
   if (!reglas?.length) return null
-  const hechas = reglas.filter(r => r.cumple).length
-  const total = reglas.length
-  const todas = hechas === total
+  const { hechos, total } = puntaje(reglas)
+  const cumplidas = reglas.filter(r => r.cumple).length
+  const todas = cumplidas === reglas.length
 
   // En el celular: un botoncito con el puntaje que abre la lista encima de los bloques.
   if (compacto)
@@ -66,10 +101,11 @@ export default function PanelBuenasPracticas({ reglas, compacto = false }) {
           type="button"
           onClick={() => setAbierto(a => !a)}
           aria-expanded={abierto}
+          aria-label={`Buenas prácticas: ${hechos} de ${total} puntos`}
           className={`absolute left-2 top-2 z-[61] flex h-9 items-center gap-1.5 rounded-md px-2.5 text-sm font-semibold text-white shadow-lg ${todas ? 'bg-arduino' : 'bg-gray-700'}`}
         >
-          <ListChecks className="h-4 w-4" />
-          {hechas}/{total}
+          <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
+          {hechos}
         </button>
         {abierto && (
           <div className="absolute inset-x-2 top-12 z-[61] max-h-[70%] overflow-y-auto rounded-[10px] border border-gray-700 bg-[#252526] p-3 shadow-xl">
@@ -87,7 +123,7 @@ export default function PanelBuenasPracticas({ reglas, compacto = false }) {
               </button>
             </div>
             <div className="mb-3">
-              <Progreso hechas={hechas} total={total} />
+              <Puntaje hechos={hechos} total={total} />
             </div>
             <Lista reglas={reglas} />
           </div>
@@ -107,9 +143,8 @@ export default function PanelBuenasPracticas({ reglas, compacto = false }) {
         <ListChecks
           className={`h-5 w-5 ${todas ? 'text-arduino-claro' : 'text-gray-300'}`}
         />
-        <span className="text-sm font-semibold">
-          {hechas}/{total}
-        </span>
+        <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
+        <span className="text-sm font-semibold">{hechos}</span>
       </button>
     )
 
@@ -119,7 +154,9 @@ export default function PanelBuenasPracticas({ reglas, compacto = false }) {
         <div>
           <h2 className="text-base font-bold text-white">Buenas prácticas</h2>
           <p className="text-xs text-gray-400">
-            {todas ? '¡Cumplís con todas!' : `Cumplís ${hechas} de ${total}`}
+            {todas
+              ? '¡Cumplís con todas!'
+              : `Cumplís ${cumplidas} de ${reglas.length}`}
           </p>
         </div>
         <button
@@ -132,7 +169,7 @@ export default function PanelBuenasPracticas({ reglas, compacto = false }) {
         </button>
       </div>
       <div className="px-4 pb-3">
-        <Progreso hechas={hechas} total={total} />
+        <Puntaje hechos={hechos} total={total} />
       </div>
       <div className="flex-1 overflow-y-auto px-4 pb-4">
         <Lista reglas={reglas} />

@@ -116,7 +116,8 @@ const PanelSimulador = ({
   onConexion,
   onDesacoplar,
   onCerrar,
-  navegacion
+  navegacion,
+  onSimulacionLista
 }) => {
   const cables = cablesDelDesafio(toolBox)
   const guardado = leerGuardado(toolBox)
@@ -840,6 +841,7 @@ const EtapaProbar = ({
           if (cargaIdRef.current !== id) return
           setCodigoCargado(codigo)
           setEstado('corriendo')
+          onSimulacionLista?.()
         },
         alMensaje: mensaje => {
           if (cargaIdRef.current !== id) return

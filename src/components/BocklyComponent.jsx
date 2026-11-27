@@ -147,7 +147,7 @@ const tieneTrabajo = workspace =>
   workspace.getAllBlocks(false).some(b => !TIPOS_RAIZ.includes(b.type))
 
 const BlocklyComponent = forwardRef(function BlocklyComponent(
-  { toolBoxDesafio, altura, onCodeChange, compacto = false },
+  { toolBoxDesafio, altura, onCodeChange, onPracticasChange, compacto = false },
   ref
 ) {
   const blocklyDiv = useRef(null)
@@ -213,6 +213,11 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
       onCodeChange(code) // Notifica al componente padre cada vez que `code` cambie
     }
   }, [code, onCodeChange])
+
+  // La pantalla del desafío usa las buenas prácticas para felicitar al alumno.
+  useEffect(() => {
+    onPracticasChange?.(practicas)
+  }, [practicas, onPracticasChange])
 
   useEffect(() => {
     const toolboxIndex = Number(toolBoxDesafio) || 1
@@ -325,7 +330,8 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
       const revision = revisarBuenasPracticas(
         Blockly,
         workspaceRef.current,
-        toolBoxDesafio
+        toolBoxDesafio,
+        selectedToolbox
       )
       aplicarAvisos(workspaceRef.current, revision.avisos, evento)
       setPracticas(anteriores =>

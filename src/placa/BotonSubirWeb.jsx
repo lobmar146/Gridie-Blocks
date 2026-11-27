@@ -28,7 +28,7 @@ async function puertoDeLaPlaca() {
   return elegirPuerto()
 }
 
-export default function BotonSubirWeb({ codigo }) {
+export default function BotonSubirWeb({ codigo, onSubido }) {
   const [mensaje, setMensaje] = useState(null)
 
   const subir = async () => {
@@ -57,9 +57,12 @@ export default function BotonSubirWeb({ codigo }) {
       setMensaje('Compilando…')
       const hex = new TextDecoder().decode(await compilar(codigo))
       await subirHex(puerto, hex, (progreso, texto) =>
-        setMensaje(progreso > 0 && progreso < 100 ? `${texto} ${progreso}%` : texto)
+        setMensaje(
+          progreso > 0 && progreso < 100 ? `${texto} ${progreso}%` : texto
+        )
       )
       toast.success('¡Programa subido a la placa!', { style: estilo })
+      onSubido?.()
     } catch (error) {
       const conocido =
         error instanceof ErrorDeSubida || error instanceof ErrorDeCompilacion

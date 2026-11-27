@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -43,8 +49,10 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
+import { puntaje } from '@/lib/buenasPracticas'
 import useEsMovil, { esPantallaMovil } from '@/lib/useEsMovil'
 import BlocklyComponent from '../components/BocklyComponent'
+import Felicitacion from '../components/Felicitacion'
 import BotonSubirWeb from '../placa/BotonSubirWeb'
 import { TOOLBOXES_CON_SIMULADOR } from '../simulador/escenas'
 import PanelSimulador, {
@@ -239,6 +247,28 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
   const [placas, setPlacas] = useState([])
   const [placaSeleccionada, setPlacaSeleccionada] = useState('')
   const [generatedCode, setGeneratedCode] = useState('')
+
+  // Buenas prácticas: si el programa anda (se subió o arrancó en el simulador) y las cumple
+  // todas, lo felicitamos. Una sola vez por programa, para no cansar.
+  const practicasRef = useRef([])
+  const felicitadoRef = useRef(null)
+  const [felicitacion, setFelicitacion] = useState(null)
+  const guardarPracticas = useCallback(reglas => {
+    practicasRef.current = reglas
+  }, [])
+  const codigoRef = useRef('')
+  codigoRef.current = generatedCode
+  const felicitarSiCorresponde = useCallback(() => {
+    const reglas = practicasRef.current
+    const obligatorias = reglas.filter(r => r.tema !== 'extra')
+    if (!obligatorias.length || !obligatorias.every(r => r.cumple)) return
+    if (felicitadoRef.current === codigoRef.current) return
+    felicitadoRef.current = codigoRef.current
+    setFelicitacion({
+      puntos: puntaje(reglas).hechos,
+      extraProlijo: reglas.some(r => r.tema === 'extra' && r.cumple)
+    })
+  }, [])
   const [isUploading, setIsUploading] = useState(false)
   const tieneSimulador = TOOLBOXES_CON_SIMULADOR.includes(Number(toolBox))
   // Los pasos del desafío: 1. Programá, 2. Conectá, 3. Probá (los dos últimos, con el
@@ -529,6 +559,7 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
         placaSeleccionada,
         generatedCode
       )
+      felicitarSiCorresponde()
       toast.success('Código subido exitosamente', {
         style: {
           borderRadius: '10px',
@@ -642,7 +673,12 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
               onEmpezarDeNuevo={() => setTrabajoAbierto(null)}
             />
             {/* En el celular no hay Web Serial: no se puede subir a una placa. */}
-            {!hayPlaca && !esMovil && <BotonSubirWeb codigo={generatedCode} />}
+            {!hayPlaca && !esMovil && (
+              <BotonSubirWeb
+                codigo={generatedCode}
+                onSubido={felicitarSiCorresponde}
+              />
+            )}
             {hayPlaca && (
               <>
                 <div className="flex items-center">
@@ -879,7 +915,14 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
               toolBoxDesafio={toolBox}
               altura="100%"
               onCodeChange={handleCodeChange}
+              onPracticasChange={guardarPracticas}
               compacto={esMovil}
+            />
+            <Felicitacion
+              abierto={!!felicitacion}
+              onCerrar={() => setFelicitacion(null)}
+              puntos={felicitacion?.puntos}
+              extraProlijo={felicitacion?.extraProlijo}
             />
           </div>
           {tieneSimulador && paso === 'programar' && !esMovil && (
@@ -938,6 +981,7 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
                 onEtapa={setPaso}
                 onConexion={setConexionLista}
                 onDesacoplar={esMovil ? undefined : desacoplar}
+                onSimulacionLista={felicitarSiCorresponde}
                 navegacion={esMovil ? navMovil : barraDePasos}
               />
             )}
