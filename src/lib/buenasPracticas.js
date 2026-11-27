@@ -380,7 +380,7 @@ const REGLAS = [
           if (encimados(a, b) && !avisos.some(([x]) => x === b))
             avisos.push([
               b,
-              'Este bloque está encimado con otro. Separalos, o hacé clic derecho en el fondo y elegí "Limpiar los bloques".'
+              'Este bloque está encimado con otro. Separalos, o hacé clic derecho en el fondo y elegí "Organizar bloques".'
             ])
         })
       )
@@ -641,9 +641,14 @@ export function revisarBuenasPracticas(
           (r.tema !== 'alternativas' || ctx.haySi)
       )
 
+  // Con el programa vacío no hay nada cumplido todavía (ni puntos).
+  const hayPrograma = bloques.some(b => esComando(b) || b.type === DEFINIR)
+
   const avisos = new Map()
   const reglas = aRevisar.map(regla => {
-    const { cumple, avisos: deLaRegla } = regla.evaluar(datos)
+    const resultado = regla.evaluar(datos)
+    const deLaRegla = resultado.avisos
+    const cumple = hayPrograma && resultado.cumple
     deLaRegla.forEach(([bloque, texto]) => {
       if (!avisos.has(bloque)) avisos.set(bloque, [])
       if (!avisos.get(bloque).includes(texto)) avisos.get(bloque).push(texto)

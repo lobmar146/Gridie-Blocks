@@ -44,6 +44,7 @@ import { toolboxEjercicio1Clase3 } from '../toolbox/Clase 3/toolboxEjercicio1Cla
 Blockly.setLocale(Es)
 
 // Sobrescribe los mensajes de los bloques de procedimientos
+Blockly.Msg['CLEAN_UP'] = 'Organizar bloques'
 Blockly.Msg['PROCEDURES_DEFNORETURN_TITLE'] = 'Definir'
 Blockly.Msg['PROCEDURES_DEFNORETURN_DO'] = 'hacer'
 Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE'] = 'Hacer algo'
