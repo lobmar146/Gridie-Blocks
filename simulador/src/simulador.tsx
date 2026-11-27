@@ -18,6 +18,8 @@ export interface OpcionesSimulador {
   reproducir?: boolean
   /** Recibe cada mensaje del simulador (scene, frame, reply, closed). */
   alMensaje?: (mensaje: ToViewer) => void
+  /** La escena ya se ve en pantalla y (si `reproducir`) el programa está por arrancar. */
+  alListo?: () => void
 }
 
 export interface Simulador {
@@ -195,28 +197,58 @@ export function montarSimulador(elemento: HTMLElement, opciones: OpcionesSimulad
       armarBloque
     )
     let yaReprodujo = false
+    let llegoEscena = false
+    let lista = false
     let mostrada = false
+    let respaldo = 0
     const capa: Capa = { div, source, root: createRoot(div), desuscribir: () => {} }
+    const mostrar = () => {
+      if (mostrada) return
+      mostrada = true
+      alMostrarse(capa)
+    }
+    // Se da play recién cuando la escena ya se ve: el motor corre con el reloj real, y si
+    // arrancara mientras el visor carga los modelos 3D y compila los sombreadores (~1 s), el
+    // alumno se perdería el comienzo del programa (los primeros parpadeos del setup, etc.).
+    const arrancar = () => {
+      if (cerrado || yaReprodujo || !llegoEscena || !lista) return
+      if (capa !== visible && capa !== pendiente) return
+      window.clearTimeout(respaldo)
+      mostrar()
+      opc.alListo?.()
+      if (!opc.reproducir) return
+      yaReprodujo = true
+      // Un cuadro más, para que la capa ya esté a la vista cuando el programa empiece.
+      requestAnimationFrame(() => {
+        if (cerrado || (capa !== visible && capa !== pendiente)) return
+        source.send({ cmd: 'play' }).catch(() => {})
+      })
+    }
+    const alEstarLista = () => {
+      lista = true
+      arrancar()
+    }
     capa.desuscribir = source.subscribe(mensaje => {
       if (cerrado) return
       if (capa !== visible && capa !== pendiente) return
       opc.alMensaje?.(mensaje)
       if (mensaje.type === 'scene') {
-        if (opc.reproducir && !yaReprodujo) {
-          yaReprodujo = true
-          source.send({ cmd: 'play' }).catch(() => {})
-        }
-        if (!mostrada) {
-          mostrada = true
-          // Dos cuadros para que el visor ya haya dibujado la escena.
-          requestAnimationFrame(() => requestAnimationFrame(() => alMostrarse(capa)))
-        }
-      } else if (mensaje.type === 'closed' && !mostrada) {
-        mostrada = true
-        alMostrarse(capa)
+        llegoEscena = true
+        // Por si el visor nunca avisa (una pieza que no carga, etc.): arrancar igual.
+        window.clearTimeout(respaldo)
+        respaldo = window.setTimeout(alEstarLista, 5000)
+        arrancar()
+      } else if (mensaje.type === 'closed') {
+        window.clearTimeout(respaldo)
+        mostrar()
       }
     })
-    capa.root.render(<Viewer source={source} />)
+    const desuscribirMensajes = capa.desuscribir
+    capa.desuscribir = () => {
+      window.clearTimeout(respaldo)
+      desuscribirMensajes()
+    }
+    capa.root.render(<Viewer source={source} onReady={alEstarLista} />)
     return capa
   }
 

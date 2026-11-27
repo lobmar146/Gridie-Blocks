@@ -50,13 +50,14 @@ const leerGuardado = toolBox => leerConexiones(toolBox) || {}
 const guardar = guardarConexiones
 
 /** Monta el visor de ORBE en `contenedor` y devuelve el simulador (o lanza). */
-async function montar(contenedor, { escena, hex, reproducir, alMensaje }) {
+async function montar(contenedor, { escena, hex, reproducir, alMensaje, alListo }) {
   const puente = await cargarPuente()
   return puente.montarSimulador(contenedor, {
     escena,
     hex,
     base: urlSimulador(''),
     reproducir,
+    alListo,
     alMensaje: mensaje => {
       // Para las pruebas automáticas en desarrollo.
       if (import.meta.env.DEV)
@@ -680,6 +681,13 @@ const EtapaProbar = ({
         escena: desafio.escena,
         hex,
         reproducir: true,
+        // El programa arranca recién cuando el circuito ya se ve (ver simulador/src/simulador.tsx),
+        // así no se pierde el comienzo; recién ahí se saca el cartel de carga.
+        alListo: () => {
+          if (cargaIdRef.current !== id) return
+          setCodigoCargado(codigo)
+          setEstado('corriendo')
+        },
         alMensaje: mensaje => {
           if (cargaIdRef.current !== id) return
           if (mensaje.type === 'scene') {
@@ -687,11 +695,6 @@ const EtapaProbar = ({
               desafio.pinParlante
             )
             setCarga({ progreso: 100, mensaje: 'Iniciando simulación…' })
-            window.requestAnimationFrame(() => {
-              if (cargaIdRef.current !== id) return
-              setCodigoCargado(codigo)
-              setEstado('corriendo')
-            })
           } else if (
             mensaje.type === 'frame' &&
             parlante &&

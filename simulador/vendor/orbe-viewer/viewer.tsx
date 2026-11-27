@@ -448,6 +448,8 @@ export interface ViewerProps {
   readonly source: SessionSource;
   /** Called once the canvas has its renderer, scene and camera. */
   readonly onCreated?: (state: RootState) => void;
+  /** GrIDIE: la escena ya se ve en pantalla (ver SceneView). */
+  readonly onReady?: () => void;
   /** A wheel scrolls the page, and zooms only with Ctrl or ⌘. One finger scrolls the page.
    * Two fingers orbit and zoom. The viewer's own page leaves this off. */
   readonly pageScroll?: boolean;
@@ -473,7 +475,7 @@ const hintStyle = {
 
 /** Draws the session's scene and its frames, and sends presses, `set`, `play` and `pause` back. `T`
  * toggles the top view. */
-export function Viewer({ source, onCreated, pageScroll = false }: ViewerProps) {
+export function Viewer({ source, onCreated, onReady, pageScroll = false }: ViewerProps) {
   const stage = useStageTheme();
   const box = useRef<HTMLDivElement>(null);
   const [hint, setHint] = useState<string | null>(null);
@@ -625,6 +627,7 @@ export function Viewer({ source, onCreated, pageScroll = false }: ViewerProps) {
                 screens={screens}
                 mode={mode}
                 onBuilt={onBuilt}
+                onReady={onReady}
                 pageScroll={pageScroll}
                 scene={scene}
                 send={send}
