@@ -26,6 +26,9 @@ let session = null;
 let timer = null;
 let last = 0;
 const cachedParts = new Map();
+// GrIDIE: modo rápido. Cada tick de reloj corre `velocidad` ticks del motor (cada uno avanza
+// como mucho un tick), así el tiempo simulado pasa 2 o 4 veces más rápido que el real.
+let velocidad = 1;
 
 const flush = () => {
   for (const text of session.messages()) post(text);
@@ -33,7 +36,7 @@ const flush = () => {
 
 function play() {
   const now = performance.now();
-  session.tick(now - last);
+  for (let i = 0; i < velocidad && session.playing(); i++) session.tick(now - last);
   last = now;
   flush();
   timer = session.playing() ? setTimeout(play, Math.max(0, last + tick - performance.now())) : null;
@@ -64,6 +67,10 @@ function open({ name, files }) {
 }
 
 receive = (data) => {
+  if (data?.type === "velocidad") {
+    velocidad = Math.max(1, Math.min(8, Math.round(Number(data.factor) || 1)));
+    return;
+  }
   if (data?.type === "open") {
     open(data);
     return;

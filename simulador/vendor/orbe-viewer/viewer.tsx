@@ -366,7 +366,15 @@ function SliderPanel({
 
 /** The session's state and time, a button that plays or pauses it, and the fault below once
  * the session faulted. It reads frames itself, so a frame redraws only this bar. */
-function Controls({ source, send }: { source: SessionSource; send: (command: Command) => void }) {
+function Controls({
+  source,
+  send,
+  sinEstado = false,
+}: {
+  source: SessionSource;
+  send: (command: Command) => void;
+  sinEstado?: boolean;
+}) {
   const [now, setNow] = useState<{ state: FrameState; t_ps: number; ratio?: number; fault?: string } | null>(null);
   useEffect(
     () =>
@@ -383,6 +391,7 @@ function Controls({ source, send }: { source: SessionSource; send: (command: Com
   const speed = speedText(now.state, now.ratio);
   return (
     <>
+      {sinEstado ? null : (
       <div
         data-testid="controls"
         style={{
@@ -423,6 +432,7 @@ function Controls({ source, send }: { source: SessionSource; send: (command: Com
           {playing ? "Pause" : "Play"}
         </button>
       </div>
+      )}
       {now.fault === undefined ? null : (
         <pre data-testid="fault" style={{ ...overlay, position: "static", padding: 0, maxWidth: "100%" }}>
           {now.fault}
@@ -453,6 +463,10 @@ export interface ViewerProps {
   /** A wheel scrolls the page, and zooms only with Ctrl or ⌘. One finger scrolls the page.
    * Two fingers orbit and zoom. The viewer's own page leaves this off. */
   readonly pageScroll?: boolean;
+  /** GrIDIE: sin la barra de estado y tiempo (playing, t = …, Pause) ni los deslizadores en
+   * inglés de ORBE (GrIDIE pone los suyos, en castellano, arriba del visor). La falla se sigue
+   * viendo. */
+  readonly sinEstado?: boolean;
 }
 
 const HINT_MS = 1600;
@@ -475,7 +489,7 @@ const hintStyle = {
 
 /** Draws the session's scene and its frames, and sends presses, `set`, `play` and `pause` back. `T`
  * toggles the top view. */
-export function Viewer({ source, onCreated, onReady, pageScroll = false }: ViewerProps) {
+export function Viewer({ source, onCreated, onReady, pageScroll = false, sinEstado = false }: ViewerProps) {
   const stage = useStageTheme();
   const box = useRef<HTMLDivElement>(null);
   const [hint, setHint] = useState<string | null>(null);
@@ -651,9 +665,9 @@ export function Viewer({ source, onCreated, onReady, pageScroll = false }: Viewe
             pointerEvents: "none",
           }}
         >
-          <Controls send={send} source={source} />
+          <Controls send={send} source={source} sinEstado={sinEstado} />
           <SerialStrip source={source} />
-          {worldControls.length === 0 ? null : (
+          {sinEstado || worldControls.length === 0 ? null : (
             <SliderPanel
               controls={worldControls}
               values={worldValues}
@@ -663,7 +677,7 @@ export function Viewer({ source, onCreated, onReady, pageScroll = false }: Viewe
               source={source}
             />
           )}
-          {paramControls.length === 0 ? null : (
+          {sinEstado || paramControls.length === 0 ? null : (
             <SliderPanel
               controls={paramControls}
               values={paramValues}

@@ -146,7 +146,7 @@ const COMPONENTES = {
       unidad: 'cm',
       min: 0,
       max: 100,
-      inicial: 0.6
+      inicial: 0.05
     }
   },
   parlante: {

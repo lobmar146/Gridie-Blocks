@@ -173,7 +173,7 @@ def hc_sr04():
     nodos = [(None, m, None)]
     parts = {
         'hdr': {'type': 'pin-header-1x4'},
-        'eco': {'type': 'trimmer-3362p', 'resistance': '10k', 'position': 0.6},
+        'eco': {'type': 'trimmer-3362p', 'resistance': '10k', 'position': 0.05},
     }
     layout = {
         'hdr': {'at': [0, 0.8, 0]},
