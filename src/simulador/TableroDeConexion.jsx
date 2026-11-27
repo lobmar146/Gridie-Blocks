@@ -104,7 +104,8 @@ const TableroDeConexion = ({
   actual,
   conexiones,
   marcado,
-  onElegir
+  onElegir,
+  escala = 1
 }) => {
   const stageRef = useRef(null)
   const [enchufes, setEnchufes] = useState({})
@@ -128,8 +129,8 @@ const TableroDeConexion = ({
     for (const el of root.querySelectorAll('[data-terminal-id]')) {
       const r = el.getBoundingClientRect()
       terminales[el.getAttribute('data-terminal-id')] = {
-        x: r.left - base.left + r.width / 2,
-        y: r.top - base.top + r.height
+        x: (r.left - base.left + r.width / 2) / escala,
+        y: (r.top - base.top + r.height) / escala
       }
     }
     const sockets = {}
@@ -139,13 +140,13 @@ const TableroDeConexion = ({
       const pin = el.getAttribute('data-arduino-pin')
       const r = el.getBoundingClientRect()
       sockets[key] = {
-        x: r.left - base.left + r.width / 2,
-        y: r.top - base.top + r.height / 2
+        x: (r.left - base.left + r.width / 2) / escala,
+        y: (r.top - base.top + r.height / 2) / escala
       }
       if (pin && !pinASocket[pin]) pinASocket[pin] = key
     }
     setPuntos({ terminales, sockets, pinASocket })
-  }, [])
+  }, [escala])
 
   useLayoutEffect(() => {
     medirPuntos()
@@ -179,8 +180,8 @@ const TableroDeConexion = ({
     )
     setArrastre({
       cable,
-      x: evento.clientX - base.left,
-      y: evento.clientY - base.top,
+      x: (evento.clientX - base.left) / escala,
+      y: (evento.clientY - base.top) / escala,
       hoverPin: destino?.pin ?? null,
       hoverSocket: destino?.socketKey ?? null
     })
@@ -202,8 +203,8 @@ const TableroDeConexion = ({
         prev
           ? {
               ...prev,
-              x: evento.clientX - base.left,
-              y: evento.clientY - base.top,
+              x: (evento.clientX - base.left) / escala,
+              y: (evento.clientY - base.top) / escala,
               hoverPin: destino?.pin ?? null,
               hoverSocket: destino?.socketKey ?? null
             }
@@ -230,7 +231,7 @@ const TableroDeConexion = ({
       window.removeEventListener('pointerup', soltar)
       window.removeEventListener('pointercancel', cancelar)
     }
-  }, [estaArrastrando, elegirConSocket])
+  }, [estaArrastrando, elegirConSocket, escala])
 
   // Los dispositivos en el orden de la guía. Los anteriores al actual se muestran en chico
   // si ya tienen algún cable puesto.

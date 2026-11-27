@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import {
   ArrowLeftIcon,
   CheckCircledIcon,
@@ -89,7 +95,8 @@ const conectadosBien = (cables, conexiones) =>
  * `enVentana` es para la ventana emergente: el panel ocupa todo el ancho.
  * `embebido` es para la pantalla del desafío, donde las pestañas
  * Programá / Conectá / Probá están afuera: la etapa la manejan `etapa` y `onEtapa`, y
- * `onDesacoplar` pasa el simulador a una ventana aparte.
+ * `onDesacoplar` pasa el simulador a una ventana aparte. `navegacion` (las pestañas) va
+ * empotrada en la barra de arriba del panel, en lugar del título.
  */
 const PanelSimulador = ({
   toolBox,
@@ -104,7 +111,8 @@ const PanelSimulador = ({
   onEtapa,
   onConexion,
   onDesacoplar,
-  onCerrar
+  onCerrar,
+  navegacion
 }) => {
   const cables = cablesDelDesafio(toolBox)
   const guardado = leerGuardado(toolBox)
@@ -147,7 +155,8 @@ const PanelSimulador = ({
     compacto,
     onVerEsquema: () => setVerEsquema(true),
     onDesacoplar,
-    onCerrar
+    onCerrar,
+    navegacion
   }
 
   return (
@@ -203,14 +212,20 @@ const PanelSimulador = ({
 }
 
 const Encabezado = ({ paso, encabezado, children }) => (
-  <div className="flex items-center justify-between gap-2 border-b border-gray-700 px-3 py-2">
-    <div className="flex min-w-0 items-center gap-3 text-sm">
+  <div
+    className={`flex items-center justify-between gap-2 border-b border-gray-700 ${encabezado.navegacion ? 'h-11 shrink-0 px-1.5' : 'px-3 py-2'}`}
+  >
+    <div
+      className={`flex min-w-0 items-center gap-3 text-sm ${encabezado.navegacion ? 'flex-1' : ''}`}
+    >
+      {encabezado.navegacion}
       {encabezado.titulo && (
         <span className="truncate font-semibold text-arduino-suave">
           {encabezado.titulo}
         </span>
       )}
-      {encabezado.compacto ? null : encabezado.embebido ? (
+      {encabezado.compacto ||
+      encabezado.navegacion ? null : encabezado.embebido ? (
         <span className="font-semibold text-white">
           {paso === 1 ? 'Conectá el circuito' : 'Probá tu programa'}
         </span>
@@ -278,6 +293,117 @@ const Encabezado = ({ paso, encabezado, children }) => (
 
 // ---- Etapa 1: conexión guiada ------------------------------------------------------------
 
+// Ancho de la guía de conexión (en la compu), como fracción del panel. Se recuerda.
+const GUIA_MIN = 360
+const VISTA_3D_MIN = 280
+const CLAVE_ANCHO_GUIA = 'gridie-ancho-guia'
+const leerFraccionGuia = () => {
+  try {
+    const n = Number(localStorage.getItem(CLAVE_ANCHO_GUIA))
+    if (n > 0.1 && n < 0.9) return n
+  } catch {
+    /* sin localStorage */
+  }
+  return 0.42
+}
+const guardarFraccionGuia = fraccion => {
+  try {
+    localStorage.setItem(CLAVE_ANCHO_GUIA, String(fraccion))
+  } catch {
+    /* sin localStorage */
+  }
+}
+
+/** El borde entre la guía y la vista 3D: se arrastra para cambiar el ancho de la guía. */
+const DivisorArrastrable = ({ contenedorRef, onCambiar }) => {
+  const [arrastrando, setArrastrando] = useState(false)
+  const mover = evento => {
+    const caja = contenedorRef.current?.getBoundingClientRect()
+    if (!caja || caja.width <= 0) return
+    const fraccion = (evento.clientX - caja.left) / caja.width
+    onCambiar(Math.min(0.85, Math.max(0.15, fraccion)))
+  }
+  return (
+    <div
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Arrastrá para cambiar el ancho de la guía"
+      title="Arrastrá para agrandar o achicar"
+      className={`group relative z-10 w-1.5 shrink-0 cursor-col-resize touch-none select-none border-x border-gray-700 transition-colors ${arrastrando ? 'bg-arduino-claro' : 'bg-[#262626] hover:bg-arduino'}`}
+      onPointerDown={evento => {
+        evento.preventDefault()
+        evento.currentTarget.setPointerCapture(evento.pointerId)
+        setArrastrando(true)
+      }}
+      onPointerMove={evento => arrastrando && mover(evento)}
+      onPointerUp={() => setArrastrando(false)}
+      onPointerCancel={() => setArrastrando(false)}
+      onLostPointerCapture={() => setArrastrando(false)}
+    >
+      {/* Mientras se arrastra, una capa evita que el visor 3D se quede con el mouse. */}
+      {arrastrando && <div className="fixed inset-0 cursor-col-resize" />}
+    </div>
+  )
+}
+
+/**
+ * Agranda (o achica) el tablero de conexión para que llene el ancho de la guía. El tablero
+ * sigue midiendo en su tamaño natural (ver `escala` en TableroDeConexion).
+ */
+const Escalado = ({ activo, children }) => {
+  const afueraRef = useRef(null)
+  const adentroRef = useRef(null)
+  const [medidas, setMedidas] = useState({ escala: 1, alto: null })
+  useLayoutEffect(() => {
+    if (!activo) return undefined
+    const afuera = afueraRef.current
+    const adentro = adentroRef.current
+    if (!afuera || !adentro || typeof ResizeObserver === 'undefined')
+      return undefined
+    const medir = () => {
+      const ancho = adentro.offsetWidth
+      const alto = adentro.offsetHeight
+      if (!ancho || !alto) return
+      // Que llene el ancho, pero sin pasarse del alto que queda: así el conector y el pin
+      // se ven juntos sin tener que desplazarse.
+      const guia = afuera.offsetParent
+      const altoLibre = guia
+        ? guia.clientHeight - afuera.offsetTop - 16
+        : Infinity
+      const escala = Math.min(
+        1.8,
+        Math.max(0.6, Math.min(afuera.clientWidth / ancho, altoLibre / alto))
+      )
+      setMedidas({ escala, alto: alto * escala })
+    }
+    medir()
+    const obs = new ResizeObserver(medir)
+    obs.observe(afuera)
+    obs.observe(adentro)
+    if (afuera.offsetParent) obs.observe(afuera.offsetParent)
+    return () => obs.disconnect()
+  }, [activo])
+  if (!activo) return <div className="shrink-0 overflow-x-auto">{children}</div>
+  return (
+    <div
+      ref={afueraRef}
+      className="relative shrink-0 overflow-hidden"
+      style={{ height: medidas.alto ?? undefined }}
+    >
+      <div
+        ref={adentroRef}
+        className="absolute left-1/2 top-0 w-max"
+        style={{
+          transform: `translateX(-50%) scale(${medidas.escala})`,
+          transformOrigin: 'top center'
+        }}
+      >
+        {React.cloneElement(children, { escala: medidas.escala })}
+      </div>
+    </div>
+  )
+}
+
 // Los conectores del Arduino Uno como se ven en la placa, con el USB a la izquierda.
 // `pin` es el que se elige; los que no tienen pin no se usan en GrIDIE.
 /** Dónde está un pin en la placa, para ayudar a encontrarlo. */
@@ -310,6 +436,14 @@ const EtapaConectar = ({
     mensaje: 'Cargando motor 3D…'
   })
   const [aviso, setAviso] = useState(null) // { ok, texto }
+  // En la compu la guía va a la izquierda y se puede agrandar arrastrando el borde.
+  const filaRef = useRef(null)
+  const [fraccionGuia, setFraccionGuia] = useState(leerFraccionGuia)
+  const anchoGuia = `clamp(${GUIA_MIN}px, ${(fraccionGuia * 100).toFixed(1)}%, calc(100% - ${VISTA_3D_MIN}px))`
+  const cambiarAnchoGuia = fraccion => {
+    setFraccionGuia(fraccion)
+    guardarFraccionGuia(fraccion)
+  }
   const listos = conectadosBien(cables, conexiones)
   const actual = cables.find(c => conexiones[c.id] !== c.esperado)
   const numero = actual ? cables.indexOf(actual) + 1 : cables.length
@@ -430,9 +564,12 @@ const EtapaConectar = ({
 
   const guia = (
     <div
-      className={`flex flex-col gap-3 overflow-y-auto px-4 py-3 text-sm text-gray-200 ${enVentana ? 'w-[440px] shrink-0 border-r border-gray-700' : encabezado.compacto ? 'min-h-0 flex-1 border-b border-gray-700' : 'max-h-[55%] border-b border-gray-700'}`}
+      className={`flex flex-col gap-3 overflow-y-auto px-4 py-3 text-gray-200 ${enVentana ? 'relative shrink-0 text-base' : encabezado.compacto ? 'min-h-0 flex-1 border-b border-gray-700 text-sm' : 'max-h-[55%] border-b border-gray-700 text-sm'}`}
+      style={enVentana ? { width: anchoGuia } : undefined}
     >
-      <div className="flex items-center justify-between text-xs text-gray-400">
+      <div
+        className={`flex items-center justify-between text-gray-400 ${enVentana ? 'text-sm' : 'text-xs'}`}
+      >
         <span>
           {actual
             ? `Cable ${numero} de ${cables.length}`
@@ -461,7 +598,9 @@ const EtapaConectar = ({
             <div className="mb-1 text-xs uppercase tracking-wide text-gray-400">
               {actual.nombreComponente}
             </div>
-            <div className="flex items-start gap-2 text-base">
+            <div
+              className={`flex items-start gap-2 ${enVentana ? 'text-lg leading-snug' : 'text-base'}`}
+            >
               <span
                 className="mt-1.5 h-2.5 w-6 shrink-0 rounded-full"
                 style={{ background: actual.color }}
@@ -474,12 +613,14 @@ const EtapaConectar = ({
                 del Arduino.
               </span>
             </div>
-            <div className="mt-1 text-xs text-gray-400">
+            <div
+              className={`mt-1 text-gray-400 ${enVentana ? 'text-sm' : 'text-xs'}`}
+            >
               Lo encontrás {dondeEsta(actual.esperado)}. Arrastrá el conector
               hasta ese pin (o hacé clic):
             </div>
           </div>
-          <div className="shrink-0 overflow-x-auto">
+          <Escalado activo={enVentana}>
             <TableroDeConexion
               cablesComponente={cables.filter(
                 c => c.componente === actual.componente
@@ -490,7 +631,7 @@ const EtapaConectar = ({
               marcado={aviso && !aviso.ok ? actual.esperado : null}
               onElegir={elegir}
             />
-          </div>
+          </Escalado>
           {aviso && (
             <p className={aviso.ok ? 'text-arduino-suave' : 'text-amber-300'}>
               {aviso.ok ? '✓ ' : '✗ '}
@@ -513,7 +654,7 @@ const EtapaConectar = ({
         </div>
       )}
       {!actual && (
-        <div className="shrink-0 overflow-x-auto">
+        <Escalado activo={enVentana}>
           <TableroDeConexion
             cablesComponente={[]}
             todosLosCables={cables}
@@ -522,11 +663,13 @@ const EtapaConectar = ({
             marcado={null}
             onElegir={() => {}}
           />
-        </div>
+        </Escalado>
       )}
 
       {listos.length > 0 && (
-        <ul className="space-y-1 text-xs text-gray-400">
+        <ul
+          className={`space-y-1 text-gray-400 ${enVentana ? 'text-sm' : 'text-xs'}`}
+        >
           {listos.map(c => (
             <li key={c.id} className="flex items-center gap-2">
               <CheckCircledIcon className="h-3.5 w-3.5 shrink-0 text-arduino-claro" />
@@ -548,9 +691,16 @@ const EtapaConectar = ({
     <>
       <Encabezado paso={1} encabezado={encabezado} />
       <div
+        ref={filaRef}
         className={`flex min-h-0 flex-1 ${enVentana ? 'flex-row' : 'flex-col'}`}
       >
         {guia}
+        {enVentana && (
+          <DivisorArrastrable
+            contenedorRef={filaRef}
+            onCambiar={cambiarAnchoGuia}
+          />
+        )}
         {!sin3D && (
           <div className="relative min-h-0 min-w-0 flex-1">
             <div ref={contenedorRef} className="absolute inset-0" />
@@ -740,7 +890,7 @@ const EtapaProbar = ({
   return (
     <>
       <Encabezado paso={2} encabezado={encabezado}>
-        {!encabezado.compacto && (
+        {!encabezado.compacto && !encabezado.navegacion && (
           <Button
             size="sm"
             variant="ghost"

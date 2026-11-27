@@ -401,6 +401,52 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
     }
   ]
 
+  // En la compu las pestañas van empotradas en la barra de arriba del panel (bloques o
+  // simulador), así no ocupan una fila aparte.
+  const barraDePasos = (
+    <div className="flex min-w-0 items-center gap-2">
+      {tieneSimulador && (
+        <nav
+          className="flex shrink-0 items-center gap-0.5 rounded-lg bg-[#2a2a2a] p-0.5"
+          aria-label="Pasos del desafío"
+        >
+          {pestanas.map(pestana => (
+            <button
+              key={pestana.id}
+              type="button"
+              disabled={pestana.bloqueada}
+              aria-current={paso === pestana.id ? 'step' : undefined}
+              title={pestana.bloqueada ? pestana.ayuda : undefined}
+              onClick={() => setPaso(pestana.id)}
+              className={`flex h-8 items-center rounded-md px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
+                paso === pestana.id
+                  ? 'bg-arduino font-semibold text-white'
+                  : pestana.bloqueada
+                    ? 'cursor-not-allowed text-gray-500'
+                    : 'text-gray-200 hover:bg-[#3a3a3a]'
+              }`}
+            >
+              <pestana.Icono className="mr-1.5 h-3.5 w-3.5" />
+              {pestana.nombre}
+            </button>
+          ))}
+        </nav>
+      )}
+      {consignaOculta && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-8 shrink-0 text-gray-200"
+          onClick={() => setConsignaElegida(false)}
+          aria-expanded={false}
+        >
+          <ReaderIcon className="mr-1.5 h-3.5 w-3.5" />
+          Ver consigna
+        </Button>
+      )}
+    </div>
+  )
+
   // En el celular: Consigna → Programá → Conectá → Probá, con Atrás / Siguiente.
   const pasosMovil = [
     { id: 'consigna', nombre: 'Consigna', Icono: ReaderIcon },
@@ -418,6 +464,44 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
         ]
       : [])
   ]
+  // En Conectá y Probá la barra de pasos va empotrada arriba del simulador.
+  const simuladorEnPantalla =
+    tieneSimulador && (paso === 'conectar' || paso === 'probar')
+  const navMovil = (
+    <nav
+      className="flex w-full min-w-0 items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
+      aria-label="Pasos del desafío"
+    >
+      {pasosMovil.map((p, i) => (
+        <button
+          key={p.id}
+          type="button"
+          disabled={p.bloqueada}
+          aria-current={paso === p.id ? 'step' : undefined}
+          aria-label={`Paso ${i + 1}: ${p.nombre}`}
+          title={p.bloqueada ? p.ayuda : undefined}
+          onClick={() => setPaso(p.id)}
+          className={`flex min-w-0 items-center justify-center gap-1 rounded-md py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
+            simuladorEnPantalla && paso !== p.id
+              ? 'flex-none px-2.5'
+              : 'flex-1 px-1'
+          } ${
+            paso === p.id
+              ? 'bg-arduino font-semibold text-white'
+              : p.bloqueada
+                ? 'text-gray-500'
+                : 'text-gray-300'
+          }`}
+        >
+          <p.Icono className="h-3.5 w-3.5 shrink-0" />
+          {/* Arriba del simulador hay menos lugar: solo el paso actual lleva nombre. */}
+          {(!simuladorEnPantalla || paso === p.id) && (
+            <span className="truncate">{p.nombre}</span>
+          )}
+        </button>
+      ))}
+    </nav>
+  )
   const indiceMovil = Math.max(
     0,
     pasosMovil.findIndex(p => p.id === paso)
@@ -765,104 +849,39 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
         {textoConsigna}
       </div>
 
-      <div
-        className={
-          esMovil
-            ? 'row-start-2 mx-2 mb-1.5'
-            : 'mx-2 mb-1 flex h-10 items-center gap-3'
-        }
-      >
-        {esMovil && (
-          <nav
-            className="flex items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
-            aria-label="Pasos del desafío"
-          >
-            {pasosMovil.map((p, i) => (
-              <button
-                key={p.id}
-                type="button"
-                disabled={p.bloqueada}
-                aria-current={paso === p.id ? 'step' : undefined}
-                aria-label={`Paso ${i + 1}: ${p.nombre}`}
-                title={p.bloqueada ? p.ayuda : undefined}
-                onClick={() => setPaso(p.id)}
-                className={`flex min-w-0 flex-1 items-center justify-center gap-1 rounded-md px-1 py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
-                  paso === p.id
-                    ? 'bg-arduino font-semibold text-white'
-                    : p.bloqueada
-                      ? 'text-gray-500'
-                      : 'text-gray-300'
-                }`}
-              >
-                <p.Icono className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">{p.nombre}</span>
-              </button>
-            ))}
-          </nav>
-        )}
-        {tieneSimulador && !esMovil && (
-          <nav
-            className="flex w-fit items-center gap-1 rounded-lg bg-[#2a2a2a] p-1"
-            aria-label="Pasos del desafío"
-          >
-            {pestanas.map(pestana => (
-              <button
-                key={pestana.id}
-                type="button"
-                disabled={pestana.bloqueada}
-                aria-current={paso === pestana.id ? 'step' : undefined}
-                title={pestana.bloqueada ? pestana.ayuda : undefined}
-                onClick={() => setPaso(pestana.id)}
-                className={`flex items-center rounded-md px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arduino-claro ${
-                  paso === pestana.id
-                    ? 'bg-arduino font-semibold text-white'
-                    : pestana.bloqueada
-                      ? 'cursor-not-allowed text-gray-500'
-                      : 'text-gray-200 hover:bg-[#3a3a3a]'
-                }`}
-              >
-                <pestana.Icono className="mr-1.5 h-3.5 w-3.5" />
-                {pestana.nombre}
-              </button>
-            ))}
-          </nav>
-        )}
-        {consignaOculta && !esMovil && (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="text-gray-200"
-            onClick={() => setConsignaElegida(false)}
-            aria-expanded={false}
-          >
-            <ReaderIcon className="mr-1.5 h-3.5 w-3.5" />
-            Ver consigna
-          </Button>
-        )}
-      </div>
+      {esMovil && !simuladorEnPantalla && (
+        <div className="row-start-2 mx-2 mb-1.5">{navMovil}</div>
+      )}
       <div
         className={
           esMovil
             ? 'relative col-start-1 row-start-3 flex min-h-0'
             : 'relative flex'
         }
-        style={
-          esMovil ? undefined : { height: `calc(${blocklyHeight} - 44px)` }
-        }
+        style={esMovil ? undefined : { height: blocklyHeight }}
       >
         {/* En Conectá y Probá los bloques quedan montados pero invisibles (sin cambiar de
             tamaño), así Blockly no pierde nada ni se corre al volver. */}
         <div
-          className={`relative min-w-0 flex-1 ${paso === 'programar' ? '' : 'invisible'}`}
+          className={`relative flex min-w-0 flex-1 flex-col ${paso === 'programar' ? '' : 'invisible'}`}
           aria-hidden={paso !== 'programar'}
         >
-          <BlocklyComponent
-            ref={blocklyRef}
-            toolBoxDesafio={toolBox}
-            altura="100%"
-            onCodeChange={handleCodeChange}
-            compacto={esMovil}
-          />
+          {!esMovil && (tieneSimulador || consignaOculta) && (
+            // La barra queda siempre (así Blockly no cambia de tamaño), pero las pestañas
+            // se dibujan una sola vez: en Conectá y Probá van en la barra del simulador.
+            <div className="mx-2 flex h-11 shrink-0 items-center rounded-t-[10px] border-b border-gray-700 bg-[#1e1e1e] px-1.5">
+              {paso === 'programar' && barraDePasos}
+            </div>
+          )}
+          <div className="relative min-h-0 flex-1">
+            <BlocklyComponent
+              ref={blocklyRef}
+              toolBoxDesafio={toolBox}
+              altura="100%"
+              onCodeChange={handleCodeChange}
+              compacto={esMovil}
+            />
+          </div>
           {tieneSimulador && paso === 'programar' && !esMovil && (
             <div className="absolute bottom-5 left-1/2 z-10 -translate-x-1/2">
               <Button
@@ -878,25 +897,32 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
         {tieneSimulador && (paso === 'conectar' || paso === 'probar') && (
           <div className="absolute inset-y-0 left-2 right-2">
             {ventanaAparte ? (
-              <div className="flex h-full flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-gray-700 bg-[#1e1e1e] p-6 text-center text-sm text-gray-300">
-                <p>El simulador está abierto en una ventana aparte.</p>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => ventanaAparte.focus()}
-                  >
-                    <ExternalLinkIcon className="mr-1.5 h-3.5 w-3.5" />
-                    Ir a la ventana
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="bg-arduino text-white hover:bg-arduino-oscuro"
-                    onClick={traerDeVuelta}
-                  >
-                    <EnterIcon className="mr-1.5 h-3.5 w-3.5" />
-                    Traer de vuelta acá
-                  </Button>
+              <div className="flex h-full flex-col overflow-hidden rounded-[10px] border border-gray-700 bg-[#1e1e1e]">
+                {!esMovil && (
+                  <div className="flex h-11 shrink-0 items-center border-b border-gray-700 px-1.5">
+                    {barraDePasos}
+                  </div>
+                )}
+                <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-gray-300">
+                  <p>El simulador está abierto en una ventana aparte.</p>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => ventanaAparte.focus()}
+                    >
+                      <ExternalLinkIcon className="mr-1.5 h-3.5 w-3.5" />
+                      Ir a la ventana
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-arduino text-white hover:bg-arduino-oscuro"
+                      onClick={traerDeVuelta}
+                    >
+                      <EnterIcon className="mr-1.5 h-3.5 w-3.5" />
+                      Traer de vuelta acá
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -912,6 +938,7 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
                 onEtapa={setPaso}
                 onConexion={setConexionLista}
                 onDesacoplar={esMovil ? undefined : desacoplar}
+                navegacion={esMovil ? navMovil : barraDePasos}
               />
             )}
           </div>
