@@ -53,7 +53,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { puntaje } from '@/lib/buenasPracticas'
 import useEsMovil, { esPantallaMovil } from '@/lib/useEsMovil'
 import BlocklyComponent from '../components/BocklyComponent'
-import Felicitacion from '../components/Felicitacion'
+import Felicitacion, { AvisoNoResuelto } from '../components/Felicitacion'
 import BotonSubirWeb from '../placa/BotonSubirWeb'
 import { TOOLBOXES_CON_SIMULADOR } from '../simulador/escenas'
 import PanelSimulador, {
@@ -254,12 +254,24 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
   const practicasRef = useRef([])
   const felicitadoRef = useRef(null)
   const [felicitacion, setFelicitacion] = useState(null)
-  const guardarPracticas = useCallback(reglas => {
+  const revisarTiempoRef = useRef(() => null)
+  const [noResuelto, setNoResuelto] = useState(null)
+  const guardarPracticas = useCallback((reglas, revisarTiempo) => {
     practicasRef.current = reglas
+    if (revisarTiempo) revisarTiempoRef.current = revisarTiempo
   }, [])
   const codigoRef = useRef('')
   codigoRef.current = generatedCode
   const felicitarSiCorresponde = useCallback(() => {
+    // Primero: si compila pero algo no se llega a ver (LED o servo sin tiempo), avisamos
+    // que el desafío todavía no está resuelto, en vez de felicitar.
+    const problema = revisarTiempoRef.current()
+    if (problema) {
+      if (felicitadoRef.current === codigoRef.current) return
+      felicitadoRef.current = codigoRef.current
+      setNoResuelto(problema)
+      return
+    }
     const reglas = practicasRef.current
     const obligatorias = reglas.filter(r => r.tema !== 'extra')
     if (!obligatorias.length || !obligatorias.every(r => r.cumple)) return
@@ -921,6 +933,10 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
               onCodeChange={handleCodeChange}
               onPracticasChange={guardarPracticas}
               compacto={esMovil}
+            />
+            <AvisoNoResuelto
+              problema={noResuelto}
+              onCerrar={() => setNoResuelto(null)}
             />
             <Felicitacion
               abierto={!!felicitacion}

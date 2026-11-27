@@ -24,6 +24,7 @@ import { toolboxDesafio2Clase2 } from '../toolbox/Clase 2/toolboxDesafio2Clase2'
 import '../App.css'
 import toast from 'react-hot-toast'
 import { revisarBuenasPracticas } from '@/lib/buenasPracticas'
+import { problemaDeTiempo } from '@/lib/funcionamiento'
 import { borrarBloques, guardarBloques, leerBloques } from '@/lib/trabajo'
 import CodigoColoreado from './CodigoColoreado'
 import PanelBuenasPracticas from './PanelBuenasPracticas'
@@ -268,8 +269,11 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
   }, [code, onCodeChange])
 
   // La pantalla del desafío usa las buenas prácticas para felicitar al alumno.
+  // Le pasamos también una forma de revisar si lo que hace el programa se llega a ver.
   useEffect(() => {
-    onPracticasChange?.(practicas)
+    onPracticasChange?.(practicas, () =>
+      workspaceRef.current ? problemaDeTiempo(workspaceRef.current) : null
+    )
   }, [practicas, onPracticasChange])
 
   useEffect(() => {
