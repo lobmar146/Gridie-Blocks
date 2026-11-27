@@ -39699,9 +39699,9 @@ var LT = [
 function RT(e) {
 	return e.type !== "pointerup" && e.type !== "pointermove" || !(e.buttons & 1);
 }
-function zT({ scene: e, frame: t, ledPeak: n, screens: r, send: i, hover: a, mode: o, onBuilt: s, colours: c, pageScroll: l = !1 }) {
-	let u = (0, v.useMemo)(() => IT(e), [e]), d = tv(tS, u), f = (0, v.useMemo)(() => uw(e, new Map(u.map((e, t) => {
-		let n = d[t];
+function zT({ scene: e, frame: t, ledPeak: n, screens: r, send: i, hover: a, mode: o, onBuilt: s, onReady: c, colours: l, pageScroll: u = !1 }) {
+	let d = (0, v.useMemo)(() => IT(e), [e]), f = tv(tS, d), p = (0, v.useMemo)(() => uw(e, new Map(d.map((e, t) => {
+		let n = f[t];
 		if (n === void 0) return [e, /* @__PURE__ */ Error(`${e}: not loaded`)];
 		try {
 			return [e, JC(n, e)];
@@ -39709,77 +39709,80 @@ function zT({ scene: e, frame: t, ledPeak: n, screens: r, send: i, hover: a, mod
 			return [e, t instanceof Error ? t : Error(String(t))];
 		}
 	}))), [
-		d,
+		f,
 		e,
-		u
+		d
 	]);
-	(0, v.useEffect)(() => s(f), [f, s]);
-	let p = X_((e) => e.gl), m = X_((e) => e.scene);
+	(0, v.useEffect)(() => s(p), [p, s]);
+	let m = X_((e) => e.gl), h = X_((e) => e.scene);
 	(0, v.useLayoutEffect)(() => {
-		let e = uT(p), t = (t) => {
+		let e = uT(m), t = (t) => {
 			if (!(t instanceof Ba)) return;
 			t.castShadow = !0, t.receiveShadow = !0;
 			let n = Array.isArray(t.material) ? t.material : [t.material];
 			for (let t of n) t instanceof vl && (t.shadowSide = 1, dT(t, e));
 		};
-		f.root.traverse(t), m.getObjectByName("stage-wires")?.traverse(t);
+		p.root.traverse(t), h.getObjectByName("stage-wires")?.traverse(t);
 	}, [
-		f,
 		p,
-		m
+		m,
+		h
 	]);
-	let h = (0, v.useMemo)(() => AT(f), [f]);
-	Z_(() => {
+	let g = (0, v.useMemo)(() => AT(p), [p]), _ = (0, v.useRef)(0);
+	(0, v.useEffect)(() => {
+		_.current = 0;
+	}, [p]), Z_(() => {
+		_.current < 2 && (_.current += 1, _.current === 2 && c?.());
 		let e = t.current, i = n.current;
-		for (let t of f.glows) {
+		for (let t of p.glows) {
 			let { by: n } = t, r = n.kind === "current" ? oC(dC(e?.led_a[n.channel] ?? 0, i[n.channel] ?? 0), n.full) : sC(e?.pixel_rgb[n.channel] ?? [], t.material.emissive);
 			t.material.emissiveIntensity = r, uC(t.base, r, t.material.color);
 		}
-		for (let { mesh: e, material: t } of h) t.emissiveIntensity >= 1 ? e.layers.enable(OT) : e.layers.disable(OT);
+		for (let { mesh: e, material: t } of g) t.emissiveIntensity >= 1 ? e.layers.enable(OT) : e.layers.disable(OT);
 		let a = Math.max(i.length, e?.led_a.length ?? 0);
 		for (let t = 0; t < a; t += 1) i[t] = e?.led_a[t] ?? 0;
 		i.length = a;
-		for (let e of f.screens) {
+		for (let e of p.screens) {
 			let t = r.current[e.channel];
 			t !== void 0 && t !== e.shown && gC(e, t);
 		}
-		for (let t of f.slides) t.node.position.copy(t.rest), e?.switches[t.channel] === 1 && t.node.position.add(t.delta);
-		for (let t of f.turns) {
+		for (let t of p.slides) t.node.position.copy(t.rest), e?.switches[t.channel] === 1 && t.node.position.add(t.delta);
+		for (let t of p.turns) {
 			let n = t.horn ? e?.horn_deg?.[t.channel] ?? t.value : e?.params?.[t.channel] ?? t.value;
 			kT.setFromAxisAngle(t.axis, t.angle(n)), t.node.quaternion.copy(kT).multiply(t.rest);
 		}
 	});
-	let g = X_((e) => e.gl.domElement), _ = (0, v.useRef)(null), y = (0, v.useCallback)(() => {
-		let e = _.current;
-		e !== null && (_.current = null, e.stop(), i({
+	let y = X_((e) => e.gl.domElement), b = (0, v.useRef)(null), x = (0, v.useCallback)(() => {
+		let e = b.current;
+		e !== null && (b.current = null, e.stop(), i({
 			cmd: "release",
 			ref: e.ref
 		}));
 	}, [i]);
-	(0, v.useEffect)(() => (window.addEventListener("blur", y), () => {
-		window.removeEventListener("blur", y), y();
-	}), [y]), (0, v.useEffect)(() => () => {
-		_.current?.stop(), _.current = null;
+	(0, v.useEffect)(() => (window.addEventListener("blur", x), () => {
+		window.removeEventListener("blur", x), x();
+	}), [x]), (0, v.useEffect)(() => () => {
+		b.current?.stop(), b.current = null;
 	}, [e]);
-	let b = (e) => {
+	let S = (e) => {
 		if (e.stopPropagation(), e.button !== 0) return;
 		let t = PT(e.object, (e) => e.instance !== void 0);
-		if (t?.tag.instance?.pressable !== !0 || _.current !== null) return;
+		if (t?.tag.instance?.pressable !== !0 || b.current !== null) return;
 		let { ref: n } = t.tag, { pointerId: r } = e, a = (e) => {
-			e.pointerId === _.current?.pointerId && RT(e) && y();
+			e.pointerId === b.current?.pointerId && RT(e) && x();
 		};
-		for (let e of LT) g.addEventListener(e, a);
-		_.current = {
+		for (let e of LT) y.addEventListener(e, a);
+		b.current = {
 			ref: n,
 			pointerId: r,
 			stop: () => {
-				for (let e of LT) g.removeEventListener(e, a);
+				for (let e of LT) y.removeEventListener(e, a);
 			}
 		}, e.target.setPointerCapture(r), i({
 			cmd: "press",
 			ref: n
 		});
-	}, x = (t) => {
+	}, C = (t) => {
 		t.stopPropagation();
 		let n = PT(t.object, () => !0);
 		if (n === void 0) {
@@ -39797,31 +39800,31 @@ function zT({ scene: e, frame: t, ledPeak: n, screens: r, send: i, hover: a, mod
 			error: n.tag.error,
 			...r
 		});
-	}, S = (0, v.useMemo)(() => NT(f), [f]);
+	}, w = (0, v.useMemo)(() => NT(p), [p]);
 	return /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
 		/* @__PURE__ */ (0, $.jsx)(fT, {}),
 		/* @__PURE__ */ (0, $.jsx)(hT, {
-			background: c.background,
-			boxes: f.boxes
+			background: l.background,
+			boxes: p.boxes
 		}),
 		/* @__PURE__ */ (0, $.jsx)(eT, {
-			boxes: S,
+			boxes: w,
 			mode: o,
-			pageScroll: l
+			pageScroll: u
 		}),
 		/* @__PURE__ */ (0, $.jsx)("primitive", {
-			object: f.root,
-			onPointerDown: b,
-			onPointerMove: x,
+			object: p.root,
+			onPointerDown: S,
+			onPointerMove: C,
 			onPointerOut: () => a.set(null)
 		}),
 		/* @__PURE__ */ (0, $.jsx)("group", {
 			name: "stage-wires",
-			children: f.wires.map((e, t) => /* @__PURE__ */ (0, $.jsx)(ET, { wire: e }, t))
+			children: p.wires.map((e, t) => /* @__PURE__ */ (0, $.jsx)(ET, { wire: e }, t))
 		}),
 		/* @__PURE__ */ (0, $.jsx)(bT, {
-			boxes: f.boxes,
-			colours: c
+			boxes: p.boxes,
+			colours: l
 		}),
 		/* @__PURE__ */ (0, $.jsx)(MT, { hover: a })
 	] });
@@ -40389,47 +40392,47 @@ var AE = 1600, jE = {
 	font: "12px ui-monospace, monospace",
 	whiteSpace: "nowrap"
 };
-function ME({ source: e, onCreated: t, pageScroll: n = !1 }) {
-	let r = GT(), i = (0, v.useRef)(null), [a, o] = (0, v.useState)(null), [s, c] = (0, v.useState)(null), [l, u] = (0, v.useState)("tilted"), d = (0, v.useRef)(null), f = (0, v.useRef)([]), p = (0, v.useRef)([]), m = (0, v.useMemo)(Dy, []), [h, g] = (0, v.useState)([]), [_, y] = (0, v.useState)([]), [b, x] = (0, v.useState)(null), S = (0, v.useCallback)((e) => g(e.errors), []), C = (0, v.useMemo)(() => (s?.world ?? []).map(cE), [s]), w = (0, v.useMemo)(() => (s?.params ?? []).map(dE), [s]), T = (0, v.useCallback)((t) => {
+function ME({ source: e, onCreated: t, onReady: n, pageScroll: r = !1 }) {
+	let i = GT(), a = (0, v.useRef)(null), [o, s] = (0, v.useState)(null), [c, l] = (0, v.useState)(null), [u, d] = (0, v.useState)("tilted"), f = (0, v.useRef)(null), p = (0, v.useRef)([]), m = (0, v.useRef)([]), h = (0, v.useMemo)(Dy, []), [g, _] = (0, v.useState)([]), [y, b] = (0, v.useState)([]), [x, S] = (0, v.useState)(null), C = (0, v.useCallback)((e) => _(e.errors), []), w = (0, v.useMemo)(() => (c?.world ?? []).map(cE), [c]), T = (0, v.useMemo)(() => (c?.params ?? []).map(dE), [c]), E = (0, v.useCallback)((t) => {
 		let n = (e) => {
 			let n = `${tE(t)}: ${e}`;
-			console.error(n), y((e) => [...e, n]);
+			console.error(n), b((e) => [...e, n]);
 		};
 		return e.send(t).then((e) => (e.ok || n(eE(e.error)), e), (e) => (n(e instanceof Error ? e.message : String(e)), null));
 	}, [e]);
 	return (0, v.useEffect)(() => e.subscribe((e) => {
-		if (e.type === "scene") d.current = null, f.current = [], p.current = [], y([]), c(e);
+		if (e.type === "scene") f.current = null, p.current = [], m.current = [], b([]), l(e);
 		else if (e.type === "frame") {
-			let t = f.current;
+			let t = p.current;
 			for (let n = 0; n < e.led_a.length; n += 1) t[n] = Math.max(t[n] ?? 0, e.led_a[n] ?? 0);
-			for (let [t, n] of (e.screens ?? []).entries()) n !== null && (p.current[t] = n);
-			d.current = e;
-		} else x(e.reason);
+			for (let [t, n] of (e.screens ?? []).entries()) n !== null && (m.current[t] = n);
+			f.current = e;
+		} else S(e.reason);
 	}), [e]), (0, v.useEffect)(() => {
 		let e = (e) => {
-			e.target instanceof HTMLInputElement || (e.key === "t" || e.key === "T") && u((e) => e === "top" ? "tilted" : "top");
+			e.target instanceof HTMLInputElement || (e.key === "t" || e.key === "T") && d((e) => e === "top" ? "tilted" : "top");
 		};
 		return window.addEventListener("keydown", e), () => window.removeEventListener("keydown", e);
 	}, []), (0, v.useEffect)(() => {
-		if (!n) return;
-		let e = i.current;
+		if (!r) return;
+		let e = a.current;
 		if (e === null) return;
-		let t = 0, r = (e) => {
-			o(e), window.clearTimeout(t), t = window.setTimeout(() => o(null), AE);
-		}, a = (e) => {
-			e.ctrlKey || e.metaKey || (e.stopPropagation(), r("Ctrl + scroll to zoom"));
-		}, s = null, c = (e) => {
-			e.pointerType === "touch" && (s = e.isPrimary ? {
+		let t = 0, n = (e) => {
+			s(e), window.clearTimeout(t), t = window.setTimeout(() => s(null), AE);
+		}, i = (e) => {
+			e.ctrlKey || e.metaKey || (e.stopPropagation(), n("Ctrl + scroll to zoom"));
+		}, o = null, c = (e) => {
+			e.pointerType === "touch" && (o = e.isPrimary ? {
 				id: e.pointerId,
 				x: e.clientX,
 				y: e.clientY
 			} : null);
 		}, l = (e) => {
-			if (s === null || e.pointerId !== s.id) return;
-			let t = e.clientX - s.x, n = e.clientY - s.y;
-			t * t + n * n < 64 || (s = null, r("Use two fingers to move the view"));
+			if (o === null || e.pointerId !== o.id) return;
+			let t = e.clientX - o.x, r = e.clientY - o.y;
+			t * t + r * r < 64 || (o = null, n("Use two fingers to move the view"));
 		}, u = (e) => {
-			s?.id === e.pointerId && (s = null);
+			o?.id === e.pointerId && (o = null);
 		}, d = () => {
 			for (let t of e.querySelectorAll("canvas")) t.style.touchAction !== "pan-y" && (t.style.touchAction = "pan-y");
 		};
@@ -40438,17 +40441,17 @@ function ME({ source: e, onCreated: t, pageScroll: n = !1 }) {
 		return f.observe(e, {
 			childList: !0,
 			subtree: !0
-		}), e.addEventListener("wheel", a, { capture: !0 }), e.addEventListener("pointerdown", c, { capture: !0 }), e.addEventListener("pointermove", l, { capture: !0 }), e.addEventListener("pointerup", u, { capture: !0 }), e.addEventListener("pointercancel", u, { capture: !0 }), () => {
-			f.disconnect(), window.clearTimeout(t), e.removeEventListener("wheel", a, { capture: !0 }), e.removeEventListener("pointerdown", c, { capture: !0 }), e.removeEventListener("pointermove", l, { capture: !0 }), e.removeEventListener("pointerup", u, { capture: !0 }), e.removeEventListener("pointercancel", u, { capture: !0 });
+		}), e.addEventListener("wheel", i, { capture: !0 }), e.addEventListener("pointerdown", c, { capture: !0 }), e.addEventListener("pointermove", l, { capture: !0 }), e.addEventListener("pointerup", u, { capture: !0 }), e.addEventListener("pointercancel", u, { capture: !0 }), () => {
+			f.disconnect(), window.clearTimeout(t), e.removeEventListener("wheel", i, { capture: !0 }), e.removeEventListener("pointerdown", c, { capture: !0 }), e.removeEventListener("pointermove", l, { capture: !0 }), e.removeEventListener("pointerup", u, { capture: !0 }), e.removeEventListener("pointercancel", u, { capture: !0 });
 		};
-	}, [n]), /* @__PURE__ */ (0, $.jsxs)("div", {
+	}, [r]), /* @__PURE__ */ (0, $.jsxs)("div", {
 		"data-testid": "viewer",
-		ref: i,
+		ref: a,
 		style: {
 			position: "relative",
 			width: "100%",
 			height: "100%",
-			touchAction: n ? "pan-y" : "none"
+			touchAction: r ? "pan-y" : "none"
 		},
 		children: [
 			/* @__PURE__ */ (0, $.jsx)(hE, { children: /* @__PURE__ */ (0, $.jsxs)(Ey, {
@@ -40459,24 +40462,25 @@ function ME({ source: e, onCreated: t, pageScroll: n = !1 }) {
 					alpha: !1
 				},
 				onCreated: t,
-				children: [/* @__PURE__ */ (0, $.jsx)(kE, { color: r.background }), s === null ? null : /* @__PURE__ */ (0, $.jsx)(v.Suspense, {
+				children: [/* @__PURE__ */ (0, $.jsx)(kE, { color: i.background }), c === null ? null : /* @__PURE__ */ (0, $.jsx)(v.Suspense, {
 					fallback: null,
 					children: /* @__PURE__ */ (0, $.jsx)(zT, {
-						colours: r,
-						frame: d,
-						hover: m,
-						ledPeak: f,
-						screens: p,
-						mode: l,
-						onBuilt: S,
-						pageScroll: n,
-						scene: s,
-						send: T
+						colours: i,
+						frame: f,
+						hover: h,
+						ledPeak: p,
+						screens: m,
+						mode: u,
+						onBuilt: C,
+						onReady: n,
+						pageScroll: r,
+						scene: c,
+						send: E
 					})
 				})]
 			}) }),
-			/* @__PURE__ */ (0, $.jsx)(yE, { errors: [...h, ..._] }),
-			b === null ? /* @__PURE__ */ (0, $.jsxs)("div", {
+			/* @__PURE__ */ (0, $.jsx)(yE, { errors: [...g, ...y] }),
+			x === null ? /* @__PURE__ */ (0, $.jsxs)("div", {
 				style: {
 					position: "absolute",
 					top: 12,
@@ -40490,29 +40494,29 @@ function ME({ source: e, onCreated: t, pageScroll: n = !1 }) {
 				},
 				children: [
 					/* @__PURE__ */ (0, $.jsx)(OE, {
-						send: T,
+						send: E,
 						source: e
 					}),
 					/* @__PURE__ */ (0, $.jsx)(vE, { source: e }),
-					C.length === 0 ? null : /* @__PURE__ */ (0, $.jsx)(DE, {
-						controls: C,
+					w.length === 0 ? null : /* @__PURE__ */ (0, $.jsx)(DE, {
+						controls: w,
 						values: wE,
 						name: "world",
 						still: "the world stays as it is",
-						send: T,
+						send: E,
 						source: e
 					}),
-					w.length === 0 ? null : /* @__PURE__ */ (0, $.jsx)(DE, {
-						controls: w,
+					T.length === 0 ? null : /* @__PURE__ */ (0, $.jsx)(DE, {
+						controls: T,
 						values: TE,
 						name: "params",
 						still: "each knob stays where it is",
-						send: T,
+						send: E,
 						source: e
 					})
 				]
 			}) : null,
-			b === null ? null : /* @__PURE__ */ (0, $.jsx)("div", {
+			x === null ? null : /* @__PURE__ */ (0, $.jsx)("div", {
 				"data-testid": "closed",
 				style: {
 					...gE,
@@ -40522,13 +40526,13 @@ function ME({ source: e, onCreated: t, pageScroll: n = !1 }) {
 					background: "rgba(16, 17, 20, 0.8)",
 					color: "#e6ebf2"
 				},
-				children: `the session ended: ${b}`
+				children: `the session ended: ${x}`
 			}),
-			/* @__PURE__ */ (0, $.jsx)(_E, { hover: m }),
-			a === null ? null : /* @__PURE__ */ (0, $.jsx)("div", {
+			/* @__PURE__ */ (0, $.jsx)(_E, { hover: h }),
+			o === null ? null : /* @__PURE__ */ (0, $.jsx)("div", {
 				"data-testid": "gesture-hint",
 				style: jE,
-				children: a
+				children: o
 			})
 		]
 	});
@@ -40759,15 +40763,30 @@ function XE(e, t) {
 				name: "gridie",
 				files: e
 			};
-		}), l = !1, u = !1, d = {
+		}), l = !1, u = !1, d = !1, f = !1, p = 0, m = {
 			div: s,
 			source: c,
 			root: (0, y.createRoot)(s),
 			desuscribir: () => {}
+		}, h = () => {
+			f || (f = !0, r(m));
+		}, g = () => {
+			!o && !l && u && d && (m === i || m === a) && (window.clearTimeout(p), h(), t.alListo?.(), t.reproducir && (l = !0, requestAnimationFrame(() => {
+				o || m !== i && m !== a || c.send({ cmd: "play" }).catch(() => {});
+			})));
+		}, _ = () => {
+			d = !0, g();
 		};
-		return d.desuscribir = c.subscribe((e) => {
-			o || (d === i || d === a) && (t.alMensaje?.(e), e.type === "scene" ? (t.reproducir && !l && (l = !0, c.send({ cmd: "play" }).catch(() => {})), u || (u = !0, requestAnimationFrame(() => requestAnimationFrame(() => r(d))))) : e.type === "closed" && !u && (u = !0, r(d)));
-		}), d.root.render(/* @__PURE__ */ (0, $.jsx)(ME, { source: c })), d;
+		m.desuscribir = c.subscribe((e) => {
+			o || (m === i || m === a) && (t.alMensaje?.(e), e.type === "scene" ? (u = !0, window.clearTimeout(p), p = window.setTimeout(_, 5e3), g()) : e.type === "closed" && (window.clearTimeout(p), h()));
+		});
+		let v = m.desuscribir;
+		return m.desuscribir = () => {
+			window.clearTimeout(p), v();
+		}, m.root.render(/* @__PURE__ */ (0, $.jsx)(ME, {
+			source: c,
+			onReady: _
+		})), m;
 	};
 	return getComputedStyle(e).position === "static" && (e.style.position = "relative"), i = c(r, () => {}), {
 		enviar: (e) => i ? i.source.send(e) : Promise.reject(/* @__PURE__ */ Error("simulador cerrado")),

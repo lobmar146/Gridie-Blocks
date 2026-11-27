@@ -175,6 +175,7 @@ export function SceneView({
   hover,
   mode,
   onBuilt,
+  onReady,
   colours,
   pageScroll = false,
 }: {
@@ -188,6 +189,9 @@ export function SceneView({
   hover: HoverStore;
   mode: CameraMode;
   onBuilt: (built: BuiltScene) => void;
+  /** GrIDIE: se llama una vez por escena, cuando ya se dibujó en pantalla (modelos cargados y
+   * sombreadores compilados). Hasta entonces conviene no dar play, o el alumno se pierde el comienzo. */
+  onReady?: () => void;
   /** Background, floor fill and grid line, from the page theme. */
   colours: StageTheme;
   /** One finger scrolls the page. Two fingers orbit and zoom. */
@@ -232,7 +236,16 @@ export function SceneView({
   }, [built, gl, stage]);
 
   const glowing = useMemo(() => glowMeshes(built), [built]);
+  // GrIDIE: cuadros dibujados con esta escena; al segundo, el primero ya llegó a la pantalla.
+  const drawn = useRef(0);
+  useEffect(() => {
+    drawn.current = 0;
+  }, [built]);
   useFrame(() => {
+    if (drawn.current < 2) {
+      drawn.current += 1;
+      if (drawn.current === 2) onReady?.();
+    }
     const live = frame.current;
     const peaks = ledPeak.current;
     for (const glow of built.glows) {
