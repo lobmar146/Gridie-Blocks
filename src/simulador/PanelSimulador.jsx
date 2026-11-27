@@ -34,6 +34,7 @@ import {
   urlSimulador
 } from './precarga'
 import TableroDeConexion from './TableroDeConexion'
+import { pinesAVigilar, verificar } from './verificador'
 
 // `animacion`: mientras se compila el programa del alumno, bloques que viajan al Arduino.
 const CargaSimulador = ({ progreso, mensaje, animacion = false }) => (
@@ -848,6 +849,22 @@ const EtapaProbar = ({
       const QUIETO_MS = 4000
       const POR_SIEMPRE_MS = 15000
       const vigia = { inicio: 0, ultimoCambio: 0, pines: null }
+      // Lo que va pasando con los pines que importan en el desafío, para verificarlo al final.
+      const aVigilar = pinesAVigilar(toolBox)
+      let indices = []
+      const registro = { cambios: [], ultimo: null, finMs: 0 }
+      const anotar = mensaje => {
+        if (!indices.length || !mensaje.pins) return
+        const ms = mensaje.t_ps / 1e9
+        registro.finMs = ms
+        const pines = Object.fromEntries(
+          indices.map(([pin, i]) => [pin, mensaje.pins[i]])
+        )
+        const clave = JSON.stringify(pines)
+        if (clave === registro.ultimo) return
+        registro.ultimo = clave
+        registro.cambios.push({ ms, pines })
+      }
       const vigilarFin = () => {
         vigia.inicio = vigia.ultimoCambio = Date.now()
         const reloj = window.setInterval(() => {
@@ -858,7 +875,9 @@ const EtapaProbar = ({
             : ahora - vigia.ultimoCambio >= QUIETO_MS
           if (!termino) return
           window.clearInterval(reloj)
-          alTerminarRef.current?.()
+          alTerminarRef.current?.(
+            verificar(toolBox, registro.cambios, registro.finMs)
+          )
         }, 500)
       }
       const opcionesMontaje = {
@@ -875,6 +894,11 @@ const EtapaProbar = ({
         },
         alMensaje: mensaje => {
           if (cargaIdRef.current !== id) return
+          if (mensaje.type === 'scene')
+            indices = aVigilar
+              .map(pin => [pin, mensaje.channels.pins.indexOf(`@uno.${pin}`)])
+              .filter(([, i]) => i >= 0)
+          if (mensaje.type === 'frame') anotar(mensaje)
           if (mensaje.type === 'frame' && mensaje.pins) {
             // Los pines y, si hay, el ángulo del servo.
             const pines = `${mensaje.pins}|${(mensaje.horn_deg || []).map(Math.round)}`
@@ -920,7 +944,7 @@ const EtapaProbar = ({
       setEstado('error')
       setError(e.message || String(e))
     }
-  }, [codigo, desafio, detener, detenerParlante, porSiempre])
+  }, [codigo, desafio, detener, detenerParlante, porSiempre, toolBox])
 
   const iniciarRef = useRef(iniciar)
   iniciarRef.current = iniciar

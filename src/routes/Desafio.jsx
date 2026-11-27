@@ -262,22 +262,28 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
   }, [])
   const codigoRef = useRef('')
   codigoRef.current = generatedCode
-  const felicitarSiCorresponde = useCallback(() => {
-    // Primero: si compila pero algo no se llega a ver (LED o servo sin tiempo), avisamos
-    // que el desafío todavía no está resuelto, en vez de felicitar.
+  // Al terminar la simulación (con `resultado`, si el desafío se puede verificar) o la subida.
+  const felicitarSiCorresponde = useCallback(resultado => {
+    if (felicitadoRef.current === codigoRef.current) return
+    // Si compila pero algo no se llega a ver (LED o servo sin tiempo), o el circuito no hizo
+    // lo que pide la consigna, el desafío todavía no está resuelto.
     const problema = revisarTiempoRef.current()
-    if (problema) {
-      if (felicitadoRef.current === codigoRef.current) return
+    if (problema || resultado?.resuelto === false) {
       felicitadoRef.current = codigoRef.current
-      setNoResuelto(problema)
+      setNoResuelto({ problema, pista: resultado?.pista })
       return
     }
     const reglas = practicasRef.current
     const obligatorias = reglas.filter(r => r.tema !== 'extra')
-    if (!obligatorias.length || !obligatorias.every(r => r.cumple)) return
-    if (felicitadoRef.current === codigoRef.current) return
+    const todas = obligatorias.length > 0 && obligatorias.every(r => r.cumple)
+    // Sin verificación y sin todas las buenas prácticas, no hay nada que festejar todavía.
+    if (!todas && !resultado?.resuelto) return
     felicitadoRef.current = codigoRef.current
     setFelicitacion({
+      resuelto: !!resultado?.resuelto,
+      todas,
+      faltan: obligatorias.filter(r => !r.cumple).length,
+      conPracticas: obligatorias.length > 0,
       puntos: puntaje(reglas).hechos,
       extraProlijo: reglas.some(r => r.tema === 'extra' && r.cumple)
     })
@@ -935,12 +941,18 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
               compacto={esMovil}
             />
             <AvisoNoResuelto
-              problema={noResuelto}
+              problema={noResuelto?.problema}
+              pista={noResuelto?.pista}
+              abierto={!!noResuelto}
               onCerrar={() => setNoResuelto(null)}
             />
             <Felicitacion
               abierto={!!felicitacion}
               onCerrar={() => setFelicitacion(null)}
+              resuelto={felicitacion?.resuelto}
+              todas={felicitacion?.todas}
+              faltan={felicitacion?.faltan}
+              conPracticas={felicitacion?.conPracticas}
               puntos={felicitacion?.puntos}
               extraProlijo={felicitacion?.extraProlijo}
             />
