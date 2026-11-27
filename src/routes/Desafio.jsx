@@ -255,39 +255,52 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
   const felicitadoRef = useRef(null)
   const [felicitacion, setFelicitacion] = useState(null)
   const revisarTiempoRef = useRef(() => null)
+  const revisarApagadoRef = useRef(() => false)
   const [noResuelto, setNoResuelto] = useState(null)
-  const guardarPracticas = useCallback((reglas, revisarTiempo) => {
-    practicasRef.current = reglas
-    if (revisarTiempo) revisarTiempoRef.current = revisarTiempo
-  }, [])
+  const guardarPracticas = useCallback(
+    (reglas, revisarTiempo, revisarApagado) => {
+      practicasRef.current = reglas
+      if (revisarTiempo) revisarTiempoRef.current = revisarTiempo
+      if (revisarApagado) revisarApagadoRef.current = revisarApagado
+    },
+    []
+  )
   const codigoRef = useRef('')
   codigoRef.current = generatedCode
   // Al terminar la simulación (con `resultado`, si el desafío se puede verificar) o la subida.
-  const felicitarSiCorresponde = useCallback(resultado => {
-    if (felicitadoRef.current === codigoRef.current) return
-    // Si compila pero algo no se llega a ver (LED o servo sin tiempo), o el circuito no hizo
-    // lo que pide la consigna, el desafío todavía no está resuelto.
-    const problema = revisarTiempoRef.current()
-    if (problema || resultado?.resuelto === false) {
+  const felicitarSiCorresponde = useCallback(
+    resultado => {
+      if (felicitadoRef.current === codigoRef.current) return
+      // Si compila pero algo no se llega a ver (LED o servo sin tiempo), o el circuito no hizo
+      // lo que pide la consigna, el desafío todavía no está resuelto.
+      const problema = revisarTiempoRef.current()
+      if (problema || resultado?.resuelto === false) {
+        felicitadoRef.current = codigoRef.current
+        setNoResuelto({ problema, pista: resultado?.pista })
+        return
+      }
+      const reglas = practicasRef.current
+      const obligatorias = reglas.filter(r => r.tema !== 'extra')
+      const todas = obligatorias.length > 0 && obligatorias.every(r => r.cumple)
+      // Sin verificación y sin todas las buenas prácticas, no hay nada que festejar todavía.
+      if (!todas && !resultado?.resuelto) return
       felicitadoRef.current = codigoRef.current
-      setNoResuelto({ problema, pista: resultado?.pista })
-      return
-    }
-    const reglas = practicasRef.current
-    const obligatorias = reglas.filter(r => r.tema !== 'extra')
-    const todas = obligatorias.length > 0 && obligatorias.every(r => r.cumple)
-    // Sin verificación y sin todas las buenas prácticas, no hay nada que festejar todavía.
-    if (!todas && !resultado?.resuelto) return
-    felicitadoRef.current = codigoRef.current
-    setFelicitacion({
-      resuelto: !!resultado?.resuelto,
-      todas,
-      faltan: obligatorias.filter(r => !r.cumple).length,
-      conPracticas: obligatorias.length > 0,
-      puntos: puntaje(reglas).hechos,
-      extraProlijo: reglas.some(r => r.tema === 'extra' && r.cumple)
-    })
-  }, [])
+      setFelicitacion({
+        resuelto: !!resultado?.resuelto,
+        todas,
+        faltan: obligatorias.filter(r => !r.cumple).length,
+        conPracticas: obligatorias.length > 0,
+        puntos: puntaje(reglas).hechos,
+        extraProlijo: reglas.some(r => r.tema === 'extra' && r.cumple),
+        // Problema 1 (parpadear): anda, pero falta el Esperar después del Apagar.
+        consejo:
+          Number(toolBox) === 2 && revisarApagadoRef.current()
+            ? 'Tu solución funciona, pero lo ideal es que luego del Apagar se espere, para indicar, al igual que en el encendido, cuánto tiempo está apagado.'
+            : null
+      })
+    },
+    [toolBox]
+  )
   const [isUploading, setIsUploading] = useState(false)
   const tieneSimulador = TOOLBOXES_CON_SIMULADOR.includes(Number(toolBox))
   // Los pasos del desafío: 1. Programá, 2. Conectá, 3. Probá (los dos últimos, con el
@@ -955,6 +968,7 @@ const PantallaDesafio = ({ titulo, consigna, toolBox, conexion }) => {
               conPracticas={felicitacion?.conPracticas}
               puntos={felicitacion?.puntos}
               extraProlijo={felicitacion?.extraProlijo}
+              consejo={felicitacion?.consejo}
             />
           </div>
           {tieneSimulador && paso === 'programar' && !esMovil && (

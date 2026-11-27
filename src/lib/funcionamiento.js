@@ -78,3 +78,21 @@ export function problemaDeTiempo(workspace) {
   }
   return null
 }
+
+/**
+ * ¿Hay un Apagar al que no le sigue ningún Esperar hasta que termina el programa? Igual se
+ * ve apagado (queda así), pero lo ideal es decir cuánto tiempo está apagado, como al encender.
+ */
+export function apagaSinEsperar(workspace) {
+  const bloques = workspace.getAllBlocks(false)
+  const raiz = bloques.find(b => b.type === 'ejecutar_una_vez')
+  if (!raiz) return false
+  const defs = bloques.filter(b => b.type === 'procedures_defnoreturn')
+  const pasos = recorrer(raiz.getInputTargetBlock('SETUP_CODE'), defs)
+  return pasos.some(
+    (paso, i) =>
+      paso.tipo === 'led' &&
+      !paso.prende &&
+      !pasos.slice(i + 1).some(p => p.tipo === 'esperar')
+  )
+}

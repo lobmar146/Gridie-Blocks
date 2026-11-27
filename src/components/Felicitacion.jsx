@@ -21,7 +21,8 @@ export default function Felicitacion({
   faltan,
   conPracticas = true,
   puntos,
-  extraProlijo
+  extraProlijo,
+  consejo
 }) {
   const titulo = todas
     ? resuelto
@@ -45,6 +46,12 @@ export default function Felicitacion({
             {texto}
           </DialogDescription>
         </DialogHeader>
+        {consejo && (
+          <div className="flex gap-2 rounded-md border border-amber-300/40 bg-amber-300/10 p-3 text-left text-sm text-amber-100">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+            <p>{consejo}</p>
+          </div>
+        )}
         {conPracticas && (
           <div className="flex items-center justify-center gap-2 text-2xl font-bold text-amber-300">
             <Star className="h-6 w-6 fill-amber-300" />

@@ -24,10 +24,8 @@ import { toolboxDesafio2Clase2 } from '../toolbox/Clase 2/toolboxDesafio2Clase2'
 import '../App.css'
 import toast from 'react-hot-toast'
 import { revisarBuenasPracticas } from '@/lib/buenasPracticas'
-import { problemaDeTiempo } from '@/lib/funcionamiento'
+import { apagaSinEsperar, problemaDeTiempo } from '@/lib/funcionamiento'
 import { borrarBloques, guardarBloques, leerBloques } from '@/lib/trabajo'
-import CodigoColoreado from './CodigoColoreado'
-import PanelBuenasPracticas from './PanelBuenasPracticas'
 import { toolboxDesafio3Clase2 } from '@/toolbox/Clase 2/toolboxDesafio3Clase2'
 import { toolboxDesafio5Clase2 } from '@/toolbox/Clase 2/toolboxDesafio5Clase2'
 import { toolboxEjercicio1Clase3PIR } from '@/toolbox/Clase 3/toolboxEjercicio1Clase3PIR'
@@ -39,6 +37,8 @@ import { toolboxDesafioClase4 } from '@/toolbox/Clase 4/toolboxDesafioClase4'
 import { toolboxDesafioHumedad } from '@/toolbox/Clase 4/toolboxDesafioHumedad'
 import { toolboxDesafio4Clase2 } from '../toolbox/Clase 2/toolboxDesafio4Clase2'
 import { toolboxEjercicio1Clase3 } from '../toolbox/Clase 3/toolboxEjercicio1Clase3'
+import CodigoColoreado from './CodigoColoreado'
+import PanelBuenasPracticas from './PanelBuenasPracticas'
 
 // Todo Blockly en español (menú del clic derecho, avisos, etc.). Importar el archivo
 // no alcanza: hay que aplicarlo, y antes de los textos propios de abajo.
@@ -110,11 +110,16 @@ const oscurecer = (hex, factor) =>
 function ajustarTextoDeBurbujas(workspace) {
   const lienzo = workspace.getBubbleCanvas?.()
   lienzo?.querySelectorAll('.blocklyBubble').forEach(burbuja => {
-    const formas = burbuja.querySelectorAll('.blocklyDraggable, .blocklyBubbleTail')
+    const formas = burbuja.querySelectorAll(
+      '.blocklyDraggable, .blocklyBubbleTail'
+    )
     let fondo = formas[0]?.getAttribute('fill')
     if (!/^#[0-9a-f]{6}$/i.test(fondo || '')) return
     let factor = 1
-    while (1.05 / (luminancia(oscurecer(fondo, factor)) + 0.05) < CONTRASTE_MINIMO)
+    while (
+      1.05 / (luminancia(oscurecer(fondo, factor)) + 0.05) <
+      CONTRASTE_MINIMO
+    )
       factor -= 0.05
     if (factor === 1) return
     fondo = oscurecer(fondo, factor)
@@ -271,8 +276,12 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
   // La pantalla del desafío usa las buenas prácticas para felicitar al alumno.
   // Le pasamos también una forma de revisar si lo que hace el programa se llega a ver.
   useEffect(() => {
-    onPracticasChange?.(practicas, () =>
-      workspaceRef.current ? problemaDeTiempo(workspaceRef.current) : null
+    onPracticasChange?.(
+      practicas,
+      () =>
+        workspaceRef.current ? problemaDeTiempo(workspaceRef.current) : null,
+      () =>
+        workspaceRef.current ? apagaSinEsperar(workspaceRef.current) : false
     )
   }, [practicas, onPracticasChange])
 
@@ -602,22 +611,22 @@ const BlocklyComponent = forwardRef(function BlocklyComponent(
           </div>
         ) : (
           !conPanel && (
-          <>
-            <Button
-              onClick={() => setShowCode(!showCode)}
-              className="absolute right-8 top-2 z-10 w-[160px] bg-arduino text-white hover:bg-arduino-oscuro"
-            >
-              <CodeIcon className="mr-2 h-4 w-4" />
-              {showCode ? 'Ocultar Código' : 'Mostrar Código'}
-            </Button>
-            <Button
-              onClick={copyToClipboard}
-              className="absolute right-8 top-[52px] z-10 w-[160px] bg-arduino-profundo text-white hover:bg-arduino-oscuro"
-            >
-              <CopyIcon className="mr-2 h-4 w-4" />
-              Copiar Código
-            </Button>
-          </>
+            <>
+              <Button
+                onClick={() => setShowCode(!showCode)}
+                className="absolute right-8 top-2 z-10 w-[160px] bg-arduino text-white hover:bg-arduino-oscuro"
+              >
+                <CodeIcon className="mr-2 h-4 w-4" />
+                {showCode ? 'Ocultar Código' : 'Mostrar Código'}
+              </Button>
+              <Button
+                onClick={copyToClipboard}
+                className="absolute right-8 top-[52px] z-10 w-[160px] bg-arduino-profundo text-white hover:bg-arduino-oscuro"
+              >
+                <CopyIcon className="mr-2 h-4 w-4" />
+                Copiar Código
+              </Button>
+            </>
           )
         )}
         {compacto && (
